@@ -40,7 +40,8 @@ const Database::DatabaseEntry Database::CopySingle = {
         { "Hawaii",                                          { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",2} } },
         { "Pitcairn",                                        { {"COPY_DIMX",8}, {"COPY_DIMY",16}, {"COPY_VW",4}, {"COPY_WPT",1} } },
         { "Tahiti",                                          { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",2} } },
-        { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",1} } },
+        { "Oland",                                           { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",1} } },
+        { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8},  {"COPY_VW",2}, {"COPY_WPT",1} } },
       }
     },
     { // ARM GPUs
@@ -104,6 +105,7 @@ const Database::DatabaseEntry Database::CopyComplexSingle = {
         { "Hawaii",                                          { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",2} } },
         { "Pitcairn",                                        { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",2} } },
         { "Tahiti",                                          { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",2} } },
+        { "Oland",                                           { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
       }
     },

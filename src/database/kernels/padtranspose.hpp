@@ -40,6 +40,7 @@ const Database::DatabaseEntry Database::PadtransposeSingle = {
         { "Hawaii",                                          { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
         { "Pitcairn",                                        { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
         { "Tahiti",                                          { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
+        { "Oland",                                           { {"PADTRA_PAD",1}, {"PADTRA_TILE",8}, {"PADTRA_WPT",8} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
       }
     },
@@ -104,6 +105,7 @@ const Database::DatabaseEntry Database::PadtransposeComplexSingle = {
         { "Hawaii",                                          { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",2} } },
         { "Pitcairn",                                        { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",4} } },
         { "Tahiti",                                          { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",2} } },
+        { "Oland",                                           { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",2} } },
       }
     },
