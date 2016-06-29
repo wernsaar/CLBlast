@@ -164,6 +164,7 @@ const Database::DatabaseEntry Database::TransposeDouble = {
         { "Hawaii",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Pitcairn",                                        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",2} } },
         { "Tahiti",                                          { {"TRA_DIM",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",4} } },
+        { "Oland",                                           { {"TRA_DIM",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -219,6 +220,7 @@ const Database::DatabaseEntry Database::TransposeComplexDouble = {
         { "Hawaii",                                          { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",2} } },
         { "Pitcairn",                                        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Tahiti",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
+        { "Oland",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },

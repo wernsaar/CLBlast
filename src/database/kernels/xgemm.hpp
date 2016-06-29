@@ -166,6 +166,7 @@ const Database::DatabaseEntry Database::XgemmDouble = {
         { "Hawaii",                                          { {"KWG",16}, {"KWI",8}, {"MDIMA",32}, {"MDIMC",8}, {"MWG",128}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",32}, {"SA",0}, {"SB",1}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",4} } },
         { "Pitcairn",                                        { {"KWG",32}, {"KWI",2}, {"MDIMA",32}, {"MDIMC",16}, {"MWG",64}, {"NDIMB",8}, {"NDIMC",16}, {"NWG",32}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",2} } },
         { "Tahiti",                                          { {"KWG",32}, {"KWI",2}, {"MDIMA",16}, {"MDIMC",8}, {"MWG",16}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",32}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",1}, {"VWM",1}, {"VWN",4} } },
+	{ "Oland", 					     { {"MWG",32}, {"NWG",32}, {"KWG",32}, {"MDIMC",16}, {"NDIMC",16}, {"MDIMA",8}, {"NDIMB",8}, {"KWI",2}, {"VWM",2}, {"VWN",2}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0} } },
         { "default",                                         { {"KWG",16}, {"KWI",2}, {"MDIMA",16}, {"MDIMC",8}, {"MWG",16}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",32}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",2} } },
       }
     },
