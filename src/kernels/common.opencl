@@ -154,8 +154,13 @@ R"(
 
 // Multiply two complex variables (used in the defines below)
 #if PRECISION == 3232 || PRECISION == 6464
-  #define MulReal(a, b) a.x*b.x - a.y*b.y
-  #define MulImag(a, b) a.x*b.y + a.y*b.x
+  #if USE_CL_MAD == 1
+  	#define MulReal(a, b) mad(a.x,b.x,-a.y*b.y)
+  	#define MulImag(a, b) mad(a.x,b.y, a.y*b.x)
+  #else
+  	#define MulReal(a, b) a.x*b.x - a.y*b.y
+  	#define MulImag(a, b) a.x*b.y + a.y*b.x
+  #endif
 #endif
 
 // The scalar multiply function
@@ -167,7 +172,11 @@ R"(
 
 // The scalar multiply-add function
 #if PRECISION == 3232 || PRECISION == 6464
-  #define MultiplyAdd(c, a, b) c.x += MulReal(a,b); c.y += MulImag(a,b)
+  #if USE_CL_MAD == 1
+  	#define MultiplyAdd(c, a, b) c.x = mad(a.x,b.x,mad(-a.y,b.y,c.x)); c.y = mad(a.x,b.y,mad(a.y,b.x,c.y))
+  #else
+  	#define MultiplyAdd(c, a, b) c.x += MulReal(a,b); c.y += MulImag(a,b)
+  #endif
 #else
   #if USE_CL_MAD == 1
     #define MultiplyAdd(c, a, b) c = mad(a, b, c)
@@ -178,9 +187,17 @@ R"(
 
 // The scalar AXPBY function
 #if PRECISION == 3232 || PRECISION == 6464
-  #define AXPBY(e, a, b, c, d) e.x = MulReal(a,b) + MulReal(c,d); e.y = MulImag(a,b) + MulImag(c,d)
+  #if USE_CL_MAD == 1
+  	#define AXPBY(e, a, b, c, d) e.x = mad(a.x,b.x, mad(c.x,d.x,-mad(c.y,d.y,a.y*b.y))); e.y = mad(a.x,b.y, mad(c.x,d.y,mad(c.y,d.x,a.y*b.x)))
+  #else
+  	#define AXPBY(e, a, b, c, d) e.x = MulReal(a,b) + MulReal(c,d); e.y = MulImag(a,b) + MulImag(c,d)
+  #endif
 #else
-  #define AXPBY(e, a, b, c, d) e = a*b + c*d
+  #if USE_CL_MAD == 1
+    #define AXPBY(e, a, b, c, d) e = mad(a,b,c*d)
+  #else
+    #define AXPBY(e, a, b, c, d) e = a*b + c*d
+  #endif
 #endif
 
 // The complex conjugate operation for complex transforms
