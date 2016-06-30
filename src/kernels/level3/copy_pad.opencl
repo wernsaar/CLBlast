@@ -38,10 +38,26 @@ __kernel void CopyPadMatrix(const int src_one, const int src_two,
   // Loops over the work per thread in both dimensions
   #pragma unroll
   for (int w_one=0; w_one<PAD_WPTX; ++w_one) {
-    const int id_one = (get_group_id(0)*PAD_WPTX + w_one) * PAD_DIMX + get_local_id(0);
+
+    #if USE_CL_MAD == 1
+      const int id_one = mad24(mad24((int) get_group_id(0),PAD_WPTX , w_one) , PAD_DIMX , (int) get_local_id(0));
+    #else
+      const int id_one = (get_group_id(0)*PAD_WPTX + w_one) * PAD_DIMX + get_local_id(0);
+    #endif
+
+
+
     #pragma unroll
     for (int w_two=0; w_two<PAD_WPTY; ++w_two) {
-      const int id_two = (get_group_id(1)*PAD_WPTY + w_two) * PAD_DIMY + get_local_id(1);
+
+      #if USE_CL_MAD == 1
+        const int id_two = mad24(mad24((int) get_group_id(1),PAD_WPTY , w_two) , PAD_DIMY ,(int) get_local_id(1));
+      #else
+        const int id_two = (get_group_id(1)*PAD_WPTY + w_two) * PAD_DIMY + get_local_id(1);
+      #endif
+
+
+
       if (id_two < dest_two && id_one < dest_one) {
 
         // Loads data if the thread IDs are within bounds of the source matrix. Otherwise, set the
@@ -49,12 +65,25 @@ __kernel void CopyPadMatrix(const int src_one, const int src_two,
         real value;
         SetToZero(value);
         if (id_two < src_two && id_one < src_one) {
-          value = src[id_two*src_ld + id_one + src_offset];
+
+          #if USE_CL_MAD == 1
+            value = src[mad24(id_two,src_ld , id_one + src_offset)];
+          #else
+            value = src[id_two*src_ld + id_one + src_offset];
+          #endif
+
         }
 
         // Stores the value in the destination matrix
+
         if (do_conjugate == 1) { COMPLEX_CONJUGATE(value); }
-        Multiply(dest[id_two*dest_ld + id_one + dest_offset], alpha, value);
+
+        #if USE_CL_MAD == 1
+          Multiply(dest[mad24(id_two,dest_ld , id_one + dest_offset)], alpha, value);
+        #else
+          Multiply(dest[id_two*dest_ld + id_one + dest_offset], alpha, value);
+        #endif
+
       }
     }
   }
@@ -80,10 +109,21 @@ __kernel void CopyMatrix(const int src_one, const int src_two,
   // Loops over the work per thread in both dimensions
   #pragma unroll
   for (int w_one=0; w_one<PAD_WPTX; ++w_one) {
-    const int id_one = (get_group_id(0)*PAD_WPTX + w_one) * PAD_DIMX + get_local_id(0);
+    #if USE_CL_MAD == 1
+      const int id_one = mad24(mad24((int) get_group_id(0),PAD_WPTX , w_one) , PAD_DIMX ,(int) get_local_id(0));
+    #else
+      const int id_one = (get_group_id(0)*PAD_WPTX + w_one) * PAD_DIMX + get_local_id(0);
+    #endif
+
+
     #pragma unroll
     for (int w_two=0; w_two<PAD_WPTY; ++w_two) {
-      const int id_two = (get_group_id(1)*PAD_WPTY + w_two) * PAD_DIMY + get_local_id(1);
+
+      #if USE_CL_MAD == 1
+        const int id_two = mad24(mad24((int) get_group_id(1),PAD_WPTY , w_two) , PAD_DIMY , (int) get_local_id(1));
+      #else
+        const int id_two = (get_group_id(1)*PAD_WPTY + w_two) * PAD_DIMY + get_local_id(1);
+      #endif
 
       // Masking in case of triangular matrices: updates only the upper or lower part
       bool condition = true;
@@ -96,9 +136,17 @@ __kernel void CopyMatrix(const int src_one, const int src_two,
         // Copies the value into the destination matrix. This is always within bounds of the source
         // matrix, as we know that the destination matrix is smaller or equal to the source.
         if (id_two < dest_two && id_one < dest_one) {
-          real value = src[id_two*src_ld + id_one + src_offset];
-          if (diagonal_imag_zero == 1 && id_one == id_two) { ImagToZero(value); }
-          Multiply(dest[id_two*dest_ld + id_one + dest_offset], alpha, value);
+
+          #if USE_CL_MAD == 1
+            real value = src[mad24(id_two,src_ld , id_one + src_offset)];
+            if (diagonal_imag_zero == 1 && id_one == id_two) { ImagToZero(value); }
+            Multiply(dest[mad24(id_two,dest_ld , id_one + dest_offset)], alpha, value);
+          #else
+            real value = src[id_two*src_ld + id_one + src_offset];
+            if (diagonal_imag_zero == 1 && id_one == id_two) { ImagToZero(value); }
+            Multiply(dest[id_two*dest_ld + id_one + dest_offset], alpha, value);
+          #endif
+
         }
       }
     }

@@ -108,36 +108,46 @@ R"(
 
 // Data-widths in dimension M
 #if VWM == 1
+    #define VWM_SHIFT 0
     typedef real realM;
 #elif VWM == 2
+    #define VWM_SHIFT 1
     typedef real2 realM;
 #elif VWM == 4
+    #define VWM_SHIFT 2
     typedef real4 realM;
 #elif VWM == 8
+    #define VWM_SHIFT 3
     typedef real8 realM;
 #elif VWM == 16
+    #define VWM_SHIFT 4
     typedef real16 realM;
 #endif
 
 // Data-widths in dimension N
 #if VWN == 1
+    #define VWN_SHIFT 0
     typedef real realN;
 #elif VWN == 2
+    #define VWN_SHIFT 1
     typedef real2 realN;
 #elif VWN == 4
+    #define VWN_SHIFT 2
     typedef real4 realN;
 #elif VWN == 8
+    #define VWN_SHIFT 3
     typedef real8 realN;
 #elif VWN == 16
+    #define VWN_SHIFT 4
     typedef real16 realN;
 #endif
 
 // =================================================================================================
 
 // Initializes the accumulation registers to zero
-inline void InitAccRegisters(realM cpm[NWI][MWI/VWM]) {
+inline void InitAccRegisters(realM cpm[NWI][MWI >> VWM_SHIFT]) {
   #pragma unroll
-  for (int mi=0; mi<MWI/VWM; ++mi) {
+  for (int mi=0; mi<(MWI>>VWM_SHIFT); ++mi) {
     #pragma unroll
     for (int ni=0; ni<NWI; ++ni) {
       #if VWM == 1
@@ -191,24 +201,24 @@ inline void GlobalToLocalA(const __global realM* restrict agm, __local realM* al
   const int la0 = tid % MDIMA;
   const int la1 = tid / MDIMA;
   #pragma unroll
-  for (int mia=0; mia<MWA/VWM; ++mia) {
+  for (int mia=0; mia<(MWA >> VWM_SHIFT); ++mia) {
     #pragma unroll
     for (int kia=0; kia<KWA; ++kia) {
 
       // Computes the indices based on strided/non-strided access
       #if STRM == 0
-        int mg = mia + la0*(MWA/VWM);
+        int mg = mia + la0*(MWA >> VWM_SHIFT);
       #elif STRM == 1
         int mg = la0 + mia*MDIMA;
       #endif
 
       // Computes the indices for the global memory
       int kg = kia + la1*KWA;
-      int idm = mg + GetGroupID0() * (MWG/VWM);
+      int idm = mg + GetGroupID0() * (MWG >> VWM_SHIFT);
       int idk = kg + kwg;
 
       // Loads the data from global memory (not transposed) into the local memory
-      alm[kg*(MWG/VWM) + mg] = agm[idk*(kSizeM/VWM) + idm];
+      alm[kg*(MWG/VWM) + mg] = agm[idk*(kSizeM >> VWM_SHIFT) + idm];
     }
   }
 }
@@ -223,22 +233,22 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
   #pragma unroll
   for (int kib=0; kib<KWB; ++kib) {
     #pragma unroll
-    for (int nib=0; nib<NWB/VWN; ++nib) {
+    for (int nib=0; nib<(NWB >> VWN_SHIFT); ++nib) {
 
       // Computes the indices based on strided/non-strided access
       #if STRN == 0
-        int ng = nib + lb0*(NWB/VWN);
+        int ng = nib + lb0*(NWB >> VWN_SHIFT);
       #elif STRN == 1
         int ng = lb0 + nib*NDIMB;
       #endif
 
       // Computes the indices for the global memory
       int kg = kib + lb1*KWB;
-      int idn = ng + GetGroupID1() * (NWG/VWN);
+      int idn = ng + GetGroupID1() * (NWG >> VWN_SHIFT);
       int idk = kg + kwg;
 
       // Loads the data from global memory (transposed) into the local memory
-      blm[kg*(NWG/VWN) + ng] = bgm[idk*(kSizeN/VWN) + idn];
+      blm[kg*(NWG >> VWN_SHIFT) + ng] = bgm[idk*(kSizeN >> VWN_SHIFT) + idn];
     }
   }
 }
@@ -249,46 +259,46 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
 // Caches global off-chip memory directly into per-thread private memory (registers). This function
 // is specific for caching the A input matrix.
 #if SA == 0
-inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI/VWM],
+inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI>>VWM_SHIFT],
                              const int kSizeM, const int idk, const int kwg) {
   #pragma unroll
-  for (int mi=0; mi<MWI/VWM; ++mi) {
+  for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
 
     // Computes the indices based on strided/non-strided access
     #if STRM == 0
-      int mg = mi + get_local_id(0)*(MWI/VWM);
+      int mg = mi + get_local_id(0)*(MWI >> VWM_SHIFT);
     #elif STRM == 1
       int mg = get_local_id(0) + mi*MDIMC;
     #endif
 
     // Computes the indices for the global memory
-    int idm = mg + GetGroupID0() * (MWG/VWM);
+    int idm = mg + GetGroupID0() * (MWG >> VWM_SHIFT);
 
     // Loads the data from global memory (not transposed) and stores into registers
-    apm[mi] = agm[idk*(kSizeM/VWM) + idm];
+    apm[mi] = agm[idk*(kSizeM >> VWM_SHIFT) + idm];
   }
 }
 #endif
 
 // Same as above, but now for the B input matrix
 #if SB == 0
-inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI/VWN],
+inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >> VWN_SHIFT],
                              const int kSizeN, const int idk) {
   #pragma unroll
-  for (int ni=0; ni<NWI/VWN; ++ni) {
+  for (int ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
 
     // Computes the indices based on strided/non-strided access
     #if STRN == 0
-      int ng = ni + get_local_id(1)*(NWI/VWN);
+      int ng = ni + get_local_id(1)*(NWI >> VWN_SHIFT);
     #elif STRN == 1
       int ng = get_local_id(1) + ni*NDIMC;
     #endif
 
     // Computes the indices for the global memory
-    int idn = ng + GetGroupID1() * (NWG/VWN);
+    int idn = ng + GetGroupID1() * (NWG >> VWN_SHIFT);
 
     // Loads the data from global memory (transposed) and stores into registers
-    bpm[ni] = bgm[idk*(kSizeN/VWN) + idn];
+    bpm[ni] = bgm[idk*(kSizeN >> VWN_SHIFT) + idn];
   }
 }
 #endif
@@ -298,30 +308,30 @@ inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI/V
 // Caches on-chip local memory into per-thread private memory (registers). This function is specific
 // for caching the A input matrix.
 #if SA == 1
-inline void LocalToPrivateA(__local realM* alm, realM apm[MWI/VWM], const int kg) {
+inline void LocalToPrivateA(__local realM* alm, realM apm[MWI >> VWM_SHIFT], const int kg) {
   #pragma unroll
-  for (int mi=0; mi<MWI/VWM; ++mi) {
+  for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
     #if STRM == 0
-      int mg = mi + get_local_id(0)*(MWI/VWM);
+      int mg = mi + get_local_id(0)*(MWI >> VWM_SHIFT);
     #elif STRM == 1
       int mg = get_local_id(0) + mi*MDIMC;
     #endif
-    apm[mi] = alm[kg*(MWG/VWM) + mg];
+    apm[mi] = alm[kg*(MWG >> VWM_SHIFT) + mg];
   }
 }
 #endif
 
 // Same as above, but now for the B input matrix
 #if SB == 1
-inline void LocalToPrivateB(__local realN* blm, realN bpm[NWI/VWN], const int kg) {
+inline void LocalToPrivateB(__local realN* blm, realN bpm[NWI >> VWN_SHIFT], const int kg) {
   #pragma unroll
-  for (int ni=0; ni<NWI/VWN; ++ni) {
+  for (int ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
     #if STRN == 0
-      int ng = ni + get_local_id(1)*(NWI/VWN);
+      int ng = ni + get_local_id(1)*(NWI >> VWN_SHIFT);
     #elif STRN == 1
       int ng = get_local_id(1) + ni*NDIMC;
     #endif
-    bpm[ni] = blm[kg*(NWG/VWN) + ng];
+    bpm[ni] = blm[kg*(NWG >> VWN_SHIFT) + ng];
   }
 }
 #endif

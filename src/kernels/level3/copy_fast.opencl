@@ -20,14 +20,19 @@ R"(
 
 // Data-widths
 #if COPY_VW == 1
+  #define COPY_VW_SHIFT 0
   typedef real realC;
 #elif COPY_VW == 2
+  #define COPY_VW_SHIFT 1
   typedef real2 realC;
 #elif COPY_VW == 4
+  #define COPY_VW_SHIFT 2
   typedef real4 realC;
 #elif COPY_VW == 8
+  #define COPY_VW_SHIFT 3
   typedef real8 realC;
 #elif COPY_VW == 16
+  #define COPY_VW_SHIFT 4
   typedef real16 realC;
 #endif
 
@@ -44,8 +49,13 @@ __kernel void CopyMatrixFast(const int ld,
   #pragma unroll
   for (int w_one=0; w_one<COPY_WPT; ++w_one) {
     const int id_one = get_global_id(0);
-    const int id_two = (get_group_id(1)*COPY_WPT + w_one) * COPY_DIMY + get_local_id(1);
-    const int id = id_two*(ld/COPY_VW) + id_one;
+    #if USE_CL_MAD == 1
+      const int id_two = mad24(mad24((int) get_group_id(1),COPY_WPT , w_one) , COPY_DIMY , (int) get_local_id(1));
+      const int id = mad24(id_two,(ld >> COPY_VW_SHIFT),id_one);
+    #else
+      const int id_two = (get_group_id(1)*COPY_WPT + w_one) * COPY_DIMY + get_local_id(1);
+      const int id = id_two*(ld >> COPY_VW_SHIFT) + id_one;
+    #endif
     realC result;
     #if COPY_VW == 1
       Multiply(result, alpha, src[id]);

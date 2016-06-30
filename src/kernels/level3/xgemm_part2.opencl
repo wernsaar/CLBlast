@@ -64,11 +64,11 @@ inline realM MultiplyAddVector(realM cvec, const realM avec, const real bval) {
 }
 
 // Performs the actual computation: Cpm += Apm * Bpm
-inline void MultiplyAccumulate(realM cpm[NWI][MWI/VWM], realM apm[MWI/VWM], realN bpm[NWI/VWN]) {
+inline void MultiplyAccumulate(realM cpm[NWI][MWI >> VWM_SHIFT], realM apm[MWI >> VWM_SHIFT], realN bpm[NWI >> VWN_SHIFT]) {
   #pragma unroll
-  for (int ni=0; ni<NWI/VWN; ++ni) {
+  for (int ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
     #pragma unroll
-    for (int mi=0; mi<MWI/VWM; ++mi) {
+    for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
       const realM aval = apm[mi];
       #if VWN == 1
         cpm[ni*VWN + 0][mi] = MultiplyAddVector(cpm[ni*VWN + 0][mi], aval, bpm[ni]);
@@ -115,27 +115,27 @@ inline void MultiplyAccumulate(realM cpm[NWI][MWI/VWM], realM apm[MWI/VWM], real
 
 // Merges the results in Cpm with the global array in Cgm. This also performs the multiplication
 // with the constants: Cgm = alpha*A*B + beta*Cgm = alpha*Cpm + beta*Cgm
-inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI/VWM], const int kSizeM,
+inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], const int kSizeM,
                          const real alpha, const real beta) {
   #pragma unroll
   for (int ni=0; ni<NWI; ++ni) {
     #pragma unroll
-    for (int mi=0; mi<MWI/VWM; ++mi) {
+    for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
       #if STRM == 0
-        int mg = mi + get_local_id(0)*(MWI/VWM);
+        int mg = mi + get_local_id(0)*(MWI >> VWM_SHIFT);
       #elif STRM == 1
         int mg = get_local_id(0) + mi*MDIMC;
       #endif
       #if STRN == 0
         int ng = ni + get_local_id(1)*NWI;
       #elif STRN == 1
-        int ng = ni%VWN + get_local_id(1)*VWN + (ni/VWN)*VWN*NDIMC;
+        int ng = ni%VWN + get_local_id(1)*VWN + (ni >> VWN_SHIFT)*VWN*NDIMC;
       #endif
-      int idm = mg + GetGroupID0() * (MWG/VWM);
+      int idm = mg + GetGroupID0() * (MWG >> VWM_SHIFT);
       int idn = ng + GetGroupID1() * NWG;
 
       // The final multiplication with alpha and the addition with beta*C
-      int index = idn*(kSizeM/VWM) + idm;
+      int index = idn*(kSizeM >> VWM_SHIFT) + idm;
       realM result;
       realM xval = cpm[ni][mi];
       realM yval = cgm[index];
@@ -186,7 +186,7 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI/VWM], const int
 // Main body of the matrix-multiplication algorithm. It calls the (inlined) functions above.
 inline void XgemmBody(const int kSizeM, const int kSizeN, const int kSizeK,
                       const __global realM* restrict agm, const __global realN* restrict bgm,
-                      __global realM* cgm, realM cpm[NWI][MWI/VWM]
+                      __global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT]
                       #if SA == 1 && SB == 1
                         , __local realM* alm, __local realN* blm
                       #elif SA == 1
@@ -197,8 +197,8 @@ inline void XgemmBody(const int kSizeM, const int kSizeN, const int kSizeK,
                       ) {
 
   // Allocates workitem-private memory (registers)
-  realM apm[MWI/VWM];
-  realN bpm[NWI/VWN];
+  realM apm[MWI >> VWM_SHIFT];
+  realN bpm[NWI >> VWN_SHIFT];
 
   // Combined thread identifier (volatile to disable caching)
   #if SA == 1 || SB == 1
@@ -364,14 +364,14 @@ __kernel void Xgemm(const int kSizeM, const int kSizeN, const int kSizeK,
 
   // Allocates workgroup-private memory (local memory)
   #if SA == 1
-    __local realM alm[KWG * MWG/VWM];
+    __local realM alm[KWG * (MWG >> VWM_SHIFT)];
   #endif
   #if SB == 1
-    __local realN blm[KWG * NWG/VWN];
+    __local realN blm[KWG * (NWG >> VWN_SHIFT)];
   #endif
 
   // Computes the matrix-multiplication and stores the result in register memory
-  realM cpm[NWI][MWI/VWM];
+  realM cpm[NWI][MWI >> VWM_SHIFT];
   #if SA == 1 && SB == 1
     XgemmBody(kSizeM, kSizeN, kSizeK, agm, bgm, cgm, cpm, alm, blm);
   #elif SA == 1

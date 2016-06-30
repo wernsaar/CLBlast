@@ -21,14 +21,19 @@ R"(
 
 // Data-widths
 #if TRA_WPT == 1
+  #define TRA_WPT_SHIFT 0
   typedef real realT;
 #elif TRA_WPT == 2
+  #define TRA_WPT_SHIFT 1
   typedef real2 realT;
 #elif TRA_WPT == 4
+  #define TRA_WPT_SHIFT 2
   typedef real4 realT;
 #elif TRA_WPT == 8
+  #define TRA_WPT_SHIFT 3
   typedef real8 realT;
 #elif TRA_WPT == 16
+  #define TRA_WPT_SHIFT 4
   typedef real16 realT;
 #endif
 
@@ -61,12 +66,19 @@ __kernel void TransposeMatrixFast(const int ld,
 
     // Computes the identifiers for the source matrix. Note that the local and global dimensions
     // do not correspond to each other!
-    const int id_one = gid1 * TRA_DIM + get_local_id(0);
-    const int id_two = (gid0 * TRA_DIM + get_local_id(1))*TRA_WPT + w_one;
-
-    // Loads data into the local memory
-    realT value = src[id_two*(ld/TRA_WPT) + id_one];
-    tile[get_local_id(0)*TRA_WPT + w_one][get_local_id(1)] = value;
+    #if USE_CL_MAD == 1
+      const int id_one = mad24(gid1 , TRA_DIM , (int) get_local_id(0));
+      const int id_two = mad24(mad24(gid0 , TRA_DIM , (int) get_local_id(1)),TRA_WPT , w_one);
+      // Loads data into the local memory
+      realT value = src[mad24(id_two,(ld >> TRA_WPT_SHIFT) , id_one)];
+      tile[mad24((int) get_local_id(0),TRA_WPT , w_one)][get_local_id(1)] = value;
+    #else
+      const int id_one = gid1 * TRA_DIM + get_local_id(0);
+      const int id_two = (gid0 * TRA_DIM + get_local_id(1))*TRA_WPT + w_one;
+      // Loads data into the local memory
+      realT value = src[id_two*(ld >> TRA_WPT_SHIFT) + id_one];
+      tile[get_local_id(0)*TRA_WPT + w_one][get_local_id(1)] = value;
+    #endif
   }
 
   // Synchronizes all threads in a workgroup
@@ -76,7 +88,11 @@ __kernel void TransposeMatrixFast(const int ld,
   realT v[TRA_WPT];
   #pragma unroll
   for (int w_one=0; w_one<TRA_WPT; ++w_one) {
-    v[w_one] = tile[get_local_id(1)*TRA_WPT + w_one][get_local_id(0)];
+    #if USE_CL_MAD == 1
+      v[w_one] = tile[mad24((int) get_local_id(1),TRA_WPT , w_one)][get_local_id(0)];
+    #else
+      v[w_one] = tile[get_local_id(1)*TRA_WPT + w_one][get_local_id(0)];
+    #endif
   }
 
   // Performs the register-level transpose of the vectorized data
@@ -160,9 +176,16 @@ __kernel void TransposeMatrixFast(const int ld,
       Multiply(result.sE, alpha, results[w_two].sE);
       Multiply(result.sF, alpha, results[w_two].sF);
     #endif
-    const int id_one = gid0*TRA_DIM + get_local_id(0);
-    const int id_two = (gid1*TRA_DIM + get_local_id(1))*TRA_WPT + w_two;
-    dest[id_two*(ld/TRA_WPT) + id_one] = result;
+
+    #if USE_CL_MAD == 1
+      const int id_one = mad24(gid0,TRA_DIM , (int) get_local_id(0));
+      const int id_two = mad24(mad24(gid1,TRA_DIM , (int) get_local_id(1)),TRA_WPT , w_two);
+      dest[mad24(id_two,(ld >> TRA_WPT_SHIFT) , id_one)] = result;
+    #else
+      const int id_one = gid0*TRA_DIM + get_local_id(0);
+      const int id_two = (gid1*TRA_DIM + get_local_id(1))*TRA_WPT + w_two;
+      dest[id_two*(ld >> TRA_WPT_SHIFT) + id_one] = result;
+    #endif
   }
 }
 
