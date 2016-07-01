@@ -220,7 +220,12 @@ R"(
 // More details: https://github.com/CNugteren/CLBlast/issues/53
 #if USE_STAGGERED_INDICES == 1
   inline size_t GetGroupIDFlat() {
-    return get_group_id(0) + get_num_groups(0) * get_group_id(1);
+    #if USE_CL_MAD == 1
+      return mad24(get_num_groups(0), get_group_id(1), get_group_id(0));
+    #else
+      return get_group_id(0) + get_num_groups(0) * get_group_id(1);
+    #endif
+  
   }
   inline size_t GetGroupID1() {
     return (GetGroupIDFlat()) % get_num_groups(1);

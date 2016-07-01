@@ -67,45 +67,48 @@ inline realM MultiplyAddVector(realM cvec, const realM avec, const real bval) {
 inline void MultiplyAccumulate(realM cpm[NWI][MWI >> VWM_SHIFT], realM apm[MWI >> VWM_SHIFT], realN bpm[NWI >> VWN_SHIFT]) {
   #pragma unroll
   for (int ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
+
+    int NIxVWN = ni * VWN;
+
     #pragma unroll
     for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
       const realM aval = apm[mi];
       #if VWN == 1
-        cpm[ni*VWN + 0][mi] = MultiplyAddVector(cpm[ni*VWN + 0][mi], aval, bpm[ni]);
+        cpm[NIxVWN + 0][mi] = MultiplyAddVector(cpm[NIxVWN + 0][mi], aval, bpm[ni]);
       #elif VWN == 2
-        cpm[ni*VWN + 0][mi] = MultiplyAddVector(cpm[ni*VWN + 0][mi], aval, bpm[ni].x);
-        cpm[ni*VWN + 1][mi] = MultiplyAddVector(cpm[ni*VWN + 1][mi], aval, bpm[ni].y);
+        cpm[NIxVWN + 0][mi] = MultiplyAddVector(cpm[NIxVWN + 0][mi], aval, bpm[ni].x);
+        cpm[NIxVWN + 1][mi] = MultiplyAddVector(cpm[NIxVWN + 1][mi], aval, bpm[ni].y);
       #elif VWN == 4
-        cpm[ni*VWN + 0][mi] = MultiplyAddVector(cpm[ni*VWN + 0][mi], aval, bpm[ni].x);
-        cpm[ni*VWN + 1][mi] = MultiplyAddVector(cpm[ni*VWN + 1][mi], aval, bpm[ni].y);
-        cpm[ni*VWN + 2][mi] = MultiplyAddVector(cpm[ni*VWN + 2][mi], aval, bpm[ni].z);
-        cpm[ni*VWN + 3][mi] = MultiplyAddVector(cpm[ni*VWN + 3][mi], aval, bpm[ni].w);
+        cpm[NIxVWN + 0][mi] = MultiplyAddVector(cpm[NIxVWN + 0][mi], aval, bpm[ni].x);
+        cpm[NIxVWN + 1][mi] = MultiplyAddVector(cpm[NIxVWN + 1][mi], aval, bpm[ni].y);
+        cpm[NIxVWN + 2][mi] = MultiplyAddVector(cpm[NIxVWN + 2][mi], aval, bpm[ni].z);
+        cpm[NIxVWN + 3][mi] = MultiplyAddVector(cpm[NIxVWN + 3][mi], aval, bpm[ni].w);
       #elif VWN == 8
-        cpm[ni*VWN + 0][mi] = MultiplyAddVector(cpm[ni*VWN + 0][mi], aval, bpm[ni].s0);
-        cpm[ni*VWN + 1][mi] = MultiplyAddVector(cpm[ni*VWN + 1][mi], aval, bpm[ni].s1);
-        cpm[ni*VWN + 2][mi] = MultiplyAddVector(cpm[ni*VWN + 2][mi], aval, bpm[ni].s2);
-        cpm[ni*VWN + 3][mi] = MultiplyAddVector(cpm[ni*VWN + 3][mi], aval, bpm[ni].s3);
-        cpm[ni*VWN + 4][mi] = MultiplyAddVector(cpm[ni*VWN + 4][mi], aval, bpm[ni].s4);
-        cpm[ni*VWN + 5][mi] = MultiplyAddVector(cpm[ni*VWN + 5][mi], aval, bpm[ni].s5);
-        cpm[ni*VWN + 6][mi] = MultiplyAddVector(cpm[ni*VWN + 6][mi], aval, bpm[ni].s6);
-        cpm[ni*VWN + 7][mi] = MultiplyAddVector(cpm[ni*VWN + 7][mi], aval, bpm[ni].s7);
+        cpm[NIxVWN + 0][mi] = MultiplyAddVector(cpm[NIxVWN + 0][mi], aval, bpm[ni].s0);
+        cpm[NIxVWN + 1][mi] = MultiplyAddVector(cpm[NIxVWN + 1][mi], aval, bpm[ni].s1);
+        cpm[NIxVWN + 2][mi] = MultiplyAddVector(cpm[NIxVWN + 2][mi], aval, bpm[ni].s2);
+        cpm[NIxVWN + 3][mi] = MultiplyAddVector(cpm[NIxVWN + 3][mi], aval, bpm[ni].s3);
+        cpm[NIxVWN + 4][mi] = MultiplyAddVector(cpm[NIxVWN + 4][mi], aval, bpm[ni].s4);
+        cpm[NIxVWN + 5][mi] = MultiplyAddVector(cpm[NIxVWN + 5][mi], aval, bpm[ni].s5);
+        cpm[NIxVWN + 6][mi] = MultiplyAddVector(cpm[NIxVWN + 6][mi], aval, bpm[ni].s6);
+        cpm[NIxVWN + 7][mi] = MultiplyAddVector(cpm[NIxVWN + 7][mi], aval, bpm[ni].s7);
       #elif VWN == 16
-        cpm[ni*VWN + 0 ][mi] = MultiplyAddVector(cpm[ni*VWN + 0 ][mi], aval, bpm[ni].s0);
-        cpm[ni*VWN + 1 ][mi] = MultiplyAddVector(cpm[ni*VWN + 1 ][mi], aval, bpm[ni].s1);
-        cpm[ni*VWN + 2 ][mi] = MultiplyAddVector(cpm[ni*VWN + 2 ][mi], aval, bpm[ni].s2);
-        cpm[ni*VWN + 3 ][mi] = MultiplyAddVector(cpm[ni*VWN + 3 ][mi], aval, bpm[ni].s3);
-        cpm[ni*VWN + 4 ][mi] = MultiplyAddVector(cpm[ni*VWN + 4 ][mi], aval, bpm[ni].s4);
-        cpm[ni*VWN + 5 ][mi] = MultiplyAddVector(cpm[ni*VWN + 5 ][mi], aval, bpm[ni].s5);
-        cpm[ni*VWN + 6 ][mi] = MultiplyAddVector(cpm[ni*VWN + 6 ][mi], aval, bpm[ni].s6);
-        cpm[ni*VWN + 7 ][mi] = MultiplyAddVector(cpm[ni*VWN + 7 ][mi], aval, bpm[ni].s7);
-        cpm[ni*VWN + 8 ][mi] = MultiplyAddVector(cpm[ni*VWN + 8 ][mi], aval, bpm[ni].s8);
-        cpm[ni*VWN + 9 ][mi] = MultiplyAddVector(cpm[ni*VWN + 9 ][mi], aval, bpm[ni].s9);
-        cpm[ni*VWN + 10][mi] = MultiplyAddVector(cpm[ni*VWN + 10][mi], aval, bpm[ni].sA);
-        cpm[ni*VWN + 11][mi] = MultiplyAddVector(cpm[ni*VWN + 11][mi], aval, bpm[ni].sB);
-        cpm[ni*VWN + 12][mi] = MultiplyAddVector(cpm[ni*VWN + 12][mi], aval, bpm[ni].sC);
-        cpm[ni*VWN + 13][mi] = MultiplyAddVector(cpm[ni*VWN + 13][mi], aval, bpm[ni].sD);
-        cpm[ni*VWN + 14][mi] = MultiplyAddVector(cpm[ni*VWN + 14][mi], aval, bpm[ni].sE);
-        cpm[ni*VWN + 15][mi] = MultiplyAddVector(cpm[ni*VWN + 15][mi], aval, bpm[ni].sF);
+        cpm[NIxVWN + 0 ][mi] = MultiplyAddVector(cpm[NIxVWN + 0 ][mi], aval, bpm[ni].s0);
+        cpm[NIxVWN + 1 ][mi] = MultiplyAddVector(cpm[NIxVWN + 1 ][mi], aval, bpm[ni].s1);
+        cpm[NIxVWN + 2 ][mi] = MultiplyAddVector(cpm[NIxVWN + 2 ][mi], aval, bpm[ni].s2);
+        cpm[NIxVWN + 3 ][mi] = MultiplyAddVector(cpm[NIxVWN + 3 ][mi], aval, bpm[ni].s3);
+        cpm[NIxVWN + 4 ][mi] = MultiplyAddVector(cpm[NIxVWN + 4 ][mi], aval, bpm[ni].s4);
+        cpm[NIxVWN + 5 ][mi] = MultiplyAddVector(cpm[NIxVWN + 5 ][mi], aval, bpm[ni].s5);
+        cpm[NIxVWN + 6 ][mi] = MultiplyAddVector(cpm[NIxVWN + 6 ][mi], aval, bpm[ni].s6);
+        cpm[NIxVWN + 7 ][mi] = MultiplyAddVector(cpm[NIxVWN + 7 ][mi], aval, bpm[ni].s7);
+        cpm[NIxVWN + 8 ][mi] = MultiplyAddVector(cpm[NIxVWN + 8 ][mi], aval, bpm[ni].s8);
+        cpm[NIxVWN + 9 ][mi] = MultiplyAddVector(cpm[NIxVWN + 9 ][mi], aval, bpm[ni].s9);
+        cpm[NIxVWN + 10][mi] = MultiplyAddVector(cpm[NIxVWN + 10][mi], aval, bpm[ni].sA);
+        cpm[NIxVWN + 11][mi] = MultiplyAddVector(cpm[NIxVWN + 11][mi], aval, bpm[ni].sB);
+        cpm[NIxVWN + 12][mi] = MultiplyAddVector(cpm[NIxVWN + 12][mi], aval, bpm[ni].sC);
+        cpm[NIxVWN + 13][mi] = MultiplyAddVector(cpm[NIxVWN + 13][mi], aval, bpm[ni].sD);
+        cpm[NIxVWN + 14][mi] = MultiplyAddVector(cpm[NIxVWN + 14][mi], aval, bpm[ni].sE);
+        cpm[NIxVWN + 15][mi] = MultiplyAddVector(cpm[NIxVWN + 15][mi], aval, bpm[ni].sF);
       #endif
     }
   }
@@ -119,26 +122,64 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
                          const real alpha, const real beta) {
   #pragma unroll
   for (int ni=0; ni<NWI; ++ni) {
-    #pragma unroll
-    for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
-      #if STRM == 0
-        int mg = mi + get_local_id(0)*(MWI >> VWM_SHIFT);
-      #elif STRM == 1
-        int mg = get_local_id(0) + mi*MDIMC;
+
+    #if USE_CL_MAD == 1
+
+      #if STRN == 0
+        int ng = mad24((int) get_local_id(1),NWI,ni);
+      #elif STRN == 1
+        int ng = mad24((int) get_local_id(1),VWN ,mad24( (ni >> VWN_SHIFT),VWN*NDIMC , ni - (ni & -VWN)));
       #endif
+
+    #else
+
       #if STRN == 0
         int ng = ni + get_local_id(1)*NWI;
       #elif STRN == 1
-        int ng = ni%VWN + get_local_id(1)*VWN + (ni >> VWN_SHIFT)*VWN*NDIMC;
+        int ng = ni - (ni & -VWN) + get_local_id(1)*VWN + (ni >> VWN_SHIFT)*VWN*NDIMC;
       #endif
-      int idm = mg + GetGroupID0() * (MWG >> VWM_SHIFT);
-      int idn = ng + GetGroupID1() * NWG;
 
-      // The final multiplication with alpha and the addition with beta*C
-      int index = idn*(kSizeM >> VWM_SHIFT) + idm;
+    #endif
+
+
+    #pragma unroll
+    for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
+
+      #if USE_CL_MAD == 1
+
+        #if STRM == 0
+          int mg = mad24((int) get_local_id(0),(MWI >> VWM_SHIFT),mi);
+        #elif STRM == 1
+          int mg = mad24(mi,MDIMC,(int) get_local_id(0));
+        #endif
+
+        int idm = mad24((int) GetGroupID0() , (MWG >> VWM_SHIFT), mg);
+        int idn = mad24((int) GetGroupID1() , NWG, ng);
+
+        // The final multiplication with alpha and the addition with beta*C
+        int index = mad24(idn,(kSizeM >> VWM_SHIFT) , idm);
+
+      #else
+
+        #if STRM == 0
+          int mg = mi + get_local_id(0)*(MWI >> VWM_SHIFT);
+        #elif STRM == 1
+          int mg = get_local_id(0) + mi*MDIMC;
+        #endif
+
+        int idm = mg + GetGroupID0() * (MWG >> VWM_SHIFT);
+        int idn = ng + GetGroupID1() * NWG;
+
+        // The final multiplication with alpha and the addition with beta*C
+        int index = idn*(kSizeM >> VWM_SHIFT) + idm;
+
+
+      #endif
+
       realM result;
       realM xval = cpm[ni][mi];
       realM yval = cgm[index];
+
       #if VWM == 1
         AXPBY(result, alpha, xval, beta, yval);
       #elif VWM == 2
