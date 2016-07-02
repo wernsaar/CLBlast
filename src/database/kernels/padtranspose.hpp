@@ -84,6 +84,7 @@ const Database::DatabaseEntry Database::PadtransposeSingle = {
         { "GeForce GTX TITAN X",                             { {"PADTRA_PAD",1}, {"PADTRA_TILE",32}, {"PADTRA_WPT",1} } },
         { "Tesla K20m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",2} } },
         { "Tesla K40m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",32}, {"PADTRA_WPT",2} } },
+        { "GeForce GTX 750",                                 { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
       }
     },
@@ -149,6 +150,7 @@ const Database::DatabaseEntry Database::PadtransposeComplexSingle = {
         { "GeForce GTX TITAN X",                             { {"PADTRA_PAD",1}, {"PADTRA_TILE",32}, {"PADTRA_WPT",1} } },
         { "Tesla K20m",                                      { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "Tesla K40m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
+        { "GeForce GTX 750",                                 { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",3232} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
       }
     },

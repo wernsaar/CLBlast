@@ -211,6 +211,7 @@ class Device {
   bool IsCPU() const { return Type() == "CPU"; }
   bool IsGPU() const { return Type() == "GPU"; }
   bool IsAMD() const { return Vendor() == "AMD" || Vendor() == "Advanced Micro Devices, Inc."; }
+  bool IsNVIDIA() const { return Vendor() == "NVIDIA" || Vendor() == "NVIDIA Corporation"; }
   bool IsARM() const { return Vendor() == "ARM"; }
 
   // Accessor to the private data-member

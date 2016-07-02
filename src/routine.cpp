@@ -89,6 +89,10 @@ StatusCode Routine::SetUp() {
     defines += "#define USE_CL_MAD 1\n";
   }
 
+  if (device_.IsNVIDIA() && device_.IsGPU()) {
+    defines += "#define USE_CL_MAD 1\n";
+  }
+
   // For specific devices, use staggered/shuffled workgroup indices.
   if (device_.IsAMD() && device_.IsGPU()) {
     defines += "#define USE_STAGGERED_INDICES 1\n";
