@@ -85,6 +85,7 @@ const Database::DatabaseEntry Database::TransposeSingle = {
         { "Tesla K20m",                                      { {"TRA_DIM",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",4} } },
         { "Tesla K40m",                                      { {"TRA_DIM",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",4} } },
         { "GeForce GTX 750",                                 { {"TRA_DIM",32}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",32} } },
+        { "GeForce GTS 450",                                 { {"TRA_DIM",8}, {"TRA_WPT",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"PRECISION",32} } },
         { "default",                                         { {"TRA_DIM",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
       }
     },
@@ -253,6 +254,7 @@ const Database::DatabaseEntry Database::TransposeComplexDouble = {
         { "Tesla K20m",                                      { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
         { "Tesla K40m",                                      { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
         { "GeForce GTX 750",                                 { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",6464} } },
+        { "GeForce GTS 450",                                 { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",6464} } },
         { "default",                                         { {"TRA_DIM",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
       }
     },
