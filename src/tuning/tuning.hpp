@@ -52,6 +52,7 @@ void Tuner(int argc, char* argv[]) {
 
   // Tests for validity of the precision and retrieves properties
   auto isAMD = false;
+  auto isNVIDIA = false;
   auto isARM = false;
   auto isGPU = false;
   {
@@ -62,6 +63,7 @@ void Tuner(int argc, char* argv[]) {
       return;
     }
     isAMD = device.IsAMD();
+    isNVIDIA = device.IsNVIDIA();
     isARM = device.IsARM();
     isGPU = device.IsGPU();
   }
@@ -98,6 +100,11 @@ void Tuner(int argc, char* argv[]) {
     defines += "#define USE_CL_MAD 1\n";
     defines += "#define USE_STAGGERED_INDICES 1\n";
   }
+
+  if (isNVIDIA && isGPU) {
+    defines += "#define USE_CL_MAD 1\n";
+  }
+
   if (isARM && isGPU) {
     defines += "#define GLOBAL_MEM_FENCE 1\n";
   }
