@@ -240,7 +240,7 @@ inline void GlobalToLocalA(const __global realM* restrict agm, __local realM* al
   #pragma unroll
   for (int mia=0; mia<(MWA >> VWM_SHIFT); ++mia) {
 
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
 
         // Computes the indices based on strided/non-strided access
 
@@ -263,7 +263,7 @@ inline void GlobalToLocalA(const __global realM* restrict agm, __local realM* al
     #pragma unroll
     for (int kia=0; kia<KWA; ++kia) {
 
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
         // Computes the indices for the global memory
         int kg =  mad24(la1,KWA,kia);
         int idm = mad24((int) GetGroupID0() , (MWG >> VWM_SHIFT),mg);
@@ -298,7 +298,7 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
   #pragma unroll
   for (int kib=0; kib<KWB; ++kib) {
 
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
       int kg = mad24(lb1,KWB,kib);
       int idk = kg + kwg;
     #else
@@ -309,7 +309,7 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
     #pragma unroll
     for (int nib=0; nib<(NWB >> VWN_SHIFT); ++nib) {
 
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
         // Computes the indices based on strided/non-strided access
         #if STRN == 0
           int ng = mad24(lb0,(NWB >> VWN_SHIFT),nib);
@@ -356,7 +356,7 @@ inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI>>
   #pragma unroll
   for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
 
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
 
       // Computes the indices based on strided/non-strided access
       #if STRM == 0
@@ -399,7 +399,7 @@ inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >
   #pragma unroll
   for (int ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
 
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
 
       // Computes the indices based on strided/non-strided access
       #if STRN == 0
@@ -446,7 +446,7 @@ inline void LocalToPrivateA(__local realM* alm, realM apm[MWI >> VWM_SHIFT], con
   #pragma unroll
   for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
 
-    #if USE_CL_MAD == 2		// bad performance of mad24
+    #if USE_MAD24 == 2		// bad performance of mad24
 
       #if STRM == 0
         int mg = mad24((int) get_local_id(0),(MWI >> VWM_SHIFT),mi);

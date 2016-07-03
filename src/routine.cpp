@@ -90,7 +90,7 @@ StatusCode Routine::SetUp() {
   }
 
   if (device_.IsNVIDIA() && device_.IsGPU()) {
-    defines += "#define USE_CL_MAD 1\n";
+    defines += "#define USE_CL_FMA 1\n";
   }
 
   // For specific devices, use staggered/shuffled workgroup indices.

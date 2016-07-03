@@ -49,7 +49,7 @@ __kernel void CopyMatrixFast(const int ld,
   #pragma unroll
   for (int w_one=0; w_one<COPY_WPT; ++w_one) {
     const int id_one = get_global_id(0);
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
       const int id_two = mad24(mad24((int) get_group_id(1),COPY_WPT , w_one) , COPY_DIMY , (int) get_local_id(1));
       const int id = mad24(id_two,(ld >> COPY_VW_SHIFT),id_one);
     #else

@@ -47,7 +47,7 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
 
       // Computes the identifiers for the source matrix. Note that the local and global dimensions
       // do not correspond to each other!
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
         const int id_src_one = mad24(mad24((int) get_group_id(1),PADTRA_WPT , w_two) , PADTRA_TILE , (int) get_local_id(0));
         const int id_src_two = mad24(mad24((int) get_group_id(0),PADTRA_WPT , w_one) , PADTRA_TILE , (int) get_local_id(1));
       #else
@@ -61,7 +61,7 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
       SetToZero(value);
       if (id_src_two < src_two && id_src_one < src_one) {
 
-        #if USE_CL_MAD == 1
+        #if USE_MAD24 == 1
           value = src[mad24(id_src_two,src_ld , id_src_one + src_offset)];
         #else
           value = src[id_src_two*src_ld + id_src_one + src_offset];
@@ -69,7 +69,7 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
 
       }
 
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
         tile[mad24((int) get_local_id(1),PADTRA_WPT , w_two)][mad24((int) get_local_id(0),PADTRA_WPT , w_one)] = value;
       #else
         tile[get_local_id(1)*PADTRA_WPT + w_two][get_local_id(0)*PADTRA_WPT + w_one] = value;
@@ -90,7 +90,7 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
     for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
 
       // Computes the identifiers for the destination matrix
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
         const int id_dest_one = mad24(mad24((int) get_group_id(0),PADTRA_WPT , w_one) , PADTRA_TILE ,(int) get_local_id(0));
         const int id_dest_two = mad24(mad24((int) get_group_id(1),PADTRA_WPT , w_two) , PADTRA_TILE ,(int) get_local_id(1));
       #else
@@ -101,7 +101,7 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
       // Stores the transposed value in the destination matrix
       if ((id_dest_one < dest_one) && (id_dest_two < dest_two)) {
 
-        #if USE_CL_MAD == 1
+        #if USE_MAD24 == 1
           real value = tile[mad24((int) get_local_id(0),PADTRA_WPT , w_two)][mad24((int) get_local_id(1),PADTRA_WPT , w_one)];
           if (do_conjugate == 1) { COMPLEX_CONJUGATE(value); }
           Multiply(dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)], alpha, value);
@@ -145,7 +145,7 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
 
       // Computes the identifiers for the source matrix. Note that the local and global dimensions
       // do not correspond to each other!
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
         const int id_src_one = mad24(mad24((int) get_group_id(1),PADTRA_WPT , w_two) , PADTRA_TILE ,(int) get_local_id(0));
         const int id_src_two = mad24(mad24((int) get_group_id(0),PADTRA_WPT , w_one) , PADTRA_TILE ,(int) get_local_id(1));
       #else
@@ -156,7 +156,7 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
       // Loads data into the local memory if the thread IDs are within bounds of the source matrix.
       if ((id_src_one < src_one) && (id_src_two < src_two)) {
 
-        #if USE_CL_MAD == 1
+        #if USE_MAD24 == 1
           real value = src[mad24(id_src_two,src_ld , id_src_one + src_offset)];
           tile[mad24((int) get_local_id(1),PADTRA_WPT , w_two)][mad24((int) get_local_id(0),PADTRA_WPT , w_one)] = value;
         #else
@@ -180,7 +180,7 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
     for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
 
       // Computes the identifiers for the destination matrix
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
         const int id_dest_one = mad24(mad24((int) get_group_id(0),PADTRA_WPT , w_one) , PADTRA_TILE ,(int) get_local_id(0));
         const int id_dest_two = mad24(mad24((int) get_group_id(1),PADTRA_WPT , w_two) , PADTRA_TILE ,(int) get_local_id(1));
       #else
@@ -199,7 +199,7 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
         // Stores the transposed value in the destination matrix
         if ((id_dest_one < dest_one) && (id_dest_two < dest_two)) {
 
-          #if USE_CL_MAD == 1
+          #if USE_MAD24 == 1
             real value = tile[mad24((int) get_local_id(0),PADTRA_WPT , w_two)][mad24((int) get_local_id(1),PADTRA_WPT , w_one)];
             if (diagonal_imag_zero == 1 && id_dest_one == id_dest_two) { ImagToZero(value); }
             Multiply(dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)], alpha, value);

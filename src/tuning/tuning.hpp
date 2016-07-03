@@ -102,7 +102,7 @@ void Tuner(int argc, char* argv[]) {
   }
 
   if (isNVIDIA && isGPU) {
-    defines += "#define USE_CL_MAD 1\n";
+    defines += "#define USE_CL_FMA 1\n";
   }
 
   if (isARM && isGPU) {

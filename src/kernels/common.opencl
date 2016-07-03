@@ -117,6 +117,14 @@ R"(
   #define USE_CL_MAD 0
 #endif
 
+#ifndef USE_CL_FMA
+  #define USE_CL_FMA 0
+#endif
+
+#ifndef USE_MAD24
+  #define USE_MAD24 0
+#endif
+
 // Sets a variable to zero
 #if PRECISION == 3232 || PRECISION == 6464
   #define SetToZero(a) a.x = ZERO; a.y = ZERO
@@ -157,6 +165,9 @@ R"(
   #if USE_CL_MAD == 1
   	#define MulReal(a, b) mad(a.x,b.x,-a.y*b.y)
   	#define MulImag(a, b) mad(a.x,b.y, a.y*b.x)
+  #elif USE_CL_FMA == 1
+  	#define MulReal(a, b) fma(a.x,b.x,-a.y*b.y)
+  	#define MulImag(a, b) fma(a.x,b.y, a.y*b.x)
   #else
   	#define MulReal(a, b) a.x*b.x - a.y*b.y
   	#define MulImag(a, b) a.x*b.y + a.y*b.x
@@ -174,12 +185,16 @@ R"(
 #if PRECISION == 3232 || PRECISION == 6464
   #if USE_CL_MAD == 1
   	#define MultiplyAdd(c, a, b) c.x = mad(a.x,b.x,mad(-a.y,b.y,c.x)); c.y = mad(a.x,b.y,mad(a.y,b.x,c.y))
+  #elif USE_CL_FMA == 1
+  	#define MultiplyAdd(c, a, b) c.x = fma(a.x,b.x,fma(-a.y,b.y,c.x)); c.y = fma(a.x,b.y,fma(a.y,b.x,c.y))
   #else
   	#define MultiplyAdd(c, a, b) c.x += MulReal(a,b); c.y += MulImag(a,b)
   #endif
 #else
   #if USE_CL_MAD == 1
     #define MultiplyAdd(c, a, b) c = mad(a, b, c)
+  #elif USE_CL_FMA == 1
+    #define MultiplyAdd(c, a, b) c = fma(a, b, c)
   #else
     #define MultiplyAdd(c, a, b) c += a * b
   #endif
@@ -189,12 +204,16 @@ R"(
 #if PRECISION == 3232 || PRECISION == 6464
   #if USE_CL_MAD == 1
   	#define AXPBY(e, a, b, c, d) e.x = mad(a.x,b.x, mad(c.x,d.x,-mad(c.y,d.y,a.y*b.y))); e.y = mad(a.x,b.y, mad(c.x,d.y,mad(c.y,d.x,a.y*b.x)))
+  #elif USE_CL_FMA == 1
+  	#define AXPBY(e, a, b, c, d) e.x = fma(a.x,b.x, fma(c.x,d.x,-fma(c.y,d.y,a.y*b.y))); e.y = fma(a.x,b.y, fma(c.x,d.y,fma(c.y,d.x,a.y*b.x)))
   #else
   	#define AXPBY(e, a, b, c, d) e.x = MulReal(a,b) + MulReal(c,d); e.y = MulImag(a,b) + MulImag(c,d)
   #endif
 #else
   #if USE_CL_MAD == 1
     #define AXPBY(e, a, b, c, d) e = mad(a,b,c*d)
+  #elif USE_CL_FMA == 1
+    #define AXPBY(e, a, b, c, d) e = fma(a,b,c*d)
   #else
     #define AXPBY(e, a, b, c, d) e = a*b + c*d
   #endif
@@ -220,7 +239,7 @@ R"(
 // More details: https://github.com/CNugteren/CLBlast/issues/53
 #if USE_STAGGERED_INDICES == 1
   inline size_t GetGroupIDFlat() {
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
       return mad24(get_num_groups(0), get_group_id(1), get_group_id(0));
     #else
       return get_group_id(0) + get_num_groups(0) * get_group_id(1);

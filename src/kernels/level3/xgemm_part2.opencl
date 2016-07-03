@@ -123,7 +123,7 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
   #pragma unroll
   for (int ni=0; ni<NWI; ++ni) {
 
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
 
       #if STRN == 0
         int ng = mad24((int) get_local_id(1),NWI,ni);
@@ -145,7 +145,7 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
     #pragma unroll
     for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
 
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
 
         #if STRM == 0
           int mg = mad24((int) get_local_id(0),(MWI >> VWM_SHIFT),mi);

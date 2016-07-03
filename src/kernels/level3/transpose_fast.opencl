@@ -66,7 +66,7 @@ __kernel void TransposeMatrixFast(const int ld,
 
     // Computes the identifiers for the source matrix. Note that the local and global dimensions
     // do not correspond to each other!
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
       const int id_one = mad24(gid1 , TRA_DIM , (int) get_local_id(0));
       const int id_two = mad24(mad24(gid0 , TRA_DIM , (int) get_local_id(1)),TRA_WPT , w_one);
       // Loads data into the local memory
@@ -88,7 +88,7 @@ __kernel void TransposeMatrixFast(const int ld,
   realT v[TRA_WPT];
   #pragma unroll
   for (int w_one=0; w_one<TRA_WPT; ++w_one) {
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
       v[w_one] = tile[mad24((int) get_local_id(1),TRA_WPT , w_one)][get_local_id(0)];
     #else
       v[w_one] = tile[get_local_id(1)*TRA_WPT + w_one][get_local_id(0)];
@@ -177,7 +177,7 @@ __kernel void TransposeMatrixFast(const int ld,
       Multiply(result.sF, alpha, results[w_two].sF);
     #endif
 
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
       const int id_one = mad24(gid0,TRA_DIM , (int) get_local_id(0));
       const int id_two = mad24(mad24(gid1,TRA_DIM , (int) get_local_id(1)),TRA_WPT , w_two);
       dest[mad24(id_two,(ld >> TRA_WPT_SHIFT) , id_one)] = result;

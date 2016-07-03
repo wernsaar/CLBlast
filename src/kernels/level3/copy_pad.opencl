@@ -39,7 +39,7 @@ __kernel void CopyPadMatrix(const int src_one, const int src_two,
   #pragma unroll
   for (int w_one=0; w_one<PAD_WPTX; ++w_one) {
 
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
       const int id_one = mad24(mad24((int) get_group_id(0),PAD_WPTX , w_one) , PAD_DIMX , (int) get_local_id(0));
     #else
       const int id_one = (get_group_id(0)*PAD_WPTX + w_one) * PAD_DIMX + get_local_id(0);
@@ -50,7 +50,7 @@ __kernel void CopyPadMatrix(const int src_one, const int src_two,
     #pragma unroll
     for (int w_two=0; w_two<PAD_WPTY; ++w_two) {
 
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
         const int id_two = mad24(mad24((int) get_group_id(1),PAD_WPTY , w_two) , PAD_DIMY ,(int) get_local_id(1));
       #else
         const int id_two = (get_group_id(1)*PAD_WPTY + w_two) * PAD_DIMY + get_local_id(1);
@@ -66,7 +66,7 @@ __kernel void CopyPadMatrix(const int src_one, const int src_two,
         SetToZero(value);
         if (id_two < src_two && id_one < src_one) {
 
-          #if USE_CL_MAD == 1
+          #if USE_MAD24 == 1
             value = src[mad24(id_two,src_ld , id_one + src_offset)];
           #else
             value = src[id_two*src_ld + id_one + src_offset];
@@ -78,7 +78,7 @@ __kernel void CopyPadMatrix(const int src_one, const int src_two,
 
         if (do_conjugate == 1) { COMPLEX_CONJUGATE(value); }
 
-        #if USE_CL_MAD == 1
+        #if USE_MAD24 == 1
           Multiply(dest[mad24(id_two,dest_ld , id_one + dest_offset)], alpha, value);
         #else
           Multiply(dest[id_two*dest_ld + id_one + dest_offset], alpha, value);
@@ -109,7 +109,7 @@ __kernel void CopyMatrix(const int src_one, const int src_two,
   // Loops over the work per thread in both dimensions
   #pragma unroll
   for (int w_one=0; w_one<PAD_WPTX; ++w_one) {
-    #if USE_CL_MAD == 1
+    #if USE_MAD24 == 1
       const int id_one = mad24(mad24((int) get_group_id(0),PAD_WPTX , w_one) , PAD_DIMX ,(int) get_local_id(0));
     #else
       const int id_one = (get_group_id(0)*PAD_WPTX + w_one) * PAD_DIMX + get_local_id(0);
@@ -119,7 +119,7 @@ __kernel void CopyMatrix(const int src_one, const int src_two,
     #pragma unroll
     for (int w_two=0; w_two<PAD_WPTY; ++w_two) {
 
-      #if USE_CL_MAD == 1
+      #if USE_MAD24 == 1
         const int id_two = mad24(mad24((int) get_group_id(1),PAD_WPTY , w_two) , PAD_DIMY , (int) get_local_id(1));
       #else
         const int id_two = (get_group_id(1)*PAD_WPTY + w_two) * PAD_DIMY + get_local_id(1);
@@ -137,7 +137,7 @@ __kernel void CopyMatrix(const int src_one, const int src_two,
         // matrix, as we know that the destination matrix is smaller or equal to the source.
         if (id_two < dest_two && id_one < dest_one) {
 
-          #if USE_CL_MAD == 1
+          #if USE_MAD24 == 1
             real value = src[mad24(id_two,src_ld , id_one + src_offset)];
             if (diagonal_imag_zero == 1 && id_one == id_two) { ImagToZero(value); }
             Multiply(dest[mad24(id_two,dest_ld , id_one + dest_offset)], alpha, value);
