@@ -58,8 +58,8 @@ class TunePadTranspose {
 
   // Sets the tuning parameters and their possible values
   static void SetParameters(cltune::Tuner &tuner, const size_t id) {
-    tuner.AddParameter(id, "PADTRA_TILE", {8, 16, 32, 64});
-    tuner.AddParameter(id, "PADTRA_WPT", {1, 2, 4, 8, 16});
+    tuner.AddParameter(id, "PADTRA_TILE", {2 ,4 ,8, 16, 32, 64});
+    tuner.AddParameter(id, "PADTRA_WPT", {1, 2, 4, 8, 16, 32 });
     tuner.AddParameter(id, "PADTRA_PAD", {0, 1});
   }
 
