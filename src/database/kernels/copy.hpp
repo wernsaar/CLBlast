@@ -201,6 +201,7 @@ const Database::DatabaseEntry Database::CopyDouble = {
         { "Tesla K20m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",1} } },
         { "Tesla K40m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",2} } },
         { "GeForce GTX 750",                                 { {"COPY_DIMX",32}, {"COPY_DIMY",16}, {"COPY_WPT",4}, {"COPY_VW",1}, {"PRECISION",64} } },
+        { "GeForce GTS 450",                                 { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",64} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
       }
     },

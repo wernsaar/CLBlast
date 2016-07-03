@@ -209,6 +209,7 @@ const Database::DatabaseEntry Database::PadtransposeDouble = {
         { "Tesla K20m",                                      { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "Tesla K40m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "GeForce GTX 750",                                 { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",64} } },
+        { "GeForce GTS 450",                                 { {"PADTRA_TILE",16}, {"PADTRA_WPT",1}, {"PADTRA_PAD",1}, {"PRECISION",64} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
       }
     },
