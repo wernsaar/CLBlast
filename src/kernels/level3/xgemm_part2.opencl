@@ -68,7 +68,7 @@ inline void MultiplyAccumulate(realM cpm[NWI][MWI >> VWM_SHIFT], realM apm[MWI >
   #pragma unroll
   for (int ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
 
-    int NIxVWN = ni * VWN;
+    int NIxVWN = ni << VWN_SHIFT;
 
     #pragma unroll
     for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
@@ -114,67 +114,48 @@ inline void MultiplyAccumulate(realM cpm[NWI][MWI >> VWM_SHIFT], realM apm[MWI >
   }
 }
 
-// =================================================================================================
-
 // Merges the results in Cpm with the global array in Cgm. This also performs the multiplication
 // with the constants: Cgm = alpha*A*B + beta*Cgm = alpha*Cpm + beta*Cgm
 inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], const int kSizeM,
                          const real alpha, const real beta) {
+
+
+  int GroupID0_M1 = GetGroupID0() << (MWG_SHIFT - VWM_SHIFT);
+  int GroupID1_M1 = GetGroupID1() << NWG_SHIFT;
+  int LocalID1_M1 = get_local_id(1) << VWN_SHIFT;
+
+  #if STRN == 0
+    int LocalID1_M2 = get_local_id(1)*NWI;
+  #endif
+
+  #if STRM == 0
+    int LocalID0_M1 = get_local_id(0)*(MWI >> VWM_SHIFT);
+  #endif
+
   #pragma unroll
   for (int ni=0; ni<NWI; ++ni) {
 
-    #if USE_MAD24 == 1
-
-      #if STRN == 0
-        int ng = mad24((int) get_local_id(1),NWI,ni);
-      #elif STRN == 1
-        int ng = mad24((int) get_local_id(1),VWN ,mad24( (ni >> VWN_SHIFT),VWN*NDIMC , ni - (ni & -VWN)));
-      #endif
-
-    #else
-
-      #if STRN == 0
-        int ng = ni + get_local_id(1)*NWI;
-      #elif STRN == 1
-        int ng = ni - (ni & -VWN) + get_local_id(1)*VWN + (ni >> VWN_SHIFT)*VWN*NDIMC;
-      #endif
-
+    #if STRN == 0
+      int ng = ni + LocalID1_M2;
+    #elif STRN == 1
+      int ng = (ni - (ni & -VWN)) + LocalID1_M1 + ((ni >> VWN_SHIFT) << (VWN_SHIFT + NDIMC_SHIFT));
     #endif
 
+    int idn = ng + GroupID1_M1 ;
+    int idn_M1 = idn*(kSizeM >> VWM_SHIFT);
 
     #pragma unroll
     for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
 
-      #if USE_MAD24 == 1
-
-        #if STRM == 0
-          int mg = mad24((int) get_local_id(0),(MWI >> VWM_SHIFT),mi);
-        #elif STRM == 1
-          int mg = mad24(mi,MDIMC,(int) get_local_id(0));
-        #endif
-
-        int idm = mad24((int) GetGroupID0() , (MWG >> VWM_SHIFT), mg);
-        int idn = mad24((int) GetGroupID1() , NWG, ng);
-
-        // The final multiplication with alpha and the addition with beta*C
-        int index = mad24(idn,(kSizeM >> VWM_SHIFT) , idm);
-
-      #else
-
-        #if STRM == 0
-          int mg = mi + get_local_id(0)*(MWI >> VWM_SHIFT);
-        #elif STRM == 1
-          int mg = get_local_id(0) + mi*MDIMC;
-        #endif
-
-        int idm = mg + GetGroupID0() * (MWG >> VWM_SHIFT);
-        int idn = ng + GetGroupID1() * NWG;
-
-        // The final multiplication with alpha and the addition with beta*C
-        int index = idn*(kSizeM >> VWM_SHIFT) + idm;
-
-
+      #if STRM == 0
+        int mg = mi + LocalID0_M1;
+      #elif STRM == 1
+        int mg = get_local_id(0) + (mi << MDIMC_SHIFT);
       #endif
+
+
+      // The final multiplication with alpha and the addition with beta*C
+      int index = idn_M1 + mg + GroupID0_M1;
 
       realM result;
       realM xval = cpm[ni][mi];
@@ -243,7 +224,7 @@ inline void XgemmBody(const int kSizeM, const int kSizeN, const int kSizeK,
 
   // Combined thread identifier (volatile to disable caching)
   #if SA == 1 || SB == 1
-    volatile int tid = get_local_id(0) + MDIMC*get_local_id(1);
+    volatile int tid = get_local_id(0) + (get_local_id(1) << MDIMC_SHIFT);
   #endif
 
   // Initializes the accumulation registers
@@ -266,8 +247,10 @@ inline void XgemmBody(const int kSizeM, const int kSizeN, const int kSizeK,
 
     // Loops over all workitem tiles, unrolled by a factor KWI
     for (int pwi=0; pwi<KWG; pwi+=KWI) {
+
       #pragma unroll
       for (int pit=0; pit<KWI; ++pit) {
+
         #if SA == 0 || SB == 0
           int idk = kwg + pwi + pit;
         #endif
@@ -400,15 +383,16 @@ __kernel void Xgemm(const int kSizeM, const int kSizeN, const int kSizeK,
                     const __global realM* restrict agm,
                     const __global realN* restrict bgm,
                     __global realM* cgm) {
+
   const real alpha = arg_alpha[0];
   const real beta = arg_beta[0];
 
   // Allocates workgroup-private memory (local memory)
   #if SA == 1
-    __local realM alm[KWG * (MWG >> VWM_SHIFT)];
+    __local realM alm[KWG << (MWG_SHIFT - VWM_SHIFT)];
   #endif
   #if SB == 1
-    __local realN blm[KWG * (NWG >> VWN_SHIFT)];
+    __local realN blm[KWG << (NWG_SHIFT - VWN_SHIFT)];
   #endif
 
   // Computes the matrix-multiplication and stores the result in register memory
