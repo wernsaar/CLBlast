@@ -145,7 +145,7 @@ const Database::DatabaseEntry Database::XgemmComplexSingle = {
         { "GeForce GTX TITAN X",                             { {"KWG",16}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",8}, {"MWG",64}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",32}, {"SA",1}, {"SB",0}, {"STRM",1}, {"STRN",1}, {"VWM",1}, {"VWN",4} } },
         { "Tesla K20m",                                      { {"KWG",32}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",16}, {"MWG",64}, {"NDIMB",8}, {"NDIMC",16}, {"NWG",64}, {"SA",1}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",4} } },
         { "Tesla K40m",                                      { {"KWG",16}, {"KWI",2}, {"MDIMA",32}, {"MDIMC",32}, {"MWG",32}, {"NDIMB",32}, {"NDIMC",8}, {"NWG",64}, {"SA",0}, {"SB",1}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",1} } },
-        { "GeForce GTX 750",                                 { {"MWG",128}, {"NWG",64}, {"KWG",16}, {"MDIMC",32}, {"NDIMC",8}, {"MDIMA",16}, {"NDIMB",16}, {"KWI",8}, {"VWM",1}, {"VWN",2}, {"STRM",1}, {"STRN",1}, {"SA",1}, {"SB",1}, {"PRECISION",3232} } },
+        { "GeForce GTX 750",                                 { {"MWG",64}, {"NWG",128}, {"KWG",16}, {"MDIMC",16}, {"NDIMC",16}, {"MDIMA",16}, {"NDIMB",16}, {"KWI",2}, {"VWM",1}, {"VWN",2}, {"STRM",1}, {"STRN",1}, {"SA",1}, {"SB",1}, {"PRECISION",3232} } },
         { "default",                                         { {"KWG",16}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",8}, {"MWG",32}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",32}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",1} } },
       }
     },
@@ -202,7 +202,7 @@ const Database::DatabaseEntry Database::XgemmDouble = {
         { "GeForce GTX TITAN X",                             { {"KWG",16}, {"KWI",8}, {"MDIMA",16}, {"MDIMC",16}, {"MWG",16}, {"NDIMB",16}, {"NDIMC",16}, {"NWG",16}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",1} } },
         { "Tesla K20m",                                      { {"KWG",16}, {"KWI",2}, {"MDIMA",32}, {"MDIMC",8}, {"MWG",32}, {"NDIMB",16}, {"NDIMC",16}, {"NWG",64}, {"SA",1}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",1} } },
         { "Tesla K40m",                                      { {"KWG",32}, {"KWI",2}, {"MDIMA",16}, {"MDIMC",8}, {"MWG",64}, {"NDIMB",16}, {"NDIMC",32}, {"NWG",128}, {"SA",1}, {"SB",0}, {"STRM",1}, {"STRN",1}, {"VWM",2}, {"VWN",4} } },
-        { "GeForce GTX 750",                                 { {"MWG",64}, {"NWG",32}, {"KWG",32}, {"MDIMC",16}, {"NDIMC",16}, {"MDIMA",32}, {"NDIMB",16}, {"KWI",2}, {"VWM",1}, {"VWN",1}, {"STRM",0}, {"STRN",1}, {"SA",0}, {"SB",0}, {"PRECISION",64} } },
+        { "GeForce GTX 750",                                 { {"MWG",32}, {"NWG",128}, {"KWG",32}, {"MDIMC",16}, {"NDIMC",16}, {"MDIMA",16}, {"NDIMB",32}, {"KWI",2}, {"VWM",1}, {"VWN",1}, {"STRM",1}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",64} } },
         { "GeForce GTS 450",                                 { {"MWG",32}, {"NWG",64}, {"KWG",16}, {"MDIMC",8}, {"NDIMC",16}, {"MDIMA",8}, {"NDIMB",16}, {"KWI",8}, {"VWM",4}, {"VWN",4}, {"STRM",1}, {"STRN",0}, {"SA",1}, {"SB",1}, {"PRECISION",64} } },
         { "default",                                         { {"KWG",16}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",8}, {"MWG",16}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",16}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",1} } },
       }
