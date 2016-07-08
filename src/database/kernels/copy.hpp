@@ -40,7 +40,8 @@ const Database::DatabaseEntry Database::CopySingle = {
         { "Hawaii",                                          { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",2} } },
         { "Pitcairn",                                        { {"COPY_DIMX",8}, {"COPY_DIMY",16}, {"COPY_VW",4}, {"COPY_WPT",1} } },
         { "Tahiti",                                          { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",2} } },
-	{ "Oland", 					     { {"COPY_DIMX",8}, {"COPY_DIMY",4}, {"COPY_WPT",1}, {"COPY_VW",4}, {"PRECISION",32} } },
+	{ "Olandbak", 					     { {"COPY_DIMX",8}, {"COPY_DIMY",4}, {"COPY_WPT",1}, {"COPY_VW",4}, {"PRECISION",32} } },
+        { "Oland",                                           { {"COPY_DIMX",16}, {"COPY_DIMY",2}, {"COPY_WPT",2}, {"COPY_VW",8}, {"PRECISION",32} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8},  {"COPY_VW",2}, {"COPY_WPT",1} } },
       }
     },
@@ -85,7 +86,8 @@ const Database::DatabaseEntry Database::CopySingle = {
         { "Tesla K20m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",4}, {"COPY_WPT",4} } },
         { "Tesla K40m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",4}, {"COPY_WPT",2} } },
         { "GeForce GTX 750",                                 { {"COPY_DIMX",16}, {"COPY_DIMY",64}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
-        { "GeForce GTS 450",                                 { {"COPY_DIMX",16}, {"COPY_DIMY",4}, {"COPY_WPT",1}, {"COPY_VW",4}, {"PRECISION",32} } },
+        { "GeForce GTS 450bak",                                 { {"COPY_DIMX",16}, {"COPY_DIMY",4}, {"COPY_WPT",1}, {"COPY_VW",4}, {"PRECISION",32} } },
+        { "GeForce GTS 450",                                 { {"COPY_DIMX",32}, {"COPY_DIMY",2}, {"COPY_WPT",1}, {"COPY_VW",4}, {"PRECISION",32} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
       }
     },

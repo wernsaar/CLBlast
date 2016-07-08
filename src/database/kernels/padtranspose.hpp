@@ -40,7 +40,8 @@ const Database::DatabaseEntry Database::PadtransposeSingle = {
         { "Hawaii",                                          { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
         { "Pitcairn",                                        { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
         { "Tahiti",                                          { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
-        { "Oland",                                           { {"PADTRA_TILE",8}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",32} } },
+        { "Olandbak",                                        { {"PADTRA_TILE",8}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",32} } },
+        { "Oland",                                           { {"PADTRA_TILE",8}, {"PADTRA_WPT",8}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
       }
     },
@@ -85,7 +86,8 @@ const Database::DatabaseEntry Database::PadtransposeSingle = {
         { "Tesla K20m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",2} } },
         { "Tesla K40m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",32}, {"PADTRA_WPT",2} } },
         { "GeForce GTX 750",                                 { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
-        { "GeForce GTS 450",                                 { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+        { "GeForce GTS 450bak",                              { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+        { "GeForce GTS 450",                                 { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
       }
     },

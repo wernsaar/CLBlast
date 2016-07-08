@@ -240,7 +240,7 @@ R"(
 #if USE_STAGGERED_INDICES == 1
   inline size_t GetGroupIDFlat() {
     #if USE_MAD24 == 1
-      return mad24(get_num_groups(0), get_group_id(1), get_group_id(0));
+      return mad24((int) get_num_groups(0),(int) get_group_id(1),(int) get_group_id(0));
     #else
       return get_group_id(0) + get_num_groups(0) * get_group_id(1);
     #endif

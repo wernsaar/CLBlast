@@ -78,8 +78,9 @@ const Database::DatabaseEntry Database::XgemmSingle = {
         { "GeForce GTX TITAN X",                             { {"KWG",16}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",16}, {"MWG",128}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",128}, {"SA",1}, {"SB",1}, {"STRM",1}, {"STRN",1}, {"VWM",4}, {"VWN",8} } },
         { "Tesla K20m",                                      { {"KWG",16}, {"KWI",2}, {"MDIMA",32}, {"MDIMC",16}, {"MWG",64}, {"NDIMB",16}, {"NDIMC",8}, {"NWG",64}, {"SA",1}, {"SB",1}, {"STRM",1}, {"STRN",0}, {"VWM",2}, {"VWN",4} } },
         { "Tesla K40m",                                      { {"KWG",16}, {"KWI",8}, {"MDIMA",16}, {"MDIMC",8}, {"MWG",64}, {"NDIMB",16}, {"NDIMC",16}, {"NWG",128}, {"SA",1}, {"SB",1}, {"STRM",1}, {"STRN",0}, {"VWM",2}, {"VWN",4} } },
-       { "GeForce GTX 750",                                  { {"MWG",64}, {"NWG",128}, {"KWG",16}, {"MDIMC",8}, {"NDIMC",16}, {"MDIMA",16}, {"NDIMB",8}, {"KWI",8}, {"VWM",4}, {"VWN",4}, {"STRM",1}, {"STRN",1}, {"SA",1}, {"SB",1}, {"PRECISION",32} } },
-       { "GeForce GTS 450",                                  { {"MWG",32}, {"NWG",128}, {"KWG",16}, {"MDIMC",8}, {"NDIMC",16}, {"MDIMA",16}, {"NDIMB",16}, {"KWI",2}, {"VWM",1}, {"VWN",8}, {"STRM",1}, {"STRN",0}, {"SA",1}, {"SB",1}, {"PRECISION",32} } },
+       { "GeForce GTX 750bak",                               { {"MWG",64}, {"NWG",128}, {"KWG",16}, {"MDIMC",8}, {"NDIMC",16}, {"MDIMA",16}, {"NDIMB",8}, {"KWI",8}, {"VWM",4}, {"VWN",4}, {"STRM",1}, {"STRN",1}, {"SA",1}, {"SB",1}, {"PRECISION",32} } },
+       { "GeForce GTX 750",                                  { {"MWG",64}, {"NWG",128}, {"KWG",16}, {"MDIMC",8}, {"NDIMC",16}, {"MDIMA",16}, {"NDIMB",16}, {"KWI",8}, {"VWM",4}, {"VWN",4}, {"STRM",1}, {"STRN",1}, {"SA",1}, {"SB",1}, {"PRECISION",32} } },
+       { "GeForce GTS 450",                                  { {"MWG",128}, {"NWG",64}, {"KWG",32}, {"MDIMC",32}, {"NDIMC",8}, {"MDIMA",8}, {"NDIMB",8}, {"KWI",8}, {"VWM",4}, {"VWN",8}, {"STRM",1}, {"STRN",1}, {"SA",0}, {"SB",1}, {"PRECISION",32} } },
         { "default",                                         { {"KWG",16}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",8}, {"MWG",32}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",64}, {"SA",1}, {"SB",1}, {"STRM",0}, {"STRN",0}, {"VWM",2}, {"VWN",2} } },
       }
     },

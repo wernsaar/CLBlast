@@ -37,6 +37,28 @@ R"(
   typedef real16 realT;
 #endif
 
+#if TRA_DIM == 1
+  #define TRA_DIM_SHIFT 0
+#elif TRA_DIM == 2
+  #define TRA_DIM_SHIFT 1
+#elif TRA_DIM == 4
+  #define TRA_DIM_SHIFT 2
+#elif TRA_DIM == 8
+  #define TRA_DIM_SHIFT 3
+#elif TRA_DIM == 16
+  #define TRA_DIM_SHIFT 4
+#elif TRA_DIM == 32
+  #define TRA_DIM_SHIFT 5
+#elif TRA_DIM == 64
+  #define TRA_DIM_SHIFT 6
+#elif TRA_DIM == 128
+  #define TRA_DIM_SHIFT 7
+#elif TRA_DIM == 256
+  #define TRA_DIM_SHIFT 8
+#endif
+
+
+
 // =================================================================================================
 
 // Transposes and copies a matrix. Requires both matrices to be of the same dimensions and without
@@ -50,35 +72,42 @@ __kernel void TransposeMatrixFast(const int ld,
 
   // Sets the group identifiers. They might be 'shuffled' around to distribute work in a different
   // way over workgroups, breaking memory-bank dependencies.
-  const int gid0 = get_group_id(0);
+
+  const int gid0_M1 = get_group_id(0) << TRA_DIM_SHIFT;
+  const int ld_D1   = ld >> TRA_WPT_SHIFT;
+
+
   #if TRA_SHUFFLE == 1
-    const int gid1 = (get_group_id(0) + get_group_id(1)) % get_num_groups(0);
+    const int gid1_M1 = ((get_group_id(0) + get_group_id(1)) % get_num_groups(0)) << TRA_DIM_SHIFT;
   #else
-    const int gid1 = get_group_id(1);
+    const int gid1_M1 = get_group_id(1) << TRA_DIM_SHIFT;
   #endif
 
+  const int id_one  = gid1_M1  + get_local_id(0);
+  const int id_one_1 = gid0_M1 + get_local_id(0);
+
+  const int gid0_M2 = (gid0_M1 + get_local_id(1)) << TRA_WPT_SHIFT;
+  const int gid1_M2 = (gid1_M1 + get_local_id(1)) << TRA_WPT_SHIFT;
+
+  const int LocalID0xTRA_WPT_SHIFT = get_local_id(0)<<TRA_WPT_SHIFT;
+  const int LocalID1xTRA_WPT_SHIFT = get_local_id(1)<<TRA_WPT_SHIFT;
+
   // Local memory to store a tile of the matrix (for coalescing)
-  __local realT tile[TRA_WPT*TRA_DIM][TRA_DIM + TRA_PAD];
+  __local realT tile[TRA_WPT << TRA_DIM_SHIFT][TRA_DIM + TRA_PAD];
 
   // Loops over the work per thread
   #pragma unroll
   for (int w_one=0; w_one<TRA_WPT; ++w_one) {
 
-    // Computes the identifiers for the source matrix. Note that the local and global dimensions
-    // do not correspond to each other!
-    #if USE_MAD24 == 1
-      const int id_one = mad24(gid1 , TRA_DIM , (int) get_local_id(0));
-      const int id_two = mad24(mad24(gid0 , TRA_DIM , (int) get_local_id(1)),TRA_WPT , w_one);
       // Loads data into the local memory
-      realT value = src[mad24(id_two,(ld >> TRA_WPT_SHIFT) , id_one)];
-      tile[mad24((int) get_local_id(0),TRA_WPT , w_one)][get_local_id(1)] = value;
-    #else
-      const int id_one = gid1 * TRA_DIM + get_local_id(0);
-      const int id_two = (gid0 * TRA_DIM + get_local_id(1))*TRA_WPT + w_one;
-      // Loads data into the local memory
-      realT value = src[id_two*(ld >> TRA_WPT_SHIFT) + id_one];
-      tile[get_local_id(0)*TRA_WPT + w_one][get_local_id(1)] = value;
-    #endif
+      #if USE_MAD24 == 2
+        realT value = src[mad24(gid0_M2 + w_one,ld_D1 , id_one)];
+      #else
+        realT value = src[(gid0_M2 + w_one)*ld_D1 + id_one];
+      #endif
+
+      tile[LocalID0xTRA_WPT_SHIFT + w_one][get_local_id(1)] = value;
+
   }
 
   // Synchronizes all threads in a workgroup
@@ -86,13 +115,12 @@ __kernel void TransposeMatrixFast(const int ld,
 
   // Loads transposed data from the local memory
   realT v[TRA_WPT];
+
   #pragma unroll
   for (int w_one=0; w_one<TRA_WPT; ++w_one) {
-    #if USE_MAD24 == 1
-      v[w_one] = tile[mad24((int) get_local_id(1),TRA_WPT , w_one)][get_local_id(0)];
-    #else
-      v[w_one] = tile[get_local_id(1)*TRA_WPT + w_one][get_local_id(0)];
-    #endif
+
+      v[w_one] = tile[LocalID1xTRA_WPT_SHIFT + w_one][get_local_id(0)];
+
   }
 
   // Performs the register-level transpose of the vectorized data
@@ -138,54 +166,64 @@ __kernel void TransposeMatrixFast(const int ld,
   // Multiplies by alpha and then stores the results into the destination matrix
   #pragma unroll
   for (int w_two=0; w_two<TRA_WPT; ++w_two) {
-    realT result;
-    #if TRA_WPT == 1
-      Multiply(result, alpha, results[w_two]);
-    #elif TRA_WPT == 2
-      Multiply(result.x, alpha, results[w_two].x);
-      Multiply(result.y, alpha, results[w_two].y);
-    #elif TRA_WPT == 4
-      Multiply(result.x, alpha, results[w_two].x);
-      Multiply(result.y, alpha, results[w_two].y);
-      Multiply(result.z, alpha, results[w_two].z);
-      Multiply(result.w, alpha, results[w_two].w);
-    #elif TRA_WPT == 8
-      Multiply(result.s0, alpha, results[w_two].s0);
-      Multiply(result.s1, alpha, results[w_two].s1);
-      Multiply(result.s2, alpha, results[w_two].s2);
-      Multiply(result.s3, alpha, results[w_two].s3);
-      Multiply(result.s4, alpha, results[w_two].s4);
-      Multiply(result.s5, alpha, results[w_two].s5);
-      Multiply(result.s6, alpha, results[w_two].s6);
-      Multiply(result.s7, alpha, results[w_two].s7);
-    #elif TRA_WPT == 16
-      Multiply(result.s0, alpha, results[w_two].s0);
-      Multiply(result.s1, alpha, results[w_two].s1);
-      Multiply(result.s2, alpha, results[w_two].s2);
-      Multiply(result.s3, alpha, results[w_two].s3);
-      Multiply(result.s4, alpha, results[w_two].s4);
-      Multiply(result.s5, alpha, results[w_two].s5);
-      Multiply(result.s6, alpha, results[w_two].s6);
-      Multiply(result.s7, alpha, results[w_two].s7);
-      Multiply(result.s8, alpha, results[w_two].s8);
-      Multiply(result.s9, alpha, results[w_two].s9);
-      Multiply(result.sA, alpha, results[w_two].sA);
-      Multiply(result.sB, alpha, results[w_two].sB);
-      Multiply(result.sC, alpha, results[w_two].sC);
-      Multiply(result.sD, alpha, results[w_two].sD);
-      Multiply(result.sE, alpha, results[w_two].sE);
-      Multiply(result.sF, alpha, results[w_two].sF);
-    #endif
 
-    #if USE_MAD24 == 1
-      const int id_one = mad24(gid0,TRA_DIM , (int) get_local_id(0));
-      const int id_two = mad24(mad24(gid1,TRA_DIM , (int) get_local_id(1)),TRA_WPT , w_two);
-      dest[mad24(id_two,(ld >> TRA_WPT_SHIFT) , id_one)] = result;
+    #if PRECISION == 32
+ 
+      #if USE_MAD24 == 2
+        dest[mad24(gid1_M2 + w_two,ld_D1  , id_one_1)] = results[w_two];
+      #else
+        dest[(gid1_M2 + w_two)*ld_D1  + id_one_1] = results[w_two];
+      #endif
+
     #else
-      const int id_one = gid0*TRA_DIM + get_local_id(0);
-      const int id_two = (gid1*TRA_DIM + get_local_id(1))*TRA_WPT + w_two;
-      dest[id_two*(ld >> TRA_WPT_SHIFT) + id_one] = result;
-    #endif
+
+      realT result;
+      #if TRA_WPT == 1
+        Multiply(result, alpha, results[w_two]);
+      #elif TRA_WPT == 2
+        Multiply(result.x, alpha, results[w_two].x);
+        Multiply(result.y, alpha, results[w_two].y);
+      #elif TRA_WPT == 4
+        Multiply(result.x, alpha, results[w_two].x);
+        Multiply(result.y, alpha, results[w_two].y);
+        Multiply(result.z, alpha, results[w_two].z);
+        Multiply(result.w, alpha, results[w_two].w);
+      #elif TRA_WPT == 8
+        Multiply(result.s0, alpha, results[w_two].s0);
+        Multiply(result.s1, alpha, results[w_two].s1);
+        Multiply(result.s2, alpha, results[w_two].s2);
+        Multiply(result.s3, alpha, results[w_two].s3);
+        Multiply(result.s4, alpha, results[w_two].s4);
+        Multiply(result.s5, alpha, results[w_two].s5);
+        Multiply(result.s6, alpha, results[w_two].s6);
+        Multiply(result.s7, alpha, results[w_two].s7);
+      #elif TRA_WPT == 16
+        Multiply(result.s0, alpha, results[w_two].s0);
+        Multiply(result.s1, alpha, results[w_two].s1);
+        Multiply(result.s2, alpha, results[w_two].s2);
+        Multiply(result.s3, alpha, results[w_two].s3);
+        Multiply(result.s4, alpha, results[w_two].s4);
+        Multiply(result.s5, alpha, results[w_two].s5);
+        Multiply(result.s6, alpha, results[w_two].s6);
+        Multiply(result.s7, alpha, results[w_two].s7);
+        Multiply(result.s8, alpha, results[w_two].s8);
+        Multiply(result.s9, alpha, results[w_two].s9);
+        Multiply(result.sA, alpha, results[w_two].sA);
+        Multiply(result.sB, alpha, results[w_two].sB);
+        Multiply(result.sC, alpha, results[w_two].sC);
+        Multiply(result.sD, alpha, results[w_two].sD);
+        Multiply(result.sE, alpha, results[w_two].sE);
+        Multiply(result.sF, alpha, results[w_two].sF);
+      #endif
+  
+      #if USE_MAD24 == 2
+        dest[mad24(gid1_M2 + w_two,ld_D1  , id_one_1)] = result;
+      #else
+        dest[(gid1_M2 + w_two)*ld_D1  + id_one_1] = result;
+      #endif
+
+   #endif
+
   }
 }
 

@@ -40,7 +40,8 @@ const Database::DatabaseEntry Database::PadSingle = {
         { "Hawaii",                                          { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",4} } },
         { "Pitcairn",                                        { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",2} } },
         { "Tahiti",                                          { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",2} } },
-        { "Oland",                                           { {"PAD_DIMX",16}, {"PAD_DIMY",4}, {"PAD_WPTX",1}, {"PAD_WPTY",2}, {"PRECISION",32} } },
+        { "Olandbak",                                        { {"PAD_DIMX",16}, {"PAD_DIMY",4}, {"PAD_WPTX",1}, {"PAD_WPTY",2}, {"PRECISION",32} } },
+        { "Oland",                                           { {"PAD_DIMX",32}, {"PAD_DIMY",2}, {"PAD_WPTX",2}, {"PAD_WPTY",1}, {"PRECISION",32} } },
         { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
       }
     },
@@ -84,8 +85,10 @@ const Database::DatabaseEntry Database::PadSingle = {
         { "GeForce GTX TITAN X",                             { {"PAD_DIMX",16}, {"PAD_DIMY",16}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
         { "Tesla K20m",                                      { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",2}, {"PAD_WPTY",1} } },
         { "Tesla K40m",                                      { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
-        { "GeForce GTX 750",                                 { {"PAD_DIMX",32}, {"PAD_DIMY",4}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",32} } },
-        { "GeForce GTS 450",                                 { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",4}, {"PRECISION",32} } },
+        { "GeForce GTX 750bak",                              { {"PAD_DIMX",32}, {"PAD_DIMY",4}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",32} } },
+        { "GeForce GTX 750",                                 { {"PAD_DIMX",32}, {"PAD_DIMY",2}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",32} } },
+        { "GeForce GTS 450bak",                              { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",4}, {"PRECISION",32} } },
+        { "GeForce GTS 450",                                 { {"PAD_DIMX",64}, {"PAD_DIMY",4}, {"PAD_WPTX",1}, {"PAD_WPTY",1}, {"PRECISION",32} } },
         { "default",                                         { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
       }
     },

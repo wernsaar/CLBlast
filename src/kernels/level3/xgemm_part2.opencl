@@ -19,8 +19,15 @@ R"(
 
 // The vectorised multiply-add function
 inline realM MultiplyAddVector(realM cvec, const realM avec, const real bval) {
-  #if USE_VECTOR_MAD == 1
-    cvec += avec * bval;
+  #if (USE_VECTOR_MAD == 1) && (PRECISION == 32)
+    #if USE_CL_MAD == 1
+      cvec = mad(avec,bval,cvec);
+    #elif USE_CL_FMA == 1
+      cvec = fma(avec,bval,cvec);
+    #else
+      cvec += avec * bval;
+    #endif 
+
   #else
     #if VWM == 1
       MultiplyAdd(cvec,    avec,    bval);
@@ -120,17 +127,18 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
                          const real alpha, const real beta) {
 
 
-  int GroupID0_M1 = GetGroupID0() << (MWG_SHIFT - VWM_SHIFT);
-  int GroupID1_M1 = GetGroupID1() << NWG_SHIFT;
-  int LocalID1_M1 = get_local_id(1) << VWN_SHIFT;
+  const int kSizeMxVWM  = kSizeM >> VWM_SHIFT;
+  const int LocalID1_M1 = get_local_id(1) << VWN_SHIFT;
 
   #if STRN == 0
-    int LocalID1_M2 = get_local_id(1)*NWI;
+    const int LocalID1_M2 = (int) get_local_id(1) * NWI;
   #endif
 
   #if STRM == 0
-    int LocalID0_M1 = get_local_id(0)*(MWI >> VWM_SHIFT);
+    const int LocalID0_M1 = (int) get_local_id(0) * (MWI >> VWM_SHIFT);
   #endif
+
+  const int GroupID1_M2 = (GetGroupID1() << NWG_SHIFT) * kSizeMxVWM + (GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
 
   #pragma unroll
   for (int ni=0; ni<NWI; ++ni) {
@@ -141,8 +149,11 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
       int ng = (ni - (ni & -VWN)) + LocalID1_M1 + ((ni >> VWN_SHIFT) << (VWN_SHIFT + NDIMC_SHIFT));
     #endif
 
-    int idn = ng + GroupID1_M1 ;
-    int idn_M1 = idn*(kSizeM >> VWM_SHIFT);
+    #if USE_MAD24 == 1
+      const int idn_M1 = mad24(ng, kSizeMxVWM , GroupID1_M2);
+    #else
+      const int idn_M1 = ng*kSizeMxVWM + GroupID1_M2;
+    #endif
 
     #pragma unroll
     for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
@@ -155,7 +166,7 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
 
 
       // The final multiplication with alpha and the addition with beta*C
-      int index = idn_M1 + mg + GroupID0_M1;
+      int index = idn_M1 + mg;
 
       realM result;
       realM xval = cpm[ni][mi];

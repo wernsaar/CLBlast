@@ -20,6 +20,49 @@
 // literal). Comment-out this line for syntax-highlighting when developing.
 R"(
 
+#if PADTRA_TILE == 1
+  #define PADTRA_TILE_SHIFT 0
+#elif PADTRA_TILE == 2
+  #define PADTRA_TILE_SHIFT 1
+#elif PADTRA_TILE == 4
+  #define PADTRA_TILE_SHIFT 2
+#elif PADTRA_TILE == 8
+  #define PADTRA_TILE_SHIFT 3
+#elif PADTRA_TILE == 16
+  #define PADTRA_TILE_SHIFT 4
+#elif PADTRA_TILE == 32
+  #define PADTRA_TILE_SHIFT 5
+#elif PADTRA_TILE == 64
+  #define PADTRA_TILE_SHIFT 6
+#elif PADTRA_TILE == 128
+  #define PADTRA_TILE_SHIFT 7
+#elif PADTRA_TILE == 256
+  #define PADTRA_TILE_SHIFT 8
+#endif
+
+#if PADTRA_WPT == 1
+  #define PADTRA_WPT_SHIFT 0
+#elif PADTRA_WPT == 2
+  #define PADTRA_WPT_SHIFT 1
+#elif PADTRA_WPT == 4
+  #define PADTRA_WPT_SHIFT 2
+#elif PADTRA_WPT == 8
+  #define PADTRA_WPT_SHIFT 3
+#elif PADTRA_WPT == 16
+  #define PADTRA_WPT_SHIFT 4
+#elif PADTRA_WPT == 32
+  #define PADTRA_WPT_SHIFT 5
+#elif PADTRA_WPT == 64
+  #define PADTRA_WPT_SHIFT 6
+#elif PADTRA_WPT == 128
+  #define PADTRA_WPT_SHIFT 7
+#elif PADTRA_WPT == 256
+  #define PADTRA_WPT_SHIFT 8
+#endif
+
+
+
+
 // =================================================================================================
 
 // Transposes a matrix from source to destination. The output is padded with zero values in case the
@@ -35,6 +78,12 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
                                  const int do_conjugate) {
   const real alpha = arg_alpha[0];
 
+  const int GroupID1xPADTRA_WPT = (int) get_group_id(1) << PADTRA_WPT_SHIFT;
+  const int GroupID0xPADTRA_WPT = (int) get_group_id(0) << PADTRA_WPT_SHIFT;
+
+  const int LocalID0xPADTRA_WPT = (int) get_local_id(0) << PADTRA_WPT_SHIFT;
+  const int LocalID1xPADTRA_WPT = (int) get_local_id(1) << PADTRA_WPT_SHIFT;
+
   // Local memory to store a tile of the matrix (for coalescing)
   __local real tile[PADTRA_WPT*PADTRA_TILE][PADTRA_WPT*PADTRA_TILE + PADTRA_PAD];
 
@@ -42,38 +91,34 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
   #pragma unroll
   for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
 
+    const int w_one_M1   = (GroupID0xPADTRA_WPT + w_one) << PADTRA_TILE_SHIFT;
+    const int id_src_two = w_one_M1 + get_local_id(1);
+    const int w_one_1    = LocalID0xPADTRA_WPT + w_one;
+
     #pragma unroll
     for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
 
       // Computes the identifiers for the source matrix. Note that the local and global dimensions
       // do not correspond to each other!
-      #if USE_MAD24 == 1
-        const int id_src_one = mad24(mad24((int) get_group_id(1),PADTRA_WPT , w_two) , PADTRA_TILE , (int) get_local_id(0));
-        const int id_src_two = mad24(mad24((int) get_group_id(0),PADTRA_WPT , w_one) , PADTRA_TILE , (int) get_local_id(1));
-      #else
-        const int id_src_one = (get_group_id(1)*PADTRA_WPT + w_two) * PADTRA_TILE + get_local_id(0);
-        const int id_src_two = (get_group_id(0)*PADTRA_WPT + w_one) * PADTRA_TILE + get_local_id(1);
-      #endif
+
+      const int id_src_one = ((GroupID1xPADTRA_WPT + w_two) << PADTRA_TILE_SHIFT) + get_local_id(0);
 
       // Loads data into the local memory if the thread IDs are within bounds of the source matrix.
       // Otherwise, set the local memory value to zero.
       real value;
       SetToZero(value);
-      if (id_src_two < src_two && id_src_one < src_one) {
+      bool condition = id_src_two < src_two && id_src_one < src_one;
+      if (condition) {
 
-        #if USE_MAD24 == 1
-          value = src[mad24(id_src_two,src_ld , id_src_one + src_offset)];
-        #else
-          value = src[id_src_two*src_ld + id_src_one + src_offset];
-        #endif
+          #if USE_MAD24
+            value = src[mad24(id_src_two,src_ld , id_src_one + src_offset)];
+          #else
+            value = src[id_src_two*src_ld + id_src_one + src_offset];
+          #endif
 
       }
 
-      #if USE_MAD24 == 1
-        tile[mad24((int) get_local_id(1),PADTRA_WPT , w_two)][mad24((int) get_local_id(0),PADTRA_WPT , w_one)] = value;
-      #else
-        tile[get_local_id(1)*PADTRA_WPT + w_two][get_local_id(0)*PADTRA_WPT + w_one] = value;
-      #endif
+      tile[LocalID1xPADTRA_WPT + w_two][w_one_1] = value;
 
 
     }
@@ -86,31 +131,45 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
   #pragma unroll
   for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
 
-    #pragma unroll
-    for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
+    const int id_dest_one = ((GroupID0xPADTRA_WPT + w_one) << PADTRA_TILE_SHIFT) + get_local_id(0);
 
-      // Computes the identifiers for the destination matrix
-      #if USE_MAD24 == 1
-        const int id_dest_one = mad24(mad24((int) get_group_id(0),PADTRA_WPT , w_one) , PADTRA_TILE ,(int) get_local_id(0));
-        const int id_dest_two = mad24(mad24((int) get_group_id(1),PADTRA_WPT , w_two) , PADTRA_TILE ,(int) get_local_id(1));
-      #else
-        const int id_dest_one = (get_group_id(0)*PADTRA_WPT + w_one) * PADTRA_TILE + get_local_id(0);
-        const int id_dest_two = (get_group_id(1)*PADTRA_WPT + w_two) * PADTRA_TILE + get_local_id(1);
-      #endif 
+    if ( id_dest_one < dest_one ) {
 
-      // Stores the transposed value in the destination matrix
-      if ((id_dest_one < dest_one) && (id_dest_two < dest_two)) {
+      const int w_one_1 = LocalID1xPADTRA_WPT + w_one; 
 
-        #if USE_MAD24 == 1
-          real value = tile[mad24((int) get_local_id(0),PADTRA_WPT , w_two)][mad24((int) get_local_id(1),PADTRA_WPT , w_one)];
-          if (do_conjugate == 1) { COMPLEX_CONJUGATE(value); }
-          Multiply(dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)], alpha, value);
-        #else
-          real value = tile[get_local_id(0)*PADTRA_WPT + w_two][get_local_id(1)*PADTRA_WPT + w_one];
-          if (do_conjugate == 1) { COMPLEX_CONJUGATE(value); }
-          Multiply(dest[id_dest_two*dest_ld + id_dest_one + dest_offset], alpha, value);
-        #endif
+      #pragma unroll
+      for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
+  
+        // Computes the identifiers for the destination matrix
+  
+        const int id_dest_two = ((GroupID1xPADTRA_WPT + w_two) << PADTRA_TILE_SHIFT) + get_local_id(1);
+  
+        // Stores the transposed value in the destination matrix
+        if ( id_dest_two < dest_two ) {
+  
+            real value = tile[LocalID0xPADTRA_WPT + w_two][w_one_1];
+  
+            if (do_conjugate == 1) { COMPLEX_CONJUGATE(value); }
 
+            #if PRECISION == 32
+  
+              #if USE_MAD24 == 1
+                dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)] = value;
+              #else
+                dest[id_dest_two*dest_ld + id_dest_one + dest_offset] = value;
+              #endif
+
+            #else
+  
+              #if USE_MAD24 == 1
+                Multiply(dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)], alpha, value);
+              #else
+                Multiply(dest[id_dest_two*dest_ld + id_dest_one + dest_offset], alpha, value);
+              #endif
+
+            #endif
+  
+        }
       }
     }
   }
@@ -133,38 +192,47 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
                               const int diagonal_imag_zero) {
   const real alpha = arg_alpha[0];
 
+
+  const int GroupID1xPADTRA_WPT = get_group_id(1) << PADTRA_WPT_SHIFT;
+  const int GroupID0xPADTRA_WPT = get_group_id(0) << PADTRA_WPT_SHIFT;
+
+  const int LocalID0xPADTRA_WPT = get_local_id(0) << PADTRA_WPT_SHIFT;
+  const int LocalID1xPADTRA_WPT = get_local_id(1) << PADTRA_WPT_SHIFT;
+
   // Local memory to store a tile of the matrix (for coalescing)
   __local real tile[PADTRA_WPT*PADTRA_TILE][PADTRA_WPT*PADTRA_TILE + PADTRA_PAD];
 
-  // Loop over the work per thread
+    // Loop over the work per thread
   #pragma unroll
   for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
+  
+    const int id_src_two = ((GroupID0xPADTRA_WPT + w_one) << PADTRA_TILE_SHIFT) + get_local_id(1);
+  
+    if ( id_src_two < src_two ) {
 
-    #pragma unroll
-    for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
+      const int w_one_1 = LocalID0xPADTRA_WPT + w_one;
 
-      // Computes the identifiers for the source matrix. Note that the local and global dimensions
-      // do not correspond to each other!
-      #if USE_MAD24 == 1
-        const int id_src_one = mad24(mad24((int) get_group_id(1),PADTRA_WPT , w_two) , PADTRA_TILE ,(int) get_local_id(0));
-        const int id_src_two = mad24(mad24((int) get_group_id(0),PADTRA_WPT , w_one) , PADTRA_TILE ,(int) get_local_id(1));
-      #else
-        const int id_src_one = (get_group_id(1)*PADTRA_WPT + w_two) * PADTRA_TILE + get_local_id(0);
-        const int id_src_two = (get_group_id(0)*PADTRA_WPT + w_one) * PADTRA_TILE + get_local_id(1);
-      #endif
+      #pragma unroll
+      for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
+  
+        // Computes the identifiers for the source matrix. Note that the local and global dimensions
+        // do not correspond to each other!
+  
+        const int id_src_one = ((GroupID1xPADTRA_WPT + w_two) << PADTRA_TILE_SHIFT) + get_local_id(0);
+  
+        // Loads data into the local memory if the thread IDs are within bounds of the source matrix.
+        if (id_src_one < src_one) {
+  
+            #if USE_MAD24 == 1
+              real value = src[mad24(id_src_two,src_ld , id_src_one + src_offset)];
+            #else
+              real value = src[id_src_two*src_ld + id_src_one + src_offset];
+            #endif
 
-      // Loads data into the local memory if the thread IDs are within bounds of the source matrix.
-      if ((id_src_one < src_one) && (id_src_two < src_two)) {
-
-        #if USE_MAD24 == 1
-          real value = src[mad24(id_src_two,src_ld , id_src_one + src_offset)];
-          tile[mad24((int) get_local_id(1),PADTRA_WPT , w_two)][mad24((int) get_local_id(0),PADTRA_WPT , w_one)] = value;
-        #else
-          real value = src[id_src_two*src_ld + id_src_one + src_offset];
-          tile[get_local_id(1)*PADTRA_WPT + w_two][get_local_id(0)*PADTRA_WPT + w_one] = value;
-        #endif
-
-
+            tile[LocalID1xPADTRA_WPT + w_two][w_one_1] = value;
+  
+  
+        }
       }
     }
   }
@@ -176,40 +244,53 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
   #pragma unroll
   for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
 
-    #pragma unroll
-    for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
+    const int id_dest_one = ((GroupID0xPADTRA_WPT + w_one) << PADTRA_TILE_SHIFT) + get_local_id(0);
 
-      // Computes the identifiers for the destination matrix
-      #if USE_MAD24 == 1
-        const int id_dest_one = mad24(mad24((int) get_group_id(0),PADTRA_WPT , w_one) , PADTRA_TILE ,(int) get_local_id(0));
-        const int id_dest_two = mad24(mad24((int) get_group_id(1),PADTRA_WPT , w_two) , PADTRA_TILE ,(int) get_local_id(1));
-      #else
-        const int id_dest_one = (get_group_id(0)*PADTRA_WPT + w_one) * PADTRA_TILE + get_local_id(0);
-        const int id_dest_two = (get_group_id(1)*PADTRA_WPT + w_two) * PADTRA_TILE + get_local_id(1);
-      #endif
+    if ( id_dest_one < dest_one ) {
 
-      // Masking in case of triangular matrices: updates only the upper or lower part
-      bool condition = true;
-      #if defined(ROUTINE_SYRK) || defined(ROUTINE_HERK) || defined(ROUTINE_SYR2K) || defined(ROUTINE_HER2K)
-        if (upper == 1) { condition = (id_dest_one >= id_dest_two); }
-        else if (lower == 1) { condition = (id_dest_one <= id_dest_two); }
-      #endif
-      if (condition) {
+      const int w_one_1 = LocalID1xPADTRA_WPT + w_one; 
 
-        // Stores the transposed value in the destination matrix
-        if ((id_dest_one < dest_one) && (id_dest_two < dest_two)) {
-
-          #if USE_MAD24 == 1
-            real value = tile[mad24((int) get_local_id(0),PADTRA_WPT , w_two)][mad24((int) get_local_id(1),PADTRA_WPT , w_one)];
-            if (diagonal_imag_zero == 1 && id_dest_one == id_dest_two) { ImagToZero(value); }
-            Multiply(dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)], alpha, value);
-          #else
-            real value = tile[get_local_id(0)*PADTRA_WPT + w_two][get_local_id(1)*PADTRA_WPT + w_one];
-            if (diagonal_imag_zero == 1 && id_dest_one == id_dest_two) { ImagToZero(value); }
-            Multiply(dest[id_dest_two*dest_ld + id_dest_one + dest_offset], alpha, value);
-          #endif
-
-
+      #pragma unroll
+      for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
+  
+        // Computes the identifiers for the destination matrix
+  
+        const int id_dest_two = ((GroupID1xPADTRA_WPT + w_two) << PADTRA_TILE_SHIFT) + get_local_id(1);
+  
+  
+        // Masking in case of triangular matrices: updates only the upper or lower part
+        bool condition = true;
+  
+        #if defined(ROUTINE_SYRK) || defined(ROUTINE_HERK) || defined(ROUTINE_SYR2K) || defined(ROUTINE_HER2K)
+          if (upper == 1) { condition = (id_dest_one >= id_dest_two); }
+          else if (lower == 1) { condition = (id_dest_one <= id_dest_two); }
+        #endif
+  
+        if (condition) {
+  
+          // Stores the transposed value in the destination matrix
+          if ( id_dest_two < dest_two ) {
+  
+              real value = tile[LocalID0xPADTRA_WPT + w_two][w_one_1];
+  
+              if (diagonal_imag_zero == 1 && id_dest_one == id_dest_two) { ImagToZero(value); }
+  
+              #if PRECISION == 32
+                #if USE_MAD24 == 1
+                  dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)] = value;
+                #else
+                  dest[id_dest_two*dest_ld + id_dest_one + dest_offset] = value;
+                #endif
+              #else
+                #if USE_MAD24 == 1
+                  Multiply(dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)], alpha, value);
+                #else
+                  Multiply(dest[id_dest_two*dest_ld + id_dest_one + dest_offset], alpha, value);
+                #endif
+              #endif
+  
+  
+          }
         }
       }
     }

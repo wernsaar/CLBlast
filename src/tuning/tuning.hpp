@@ -91,18 +91,29 @@ void Tuner(int argc, char* argv[]) {
     tuner.UseFullSearch();
   }
   else {
-    tuner.UseRandomSearch(1.0/args.fraction);
+    //tuner.UseRandomSearch(1.0/args.fraction);
+    tuner.UsePSO(1.0f/args.fraction, 4 ,0.4, 0.0, 0.4);
+    //tuner.UseAnnealing(1.0f/args.fraction, 4.0 );
   }
+  
+  tuner.OutputSearchLog("search_log.txt");
 
   // Set extra settings for specific defines. This mimics src/routine.cc.
   auto defines = std::string{""};
+
+  defines += "#define PRECISION "+ToString(static_cast<size_t>(args.precision))+"\n"; 
+
   if (isAMD && isGPU) {
     defines += "#define USE_CL_MAD 1\n";
     defines += "#define USE_STAGGERED_INDICES 1\n";
+    defines += "#define USE_MAD24 1\n";
   }
 
   if (isNVIDIA && isGPU) {
-    defines += "#define USE_CL_FMA 1\n";
+    defines += "#define USE_VECTOR_MAD 1\n";
+    defines += "#define USE_CL_FMA 0\n";
+    defines += "#define USE_CL_MAD 0\n";
+    defines += "#define USE_MAD24 1\n";
   }
 
   if (isARM && isGPU) {
@@ -137,6 +148,7 @@ void Tuner(int argc, char* argv[]) {
 
   // Prints the results to screen
   auto time_ms = tuner.PrintToScreen();
+  tuner.PrintToFile("output.csv");
   tuner.PrintFormatted();
 
   // Also prints the performance of the best-case in terms of GB/s or GFLOPS
