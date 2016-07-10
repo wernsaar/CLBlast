@@ -131,14 +131,20 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
   const int LocalID1_M1 = get_local_id(1) << VWN_SHIFT;
 
   #if STRN == 0
-    const int LocalID1_M2 = (int) get_local_id(1) * NWI;
+    const int LocalID1_M2 = (int) get_local_id(1) << NWI_SHIFT;
   #endif
 
   #if STRM == 0
-    const int LocalID0_M1 = (int) get_local_id(0) * (MWI >> VWM_SHIFT);
+    const int LocalID0_M1 = (int) get_local_id(0) << (MWI_SHIFT - VWM_SHIFT);
+  #else
+    const int local_id0 = get_local_id(0);
   #endif
 
-  const int GroupID1_M2 = (GetGroupID1() << NWG_SHIFT) * kSizeMxVWM + (GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
+  #if USE_MAD24 == 1
+    const int GroupID1_M2 = mad24((int) GetGroupID1() << NWG_SHIFT, kSizeMxVWM, (int) GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
+  #else
+    const int GroupID1_M2 = (GetGroupID1() << NWG_SHIFT) * kSizeMxVWM + (GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
+  #endif
 
   #pragma unroll
   for (int ni=0; ni<NWI; ++ni) {
@@ -161,7 +167,7 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
       #if STRM == 0
         int mg = mi + LocalID0_M1;
       #elif STRM == 1
-        int mg = get_local_id(0) + (mi << MDIMC_SHIFT);
+        int mg = local_id0 + (mi << MDIMC_SHIFT);
       #endif
 
 

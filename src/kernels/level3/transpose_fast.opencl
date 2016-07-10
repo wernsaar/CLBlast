@@ -167,7 +167,7 @@ __kernel void TransposeMatrixFast(const int ld,
   #pragma unroll
   for (int w_two=0; w_two<TRA_WPT; ++w_two) {
 
-    #if PRECISION == 32
+    #if (PRECISION == 32) || (PRECISION == 3232) || (PRECISION == 64) || (PRECISION == 6464)
  
       #if USE_MAD24 == 2
         dest[mad24(gid1_M2 + w_two,ld_D1  , id_one_1)] = results[w_two];

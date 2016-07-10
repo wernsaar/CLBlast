@@ -221,7 +221,7 @@ __kernel void CopyMatrix(const int src_one, const int src_two,
             bool condition2 = diagonal_imag_zero == 1 && id_one == id_two;
             if (condition2) { ImagToZero(value); }
 
-            #if PRECISION == 32
+            #if (PRECISION == 32) || (PRECISION == 3232) || (PRECISION == 64) || (PRECISION == 6464)
               #if USE_MAD24 == 1
                 dest[mad24(id_two,dest_ld , id_one + dest_offset)] = value;
               #else

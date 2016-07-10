@@ -250,8 +250,26 @@ R"(
     return (GetGroupIDFlat()) % get_num_groups(1);
   }
   inline size_t GetGroupID0() {
-    return ((GetGroupIDFlat() / get_num_groups(1)) + GetGroupID1()) % get_num_groups(0);
+
+    int num_groups_0 = get_num_groups(0);
+    int num_groups_1 = get_num_groups(1);
+
+    #if USE_MAD24 == 1
+      int group_id0_M1 = mad24(num_groups_0 , (int) get_group_id(1) , (int) get_group_id(0));
+    #else
+      int group_id0_M1 = num_groups_0 * get_group_id(1) + get_group_id(0);
+    #endif
+
+    int group_id0_D1 = group_id0_M1 / num_groups_1;
+
+    #if USE_MAD24 == 1
+      return mad24(group_id0_D1 , 1 - num_groups_1 , group_id0_M1) % num_groups_0; 
+    #else
+      return (group_id0_D1 * (1 - num_groups_1) + group_id0_M1) % num_groups_0; 
+    #endif
   }
+
+
 #else
   inline size_t GetGroupID1() { return get_group_id(1); }
   inline size_t GetGroupID0() { return get_group_id(0); }

@@ -78,8 +78,11 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
                                  const int do_conjugate) {
   const real alpha = arg_alpha[0];
 
-  const int GroupID1xPADTRA_WPT = (int) get_group_id(1) << PADTRA_WPT_SHIFT;
-  const int GroupID0xPADTRA_WPT = (int) get_group_id(0) << PADTRA_WPT_SHIFT;
+  const int GroupID1xPADTRA_WPT = ((int) get_group_id(1) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + get_local_id(0);
+  const int GroupID0xPADTRA_WPT = ((int) get_group_id(0) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + get_local_id(1);
+
+  const int GroupID1xPADTRA_WPT_1 = ((int) get_group_id(1) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + get_local_id(1);
+  const int GroupID0xPADTRA_WPT_1 = ((int) get_group_id(0) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + get_local_id(0);
 
   const int LocalID0xPADTRA_WPT = (int) get_local_id(0) << PADTRA_WPT_SHIFT;
   const int LocalID1xPADTRA_WPT = (int) get_local_id(1) << PADTRA_WPT_SHIFT;
@@ -91,8 +94,7 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
   #pragma unroll
   for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
 
-    const int w_one_M1   = (GroupID0xPADTRA_WPT + w_one) << PADTRA_TILE_SHIFT;
-    const int id_src_two = w_one_M1 + get_local_id(1);
+    const int id_src_two  = GroupID0xPADTRA_WPT + (w_one << PADTRA_TILE_SHIFT);
     const int w_one_1    = LocalID0xPADTRA_WPT + w_one;
 
     #pragma unroll
@@ -101,7 +103,7 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
       // Computes the identifiers for the source matrix. Note that the local and global dimensions
       // do not correspond to each other!
 
-      const int id_src_one = ((GroupID1xPADTRA_WPT + w_two) << PADTRA_TILE_SHIFT) + get_local_id(0);
+      const int id_src_one = GroupID1xPADTRA_WPT + (w_two << PADTRA_TILE_SHIFT);
 
       // Loads data into the local memory if the thread IDs are within bounds of the source matrix.
       // Otherwise, set the local memory value to zero.
@@ -131,7 +133,7 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
   #pragma unroll
   for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
 
-    const int id_dest_one = ((GroupID0xPADTRA_WPT + w_one) << PADTRA_TILE_SHIFT) + get_local_id(0);
+    const int id_dest_one = GroupID0xPADTRA_WPT_1 + (w_one << PADTRA_TILE_SHIFT);
 
     if ( id_dest_one < dest_one ) {
 
@@ -142,16 +144,18 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
   
         // Computes the identifiers for the destination matrix
   
-        const int id_dest_two = ((GroupID1xPADTRA_WPT + w_two) << PADTRA_TILE_SHIFT) + get_local_id(1);
+        const int id_dest_two = GroupID1xPADTRA_WPT_1 + (w_two << PADTRA_TILE_SHIFT);
   
         // Stores the transposed value in the destination matrix
         if ( id_dest_two < dest_two ) {
   
             real value = tile[LocalID0xPADTRA_WPT + w_two][w_one_1];
   
-            if (do_conjugate == 1) { COMPLEX_CONJUGATE(value); }
+            #if (PRECISION == 3232) || (PRECISION == 6464)
+              if (do_conjugate == 1) { COMPLEX_CONJUGATE(value); }
+            #endif
 
-            #if PRECISION == 32
+            #if (PRECISION == 32) || (PRECISION == 3232) || (PRECISION == 64) || (PRECISION == 6464)
   
               #if USE_MAD24 == 1
                 dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)] = value;
@@ -193,8 +197,11 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
   const real alpha = arg_alpha[0];
 
 
-  const int GroupID1xPADTRA_WPT = get_group_id(1) << PADTRA_WPT_SHIFT;
-  const int GroupID0xPADTRA_WPT = get_group_id(0) << PADTRA_WPT_SHIFT;
+  const int GroupID1xPADTRA_WPT = (get_group_id(1) << ( PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT )) + get_local_id(0);
+  const int GroupID0xPADTRA_WPT = (get_group_id(0) << ( PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT )) + get_local_id(1);
+
+  const int GroupID1xPADTRA_WPT_1 = (get_group_id(1) << ( PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT )) + get_local_id(1);
+  const int GroupID0xPADTRA_WPT_1 = (get_group_id(0) << ( PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT )) + get_local_id(0);
 
   const int LocalID0xPADTRA_WPT = get_local_id(0) << PADTRA_WPT_SHIFT;
   const int LocalID1xPADTRA_WPT = get_local_id(1) << PADTRA_WPT_SHIFT;
@@ -203,22 +210,22 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
   __local real tile[PADTRA_WPT*PADTRA_TILE][PADTRA_WPT*PADTRA_TILE + PADTRA_PAD];
 
     // Loop over the work per thread
-  #pragma unroll
+  #pragma unroll PADTRA_WPT
   for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
   
-    const int id_src_two = ((GroupID0xPADTRA_WPT + w_one) << PADTRA_TILE_SHIFT) + get_local_id(1);
+    const int id_src_two = GroupID0xPADTRA_WPT + ( w_one << PADTRA_TILE_SHIFT ) ;
   
     if ( id_src_two < src_two ) {
 
       const int w_one_1 = LocalID0xPADTRA_WPT + w_one;
 
-      #pragma unroll
+      #pragma unroll PADTRA_WPT
       for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
   
         // Computes the identifiers for the source matrix. Note that the local and global dimensions
         // do not correspond to each other!
   
-        const int id_src_one = ((GroupID1xPADTRA_WPT + w_two) << PADTRA_TILE_SHIFT) + get_local_id(0);
+        const int id_src_one = GroupID1xPADTRA_WPT + (w_two << PADTRA_TILE_SHIFT);
   
         // Loads data into the local memory if the thread IDs are within bounds of the source matrix.
         if (id_src_one < src_one) {
@@ -241,21 +248,21 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
   barrier(CLK_LOCAL_MEM_FENCE);
 
   // Loop over the work per thread
-  #pragma unroll
+  #pragma unroll PADTRA_WPT
   for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
 
-    const int id_dest_one = ((GroupID0xPADTRA_WPT + w_one) << PADTRA_TILE_SHIFT) + get_local_id(0);
+    const int id_dest_one = GroupID0xPADTRA_WPT_1 + (w_one << PADTRA_TILE_SHIFT);
 
     if ( id_dest_one < dest_one ) {
 
       const int w_one_1 = LocalID1xPADTRA_WPT + w_one; 
 
-      #pragma unroll
+      #pragma unroll PADTRA_WPT
       for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
   
         // Computes the identifiers for the destination matrix
   
-        const int id_dest_two = ((GroupID1xPADTRA_WPT + w_two) << PADTRA_TILE_SHIFT) + get_local_id(1);
+        const int id_dest_two = GroupID1xPADTRA_WPT_1 + (w_two << PADTRA_TILE_SHIFT);
   
   
         // Masking in case of triangular matrices: updates only the upper or lower part
@@ -273,9 +280,11 @@ __kernel void TransposeMatrix(const int src_one, const int src_two,
   
               real value = tile[LocalID0xPADTRA_WPT + w_two][w_one_1];
   
-              if (diagonal_imag_zero == 1 && id_dest_one == id_dest_two) { ImagToZero(value); }
+              #if defined(ROUTINE_SYRK) || defined(ROUTINE_HERK) || defined(ROUTINE_SYR2K) || defined(ROUTINE_HER2K)
+                if (diagonal_imag_zero == 1 && id_dest_one == id_dest_two) { ImagToZero(value); }
+              #endif
   
-              #if PRECISION == 32
+              #if (PRECISION == 32) || (PRECISION == 3232) || (PRECISION == 64) || (PRECISION == 6464)
                 #if USE_MAD24 == 1
                   dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)] = value;
                 #else

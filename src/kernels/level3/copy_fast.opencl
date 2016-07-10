@@ -90,7 +90,7 @@ __kernel void CopyMatrixFast(const int ld,
       int id = (w_one << COPY_DIMY_SHIFT) * ld_D1 + GroupID1_M2;
     #endif
 
-    #if PRECISION == 32
+    #if (PRECISION == 32) || (PRECISION == 3232) || (PRECISION == 64) || (PRECISION == 6464)
       dest[id] = src[id];
     #else
       realC result;

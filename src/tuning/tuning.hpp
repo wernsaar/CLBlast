@@ -91,9 +91,9 @@ void Tuner(int argc, char* argv[]) {
     tuner.UseFullSearch();
   }
   else {
-    //tuner.UseRandomSearch(1.0/args.fraction);
-    tuner.UsePSO(1.0f/args.fraction, 4 ,0.4, 0.0, 0.4);
-    //tuner.UseAnnealing(1.0f/args.fraction, 4.0 );
+    // tuner.UseRandomSearch(1.0/args.fraction);
+    // tuner.UsePSO(1.0f/args.fraction, 4 ,0.4, 0.0, 0.4);
+    tuner.UseAnnealing(1.0f/args.fraction, 4.0 );
   }
   
   tuner.OutputSearchLog("search_log.txt");
@@ -113,7 +113,9 @@ void Tuner(int argc, char* argv[]) {
     defines += "#define USE_VECTOR_MAD 1\n";
     defines += "#define USE_CL_FMA 0\n";
     defines += "#define USE_CL_MAD 0\n";
-    defines += "#define USE_MAD24 1\n";
+    defines += "#define USE_STAGGERED_INDICES 0\n";
+    defines += "#define USE_MAD24 0\n";
+    defines += "#define GLOBAL_MEM_FENCE 0\n";
   }
 
   if (isARM && isGPU) {
@@ -145,6 +147,10 @@ void Tuner(int argc, char* argv[]) {
 
   // Starts the tuning process
   tuner.Tune();
+
+  // auto validation_fraction = 0.20f; // 20%
+  // auto top_x = size_t{10}; // Tests the top-10 best found results from the model on actual hardware
+  // tuner.ModelPrediction(cltune::Model::kNeuralNetwork, validation_fraction, top_x);
 
   // Prints the results to screen
   auto time_ms = tuner.PrintToScreen();

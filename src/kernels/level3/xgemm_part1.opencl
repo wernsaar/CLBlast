@@ -87,17 +87,6 @@ R"(
 #endif
 
 
-
-// Helper parameters based on the above tuning parameters
-#define MWI (MWG/MDIMC)               // Work per work-item (M-dimension)
-#define NWI (NWG/NDIMC)               // Work per work-item (N-dimension)
-#define KDIMA ((MDIMC*NDIMC)/(MDIMA)) // Re-shaped tile dimension of matrix A: KDIMA * MDIMA
-#define KDIMB ((MDIMC*NDIMC)/(NDIMB)) // Re-shaped tile dimension of matrix B: KDIMB * NDIMB
-#define MWA (MWG/MDIMA)               // Amount of loads-per-thread for matrix A (M-dimension)
-#define KWA (KWG/KDIMA)               // Amount of loads-per-thread for matrix A (K-dimension)
-#define KWB (KWG/KDIMB)               // Amount of loads-per-thread for matrix B (K-dimension)
-#define NWB (NWG/NDIMB)               // Amount of loads-per-thread for matrix B (N-dimension)
-
 // Settings
 #ifndef USE_VECTOR_MAD
   #define USE_VECTOR_MAD 0      // Unroll (0) or don't (1) unroll the vector MAD manually
@@ -263,6 +252,25 @@ R"(
     #define KWG_SHIFT 7
 #endif
 
+// Helper parameters based on the above tuning parameters
+#define MWI (MWG/MDIMC)               // Work per work-item (M-dimension)
+#define NWI (NWG/NDIMC)               // Work per work-item (N-dimension)
+#define KDIMA ((MDIMC*NDIMC)/(MDIMA)) // Re-shaped tile dimension of matrix A: KDIMA * MDIMA
+#define KDIMB ((MDIMC*NDIMC)/(NDIMB)) // Re-shaped tile dimension of matrix B: KDIMB * NDIMB
+#define MWA (MWG/MDIMA)               // Amount of loads-per-thread for matrix A (M-dimension)
+#define KWA (KWG/KDIMA)               // Amount of loads-per-thread for matrix A (K-dimension)
+#define KWB (KWG/KDIMB)               // Amount of loads-per-thread for matrix B (K-dimension)
+#define NWB (NWG/NDIMB)               // Amount of loads-per-thread for matrix B (N-dimension)
+
+#define MWI_SHIFT   (MWG_SHIFT - MDIMC_SHIFT)
+#define NWI_SHIFT   (NWG_SHIFT - NDIMC_SHIFT)
+#define KDIMA_SHIFT (MDIMC_SHIFT + NDIMC_SHIFT - MDIMA_SHIFT)
+#define KDIMB_SHIFT (MDIMC_SHIFT + NDIMC_SHIFT - NDIMB_SHIFT)
+#define MWA_SHIFT   (MWG_SHIFT - MDIMA_SHIFT)
+#define KWA_SHIFT   (KWG_SHIFT - KDIMA_SHIFT)
+#define KWB_SHIFT   (KWG_SHIFT - KDIMB_SHIFT)
+#define NWB_SHIFT   (NWG_SHIFT - NDIMB_SHIFT)
+
 
 
 
@@ -327,13 +335,13 @@ inline void GlobalToLocalA(const __global realM* restrict agm, __local realM* al
                            const int kSizeM, const int tid, const int kwg) {
 
   #if STRM == 0
-    const int la0_M1 = (tid - (tid & -MDIMA)) * (MWA >> VWM_SHIFT);
+    const int la0_M1 = (tid - (tid & -MDIMA)) << (MWA_SHIFT - VWM_SHIFT);
   #else
     const int la0 = tid - (tid & -MDIMA);
   #endif
 
   const int GroupID0_M1 = GetGroupID0() << (MWG_SHIFT - VWM_SHIFT);
-  const int  la1_M1 = (tid >> MDIMA_SHIFT) * KWA;
+  const int  la1_M1 = (tid >> MDIMA_SHIFT) << KWA_SHIFT;
   const int  kSizeMxVWM = kSizeM >> VWM_SHIFT;
  
 
@@ -370,10 +378,10 @@ inline void GlobalToLocalA(const __global realM* restrict agm, __local realM* al
 inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* blm,
                            const int kSizeN, const int tid, const int kwg) {
 
-  const int lb1_M1 = KWB * (tid >> NDIMB_SHIFT);
+  const int lb1_M1 = (tid >> NDIMB_SHIFT) << KWB_SHIFT;
 
   #if STRN == 0
-    const int lb0_M1 = (tid - (tid & -NDIMB)) * (NWB >> VWN_SHIFT);
+    const int lb0_M1 = (tid - (tid & -NDIMB)) << (NWB_SHIFT - VWN_SHIFT);
   #else
     const int lb0 = tid - (tid & -NDIMB);
   #endif
@@ -418,11 +426,18 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
 inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI>>VWM_SHIFT],
                              const int kSizeM, const int idk, const int kwg) {
 
-  const int idk_M1 = idk*(kSizeM >> VWM_SHIFT) + GetGroupID0() * (MWG >> VWM_SHIFT);
 
   #if STRM == 0
-    const int LocalID0_M1 = get_local_id(0)*(MWI >> VWM_SHIFT);
+    int LocalID0_M1 = get_local_id(0) << (MWI_SHIFT - VWM_SHIFT);
+  #else
+    int local_id0 = get_local_id(0);
   #endif 
+
+  #if USE_MAD24 == 1
+    const int idk_M1 = mad24(idk,(kSizeM >> VWM_SHIFT) , (int) GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
+  #else
+    const int idk_M1 = idk*(kSizeM >> VWM_SHIFT) + ((int) GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
+  #endif
 
   #pragma unroll
   for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
@@ -431,7 +446,7 @@ inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI>>
       #if STRM == 0
         int mg = mi + LocalID0_M1;
       #elif STRM == 1
-        int mg = get_local_id(0) + (mi << MDIMC_SHIFT);
+        int mg = local_id0 + (mi << MDIMC_SHIFT);
       #endif
 
       // Loads the data from global memory (not transposed) and stores into registers
@@ -448,7 +463,9 @@ inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >
                              const int kSizeN, const int idk) {
 
   #if STRN == 0
-    const int LocalID1_M1 = get_local_id(1)*(NWI >> VWN_SHIFT);
+    int LocalID1_M1 = get_local_id(1) << (NWI_SHIFT - VWN_SHIFT);
+  #else
+    int local_id1 = get_local_id(1); 
   #endif
 
   #if USE_MAD24 == 1
@@ -464,7 +481,7 @@ inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >
       #if STRN == 0
         int ng = ni + LocalID1_M1;
       #elif STRN == 1
-        int ng = get_local_id(1) + (ni << NDIMC_SHIFT);
+        int ng = local_id1 + (ni << NDIMC_SHIFT);
       #endif
 
       // Loads the data from global memory (transposed) and stores into registers
@@ -482,7 +499,9 @@ inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >
 inline void LocalToPrivateA(__local realM* alm, realM apm[MWI >> VWM_SHIFT], const int kg) {
 
   #if STRM == 0
-    int LocalID0_M1 = get_local_id(0)*(MWI >> VWM_SHIFT);
+    int LocalID0_M1 = get_local_id(0) << (MWI_SHIFT - VWM_SHIFT);
+  #else
+    int local_id0 = get_local_id(0);
   #endif
 
   int kg_M1 = kg << (MWG_SHIFT - VWM_SHIFT);
@@ -493,7 +512,7 @@ inline void LocalToPrivateA(__local realM* alm, realM apm[MWI >> VWM_SHIFT], con
       #if STRM == 0
         int mg = mi + LocalID0_M1;
       #elif STRM == 1
-        int mg = get_local_id(0) + (mi << MDIMC_SHIFT);
+        int mg = local_id0 + (mi << MDIMC_SHIFT);
       #endif
 
       apm[mi] = alm[kg_M1 + mg];
@@ -506,7 +525,12 @@ inline void LocalToPrivateA(__local realM* alm, realM apm[MWI >> VWM_SHIFT], con
 #if SB == 1
 inline void LocalToPrivateB(__local realN* blm, realN bpm[NWI >> VWN_SHIFT], const int kg) {
 
-  const int local_id1_M1 = get_local_id(1)*(NWI >> VWN_SHIFT);
+  #if STRN == 0
+    int local_id1_M1 = get_local_id(1) << (NWI_SHIFT - VWN_SHIFT);
+  #else
+    int local_id1 = get_local_id(1);
+  #endif
+
   const int kg_M1 = kg << (NWG_SHIFT - VWN_SHIFT);
 
   #pragma unroll
@@ -515,7 +539,7 @@ inline void LocalToPrivateB(__local realN* blm, realN bpm[NWI >> VWN_SHIFT], con
     #if STRN == 0
       int ng = ni + local_id1_M1;
     #elif STRN == 1
-      int ng = get_local_id(1) + (ni << NDIMC_SHIFT);
+      int ng = local_id1 + (ni << NDIMC_SHIFT);
     #endif
 
     bpm[ni] = blm[kg_M1 + ng];
