@@ -86,7 +86,8 @@ const Database::DatabaseEntry Database::CopySingle = {
         { "GeForce GTX TITAN X",                             { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",1} } },
         { "Tesla K20m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",4}, {"COPY_WPT",4} } },
         { "Tesla K40m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",4}, {"COPY_WPT",2} } },
-        { "GeForce GTX 750",                                 { {"COPY_DIMX",16}, {"COPY_DIMY",64}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
+        { "GeForce GTX 750bak",                              { {"COPY_DIMX",16}, {"COPY_DIMY",64}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
+        { "GeForce GTX 750",                                 { {"COPY_DIMX",8}, {"COPY_DIMY",16}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
         { "GeForce GTS 450",                                 { {"COPY_DIMX",32}, {"COPY_DIMY",4}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
       }
@@ -205,7 +206,8 @@ const Database::DatabaseEntry Database::CopyDouble = {
         { "GeForce GTX TITAN X",                             { {"COPY_DIMX",32}, {"COPY_DIMY",16}, {"COPY_VW",1}, {"COPY_WPT",1} } },
         { "Tesla K20m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",1} } },
         { "Tesla K40m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",2} } },
-        { "GeForce GTX 750",                                 { {"COPY_DIMX",8}, {"COPY_DIMY",16}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",64} } },
+        { "GeForce GTX 750bak",                              { {"COPY_DIMX",8}, {"COPY_DIMY",16}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",64} } },
+        { "GeForce GTX 750",                                 { {"COPY_DIMX",32}, {"COPY_DIMY",32}, {"COPY_WPT",1}, {"COPY_VW",4}, {"PRECISION",64} } },
         { "GeForce GTS 450",                                 { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",64} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
       }
@@ -263,7 +265,8 @@ const Database::DatabaseEntry Database::CopyComplexDouble = {
         { "GeForce GTX TITAN X",                             { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
         { "Tesla K20m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",2} } },
         { "Tesla K40m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
-        { "GeForce GTX 750",                                 { {"COPY_DIMX",64}, {"COPY_DIMY",16}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",6464} } },
+        { "GeForce GTX 750bak",                              { {"COPY_DIMX",64}, {"COPY_DIMY",16}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",6464} } },
+        { "GeForce GTX 750",                                 { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",6464} } },
         { "GeForce GTS 450",                                 { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",6464} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
       }
