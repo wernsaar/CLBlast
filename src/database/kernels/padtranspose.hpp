@@ -41,7 +41,8 @@ const Database::DatabaseEntry Database::PadtransposeSingle = {
         { "Pitcairn",                                        { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
         { "Tahiti",                                          { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
         { "Olandbak",                                        { {"PADTRA_TILE",8}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",32} } },
-        { "Oland",                                           { {"PADTRA_TILE",8}, {"PADTRA_WPT",8}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+        { "Olandbak1",                                       { {"PADTRA_TILE",8}, {"PADTRA_WPT",8}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+        { "Oland",                                           { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
       }
     },

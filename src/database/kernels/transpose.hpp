@@ -42,7 +42,8 @@ const Database::DatabaseEntry Database::TransposeSingle = {
         { "Tahiti",                                          { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",4} } },
         { "Olandbak",                                        { {"TRA_DIM",4}, {"TRA_WPT",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
         { "Olandbak1",                                       { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
-        { "Oland",                                           { {"TRA_DIM",8}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+        { "Olandbak2",                                       { {"TRA_DIM",8}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+        { "Oland",                                           { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -109,8 +110,9 @@ const Database::DatabaseEntry Database::TransposeComplexSingle = {
         { "Hawaii",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Pitcairn",                                        { {"TRA_DIM",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Tahiti",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
-        { "Olandbak",                                           { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
-{ "Oland", { {"TRA_DIM",4}, {"TRA_WPT",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
+        { "Olandbak",                                        { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
+        { "Olandbak1",                                       { {"TRA_DIM",4}, {"TRA_WPT",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
+        { "Oland",                                           { {"TRA_DIM",4}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -171,7 +173,8 @@ const Database::DatabaseEntry Database::TransposeDouble = {
         { "Hawaii",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Pitcairn",                                        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",2} } },
         { "Tahiti",                                          { {"TRA_DIM",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",4} } },
-        { "Oland",                                           { {"TRA_DIM",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
+        { "Olandbak",                                           { {"TRA_DIM",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
+        { "Oland",                                           { {"TRA_DIM",4}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",64} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -229,7 +232,8 @@ const Database::DatabaseEntry Database::TransposeComplexDouble = {
         { "Hawaii",                                          { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",2} } },
         { "Pitcairn",                                        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Tahiti",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
-        { "Oland",                                          { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
+        { "Olandbak",                                        { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
+        { "Oland",                                           { {"TRA_DIM",4}, {"TRA_WPT",2}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",6464} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
