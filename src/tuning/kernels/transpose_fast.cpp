@@ -58,7 +58,7 @@ class TuneTranspose {
 
   // Sets the tuning parameters and their possible values
   static void SetParameters(cltune::Tuner &tuner, const size_t id) {
-    tuner.AddParameter(id, "TRA_DIM", {2, 4, 8, 16, 32, 64});
+    tuner.AddParameter(id, "TRA_DIM", {4, 8, 16, 32, 64});
     tuner.AddParameter(id, "TRA_WPT", {1, 2, 4, 8, 16});
     tuner.AddParameter(id, "TRA_PAD", {0, 1});
     tuner.AddParameter(id, "TRA_SHUFFLE", {0, 1});

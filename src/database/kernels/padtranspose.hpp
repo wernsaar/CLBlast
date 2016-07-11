@@ -87,7 +87,8 @@ const Database::DatabaseEntry Database::PadtransposeSingle = {
         { "Tesla K40m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",32}, {"PADTRA_WPT",2} } },
         { "GeForce GTX 750",                                 { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
         { "GeForce GTS 450bak",                              { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
-        { "GeForce GTS 450",                                 { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+        { "GeForce GTS 450bak1",                             { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+        { "GeForce GTS 450",                                 { {"PADTRA_TILE",16}, {"PADTRA_WPT",1}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
       }
     },
@@ -154,6 +155,7 @@ const Database::DatabaseEntry Database::PadtransposeComplexSingle = {
         { "Tesla K20m",                                      { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "Tesla K40m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "GeForce GTX 750",                                 { {"PADTRA_TILE",16}, {"PADTRA_WPT",1}, {"PADTRA_PAD",1}, {"PRECISION",3232} } },
+        { "GeForce GTS 450",                                 { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",0}, {"PRECISION",3232} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
       }
     },
@@ -211,7 +213,8 @@ const Database::DatabaseEntry Database::PadtransposeDouble = {
         { "Tesla K20m",                                      { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "Tesla K40m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "GeForce GTX 750",                                 { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",64} } },
-        { "GeForce GTS 450",                                 { {"PADTRA_TILE",16}, {"PADTRA_WPT",1}, {"PADTRA_PAD",1}, {"PRECISION",64} } },
+        { "GeForce GTS 450bak",                              { {"PADTRA_TILE",16}, {"PADTRA_WPT",1}, {"PADTRA_PAD",1}, {"PRECISION",64} } },
+        { "GeForce GTS 450",                                 { {"PADTRA_TILE",32}, {"PADTRA_WPT",1}, {"PADTRA_PAD",1}, {"PRECISION",64} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
       }
     },
@@ -269,7 +272,8 @@ const Database::DatabaseEntry Database::PadtransposeComplexDouble = {
         { "Tesla K20m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "Tesla K40m",                                      { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "GeForce GTX 750",                                 { {"PADTRA_TILE",8}, {"PADTRA_WPT",1}, {"PADTRA_PAD",1}, {"PRECISION",6464} } },
-        { "GeForce GTS 450",                                 { {"PADTRA_TILE",8}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",6464} } },
+        { "GeForce GTS 450bak",                              { {"PADTRA_TILE",8}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",6464} } },
+        { "GeForce GTS 450",                                 { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",6464} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
       }
     },

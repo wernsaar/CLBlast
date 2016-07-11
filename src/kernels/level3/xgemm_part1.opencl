@@ -262,14 +262,14 @@ R"(
 #define KWB (KWG/KDIMB)               // Amount of loads-per-thread for matrix B (K-dimension)
 #define NWB (NWG/NDIMB)               // Amount of loads-per-thread for matrix B (N-dimension)
 
-#define MWI_SHIFT   (MWG_SHIFT - MDIMC_SHIFT)
-#define NWI_SHIFT   (NWG_SHIFT - NDIMC_SHIFT)
-#define KDIMA_SHIFT (MDIMC_SHIFT + NDIMC_SHIFT - MDIMA_SHIFT)
-#define KDIMB_SHIFT (MDIMC_SHIFT + NDIMC_SHIFT - NDIMB_SHIFT)
-#define MWA_SHIFT   (MWG_SHIFT - MDIMA_SHIFT)
-#define KWA_SHIFT   (KWG_SHIFT - KDIMA_SHIFT)
-#define KWB_SHIFT   (KWG_SHIFT - KDIMB_SHIFT)
-#define NWB_SHIFT   (NWG_SHIFT - NDIMB_SHIFT)
+#define MWI_SHIFT   ((MWG_SHIFT - MDIMC_SHIFT) > 0 ? (MWG_SHIFT - MDIMC_SHIFT) : 0 )
+#define NWI_SHIFT   ((NWG_SHIFT - NDIMC_SHIFT) > 0 ? (NWG_SHIFT - NDIMC_SHIFT) : 0 )
+#define KDIMA_SHIFT ((MDIMC_SHIFT + NDIMC_SHIFT - MDIMA_SHIFT) > 0 ? (MDIMC_SHIFT + NDIMC_SHIFT - MDIMA_SHIFT) : 0 )
+#define KDIMB_SHIFT ((MDIMC_SHIFT + NDIMC_SHIFT - NDIMB_SHIFT) > 0 ? (MDIMC_SHIFT + NDIMC_SHIFT - NDIMB_SHIFT) : 0 )
+#define MWA_SHIFT   ((MWG_SHIFT - MDIMA_SHIFT) > 0 ? (MWG_SHIFT - MDIMA_SHIFT) : 0 )
+#define KWA_SHIFT   ((KWG_SHIFT - KDIMA_SHIFT) > 0 ? (KWG_SHIFT - KDIMA_SHIFT) : 0 )
+#define KWB_SHIFT   ((KWG_SHIFT - KDIMB_SHIFT) > 0 ? (KWG_SHIFT - KDIMB_SHIFT) : 0 )
+#define NWB_SHIFT   ((NWG_SHIFT - NDIMB_SHIFT) > 0 ? (NWG_SHIFT - NDIMB_SHIFT) : 0 )
 
 
 
@@ -335,12 +335,12 @@ inline void GlobalToLocalA(const __global realM* restrict agm, __local realM* al
                            const int kSizeM, const int tid, const int kwg) {
 
   #if STRM == 0
-    const int la0_M1 = (tid - (tid & -MDIMA)) << (MWA_SHIFT - VWM_SHIFT);
+    const int la0_M1 = (tid - (tid & -MDIMA)) << ((MWA_SHIFT - VWM_SHIFT) > 0 ? (MWA_SHIFT - VWM_SHIFT) : 0);
   #else
     const int la0 = tid - (tid & -MDIMA);
   #endif
 
-  const int GroupID0_M1 = GetGroupID0() << (MWG_SHIFT - VWM_SHIFT);
+  const int GroupID0_M1 = GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) > 0 ? (MWG_SHIFT - VWM_SHIFT) : 0);
   const int  la1_M1 = (tid >> MDIMA_SHIFT) << KWA_SHIFT;
   const int  kSizeMxVWM = kSizeM >> VWM_SHIFT;
  
@@ -363,9 +363,9 @@ inline void GlobalToLocalA(const __global realM* restrict agm, __local realM* al
 
         // Loads the data from global memory (not transposed) into the local memory
         #if USE_MAD24 == 1
-          alm[(kg << (MWG_SHIFT - VWM_SHIFT)) + mg] = agm[mad24(kg+kwg,kSizeMxVWM , idm)];
+          alm[(kg << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0 )) + mg] = agm[mad24(kg+kwg,kSizeMxVWM , idm)];
         #else
-          alm[(kg << (MWG_SHIFT - VWM_SHIFT)) + mg] = agm[(kg+kwg)*kSizeMxVWM + idm];
+          alm[(kg << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0 )) + mg] = agm[(kg+kwg)*kSizeMxVWM + idm];
         #endif 
 
     }
@@ -381,19 +381,19 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
   const int lb1_M1 = (tid >> NDIMB_SHIFT) << KWB_SHIFT;
 
   #if STRN == 0
-    const int lb0_M1 = (tid - (tid & -NDIMB)) << (NWB_SHIFT - VWN_SHIFT);
+    const int lb0_M1 = (tid - (tid & -NDIMB)) << ((NWB_SHIFT - VWN_SHIFT) >0 ? (NWB_SHIFT - VWN_SHIFT) : 0);
   #else
     const int lb0 = tid - (tid & -NDIMB);
   #endif
 
-  const int GroupID1_M1 = GetGroupID1() << (NWG_SHIFT - VWN_SHIFT);
+  const int GroupID1_M1 = GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0);
   const int kSizeNxVWN = kSizeN >> VWN_SHIFT;
 
   #pragma unroll
   for (int kib=0; kib<KWB; ++kib) {
 
     const int kg = kib + lb1_M1;
-    const int kg_M1 = kg << (NWG_SHIFT - VWN_SHIFT);
+    const int kg_M1 = kg << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0);
     #if USE_MAD24 == 1
       const int idk_M1 = mad24(kg + kwg , kSizeNxVWN , GroupID1_M1);
     #else
@@ -434,9 +434,9 @@ inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI>>
   #endif 
 
   #if USE_MAD24 == 1
-    const int idk_M1 = mad24(idk,(kSizeM >> VWM_SHIFT) , (int) GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
+    const int idk_M1 = mad24(idk,(kSizeM >> VWM_SHIFT) , (int) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
   #else
-    const int idk_M1 = idk*(kSizeM >> VWM_SHIFT) + ((int) GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
+    const int idk_M1 = idk*(kSizeM >> VWM_SHIFT) + ((int) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
   #endif
 
   #pragma unroll
@@ -463,15 +463,15 @@ inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >
                              const int kSizeN, const int idk) {
 
   #if STRN == 0
-    int LocalID1_M1 = get_local_id(1) << (NWI_SHIFT - VWN_SHIFT);
+    int LocalID1_M1 = get_local_id(1) << ((NWI_SHIFT - VWN_SHIFT) >0 ? (NWI_SHIFT - VWN_SHIFT) : 0);
   #else
     int local_id1 = get_local_id(1); 
   #endif
 
   #if USE_MAD24 == 1
-    const int idk_M1 = mad24(idk,(kSizeN >> VWN_SHIFT) , ((int) GetGroupID1() << (NWG_SHIFT - VWN_SHIFT)));
+    const int idk_M1 = mad24(idk,(kSizeN >> VWN_SHIFT) , ((int) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)));
   #else
-    const int idk_M1 = idk*(kSizeN >> VWN_SHIFT) + ((int) GetGroupID1() << (NWG_SHIFT - VWN_SHIFT));
+    const int idk_M1 = idk*(kSizeN >> VWN_SHIFT) + ((int) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0));
   #endif
 
   #pragma unroll
@@ -499,12 +499,12 @@ inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >
 inline void LocalToPrivateA(__local realM* alm, realM apm[MWI >> VWM_SHIFT], const int kg) {
 
   #if STRM == 0
-    int LocalID0_M1 = get_local_id(0) << (MWI_SHIFT - VWM_SHIFT);
+    int LocalID0_M1 = get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) >0 ? (MWI_SHIFT - VWM_SHIFT) : 0);
   #else
     int local_id0 = get_local_id(0);
   #endif
 
-  int kg_M1 = kg << (MWG_SHIFT - VWM_SHIFT);
+  int kg_M1 = kg << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0);
 
   #pragma unroll
   for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
@@ -526,12 +526,12 @@ inline void LocalToPrivateA(__local realM* alm, realM apm[MWI >> VWM_SHIFT], con
 inline void LocalToPrivateB(__local realN* blm, realN bpm[NWI >> VWN_SHIFT], const int kg) {
 
   #if STRN == 0
-    int local_id1_M1 = get_local_id(1) << (NWI_SHIFT - VWN_SHIFT);
+    int local_id1_M1 = get_local_id(1) << ((NWI_SHIFT - VWN_SHIFT) >0 ? (NWI_SHIFT - VWN_SHIFT) : 0);
   #else
     int local_id1 = get_local_id(1);
   #endif
 
-  const int kg_M1 = kg << (NWG_SHIFT - VWN_SHIFT);
+  const int kg_M1 = kg << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0);
 
   #pragma unroll
   for (int ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {

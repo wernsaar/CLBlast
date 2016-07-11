@@ -214,6 +214,8 @@ class Device {
   bool IsNVIDIA() const { return Vendor() == "NVIDIA" || Vendor() == "NVIDIA Corporation"; }
   bool IsARM() const { return Vendor() == "ARM"; }
 
+  bool IsGeforce_GTS_450() const { return Name() == "GeForce GTS 450"; }
+
   // Accessor to the private data-member
   const cl_device_id& operator()() const { return device_; }
  private:

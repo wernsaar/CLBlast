@@ -86,18 +86,20 @@ StatusCode Routine::SetUp() {
   // For specific devices, use the non-IEE754 compilant OpenCL mad() instruction. This can improve
   // performance, but might result in a reduced accuracy.
   if (device_.IsAMD() && device_.IsGPU()) {
-    defines += "#define USE_VECTOR_MAD 0\n";
     defines += "#define USE_CL_MAD 1\n";
     defines += "#define USE_MAD24 1\n";
   }
 
   if (device_.IsNVIDIA() && device_.IsGPU()) {
-    defines += "#define USE_VECTOR_MAD 1\n";
-    defines += "#define USE_CL_MAD 0\n";
-    defines += "#define USE_CL_FMA 0\n";
-    defines += "#define USE_MAD24 0\n";
-    defines += "#define USE_STAGGERED_INDICES 0\n";
-    defines += "#define GLOBAL_MEM_FENCE 1\n";
+    if (device_.IsGeforce_GTS_450()) {
+      // printf("Using IsGeforce_GTS_450\n\n");
+      defines += "#define USE_VECTOR_MAD 1\n";
+      defines += "#define USE_CL_FMA 1\n";
+    }
+    else {
+      defines += "#define USE_CL_MAD 1\n";
+      defines += "#define USE_MAD24 1\n";
+    }
   }
 
   // For specific devices, use staggered/shuffled workgroup indices.

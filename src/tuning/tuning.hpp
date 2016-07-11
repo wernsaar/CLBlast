@@ -52,9 +52,10 @@ void Tuner(int argc, char* argv[]) {
 
   // Tests for validity of the precision and retrieves properties
   auto isAMD = false;
-  auto isNVIDIA = false;
   auto isARM = false;
   auto isGPU = false;
+  auto isNVIDIA = false;
+  auto IsGeforce_GTS_450 = false;
   {
     const auto platform = Platform(args.platform_id);
     const auto device = Device(platform, args.device_id);
@@ -63,9 +64,10 @@ void Tuner(int argc, char* argv[]) {
       return;
     }
     isAMD = device.IsAMD();
-    isNVIDIA = device.IsNVIDIA();
     isARM = device.IsARM();
+    isNVIDIA = device.IsNVIDIA();
     isGPU = device.IsGPU();
+    IsGeforce_GTS_450 = device.IsGeforce_GTS_450();
   }
 
   // Creates input buffers with random data
@@ -91,33 +93,26 @@ void Tuner(int argc, char* argv[]) {
     tuner.UseFullSearch();
   }
   else {
-    // tuner.UseRandomSearch(1.0/args.fraction);
-    // tuner.UsePSO(1.0f/args.fraction, 4 ,0.4, 0.0, 0.4);
-    tuner.UseAnnealing(1.0f/args.fraction, 4.0 );
+    tuner.UseRandomSearch(1.0/args.fraction);
   }
-  
-  tuner.OutputSearchLog("search_log.txt");
+
 
   // Set extra settings for specific defines. This mimics src/routine.cc.
   auto defines = std::string{""};
-
-  defines += "#define PRECISION "+ToString(static_cast<size_t>(args.precision))+"\n"; 
-
   if (isAMD && isGPU) {
+    defines += "#define USE_MAD24 1\n";
     defines += "#define USE_CL_MAD 1\n";
     defines += "#define USE_STAGGERED_INDICES 1\n";
-    defines += "#define USE_MAD24 1\n";
   }
-
   if (isNVIDIA && isGPU) {
-    defines += "#define USE_VECTOR_MAD 1\n";
-    defines += "#define USE_CL_FMA 0\n";
-    defines += "#define USE_CL_MAD 0\n";
-    defines += "#define USE_STAGGERED_INDICES 0\n";
-    defines += "#define USE_MAD24 0\n";
-    defines += "#define GLOBAL_MEM_FENCE 0\n";
+    if (IsGeforce_GTS_450) {
+      defines += "#define USE_VECTOR_MAD 1\n";
+      defines += "#define USE_MAD24 1\n";
+    } else {
+      defines += "#define USE_MAD24 1\n";
+      defines += "#define USE_CL_MAD 1\n";
+    }
   }
-
   if (isARM && isGPU) {
     defines += "#define GLOBAL_MEM_FENCE 1\n";
   }
@@ -148,13 +143,8 @@ void Tuner(int argc, char* argv[]) {
   // Starts the tuning process
   tuner.Tune();
 
-  // auto validation_fraction = 0.20f; // 20%
-  // auto top_x = size_t{10}; // Tests the top-10 best found results from the model on actual hardware
-  // tuner.ModelPrediction(cltune::Model::kNeuralNetwork, validation_fraction, top_x);
-
   // Prints the results to screen
   auto time_ms = tuner.PrintToScreen();
-  tuner.PrintToFile("output.csv");
   tuner.PrintFormatted();
 
   // Also prints the performance of the best-case in terms of GB/s or GFLOPS

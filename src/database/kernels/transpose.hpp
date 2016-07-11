@@ -41,7 +41,8 @@ const Database::DatabaseEntry Database::TransposeSingle = {
         { "Pitcairn",                                        { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Tahiti",                                          { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",4} } },
         { "Olandbak",                                        { {"TRA_DIM",4}, {"TRA_WPT",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
-        { "Oland",                                           { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+        { "Olandbak1",                                       { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+        { "Oland",                                           { {"TRA_DIM",8}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -86,8 +87,6 @@ const Database::DatabaseEntry Database::TransposeSingle = {
         { "Tesla K20m",                                      { {"TRA_DIM",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",4} } },
         { "Tesla K40m",                                      { {"TRA_DIM",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",4} } },
         { "GeForce GTX 750",                                 { {"TRA_DIM",32}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",32} } },
-        { "GeForce GTS 450bak",                              { {"TRA_DIM",16}, {"TRA_WPT",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",32} } },
-        { "GeForce GTS 450bak1",                             { {"TRA_DIM",32}, {"TRA_WPT",2}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"PRECISION",32} } },
         { "GeForce GTS 450",                                 { {"TRA_DIM",32}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",32} } },
         { "default",                                         { {"TRA_DIM",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
       }
@@ -110,7 +109,8 @@ const Database::DatabaseEntry Database::TransposeComplexSingle = {
         { "Hawaii",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Pitcairn",                                        { {"TRA_DIM",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Tahiti",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
-        { "Oland",                                           { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
+        { "Olandbak",                                           { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
+{ "Oland", { {"TRA_DIM",4}, {"TRA_WPT",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -149,6 +149,7 @@ const Database::DatabaseEntry Database::TransposeComplexSingle = {
         { "Tesla K20m",                                      { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
         { "Tesla K40m",                                      { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
         { "GeForce GTX 750",                                 { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",3232} } },
+        { "GeForce GTS 450",                                 { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"PRECISION",3232} } },
         { "default",                                         { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
       }
     },
@@ -206,7 +207,7 @@ const Database::DatabaseEntry Database::TransposeDouble = {
         { "Tesla K20m",                                      { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",2} } },
         { "Tesla K40m",                                      { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",2} } },
         { "GeForce GTX 750",                                 { {"TRA_DIM",32}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",64} } },
-        { "GeForce GTS 450",                                 { {"TRA_DIM",16}, {"TRA_WPT",2}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",64} } },
+        { "GeForce GTS 450",                                 { {"TRA_DIM",32}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",64} } },
         { "default",                                         { {"TRA_DIM",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
       }
     },
@@ -258,7 +259,7 @@ const Database::DatabaseEntry Database::TransposeComplexDouble = {
         { "Tesla K20m",                                      { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
         { "Tesla K40m",                                      { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
         { "GeForce GTX 750",                                 { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",6464} } },
-        { "GeForce GTS 450",                                 { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",6464} } },
+        { "GeForce GTS 450",                                 { {"TRA_DIM",8}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",6464} } },
         { "default",                                         { {"TRA_DIM",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",1} } },
       }
     },

@@ -58,8 +58,8 @@ class TunePad {
 
   // Sets the tuning parameters and their possible values
   static void SetParameters(cltune::Tuner &tuner, const size_t id) {
-    tuner.AddParameter(id, "PAD_DIMX", {2 ,4, 8, 16, 32, 64});
-    tuner.AddParameter(id, "PAD_DIMY", {2, 4, 8, 16, 32, 64});
+    tuner.AddParameter(id, "PAD_DIMX", {8, 16, 32});
+    tuner.AddParameter(id, "PAD_DIMY", {8, 16, 32});
     tuner.AddParameter(id, "PAD_WPTX", {1, 2, 4});
     tuner.AddParameter(id, "PAD_WPTY", {1, 2, 4});
   }

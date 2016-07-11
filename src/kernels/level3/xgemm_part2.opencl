@@ -135,15 +135,15 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
   #endif
 
   #if STRM == 0
-    const int LocalID0_M1 = (int) get_local_id(0) << (MWI_SHIFT - VWM_SHIFT);
+    const int LocalID0_M1 = (int) get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) >0 ? (MWI_SHIFT - VWM_SHIFT) : 0);
   #else
     const int local_id0 = get_local_id(0);
   #endif
 
   #if USE_MAD24 == 1
-    const int GroupID1_M2 = mad24((int) GetGroupID1() << NWG_SHIFT, kSizeMxVWM, (int) GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
+    const int GroupID1_M2 = mad24((int) GetGroupID1() << NWG_SHIFT, kSizeMxVWM, (int) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) :0 ));
   #else
-    const int GroupID1_M2 = (GetGroupID1() << NWG_SHIFT) * kSizeMxVWM + (GetGroupID0() << (MWG_SHIFT - VWM_SHIFT));
+    const int GroupID1_M2 = (GetGroupID1() << NWG_SHIFT) * kSizeMxVWM + (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
   #endif
 
   #pragma unroll
@@ -406,10 +406,10 @@ __kernel void Xgemm(const int kSizeM, const int kSizeN, const int kSizeK,
 
   // Allocates workgroup-private memory (local memory)
   #if SA == 1
-    __local realM alm[KWG << (MWG_SHIFT - VWM_SHIFT)];
+    __local realM alm[KWG << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0)];
   #endif
   #if SB == 1
-    __local realN blm[KWG << (NWG_SHIFT - VWN_SHIFT)];
+    __local realN blm[KWG << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)];
   #endif
 
   // Computes the matrix-multiplication and stores the result in register memory
