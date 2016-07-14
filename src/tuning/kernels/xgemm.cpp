@@ -67,13 +67,13 @@ class TuneXgemm {
     tuner.AddParameter(id, "NDIMC", {8, 16, 32});
     tuner.AddParameter(id, "MDIMA", {8, 16, 32});
     tuner.AddParameter(id, "NDIMB", {8, 16, 32});
-    tuner.AddParameter(id, "KWI", {2, 8});
-    tuner.AddParameter(id, "VWM", {1, 2, 4, 8});
-    tuner.AddParameter(id, "VWN", {1, 2, 4, 8});
+    tuner.AddParameter(id, "KWI", {1,2,4,8});
+    tuner.AddParameter(id, "VWM", {1, 2, 4, 8, 16});
+    tuner.AddParameter(id, "VWN", {1, 2, 4, 8, 16});
     tuner.AddParameter(id, "STRM", {0, 1});
     tuner.AddParameter(id, "STRN", {0, 1});
-    tuner.AddParameter(id, "SA", {0, 1});
-    tuner.AddParameter(id, "SB", {0, 1});
+    tuner.AddParameter(id, "SA", {0});
+    tuner.AddParameter(id, "SB", {0});
   }
 
   // Sets the constraints

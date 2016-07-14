@@ -90,6 +90,11 @@ StatusCode Routine::SetUp() {
     defines += "#define USE_MAD24 1\n";
   }
 
+  if (device_.IsAMD() && device_.IsCPU()) {
+    defines += "#define USE_VECTOR_MAD 1\n";
+    defines += "#define USE_VLOAD 1\n";
+  }
+
   if (device_.IsNVIDIA() && device_.IsGPU()) {
     if (device_.IsGeforce_GTS_450()) {
       // printf("Using IsGeforce_GTS_450\n\n");

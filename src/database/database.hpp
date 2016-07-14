@@ -63,6 +63,7 @@ class Database {
     {"Intel(R) Corporation", "Intel"},
     {"GenuineIntel", "Intel"},
     {"Advanced Micro Devices, Inc.", "AMD"},
+    {"AuthenticAMD", "AMD"},
     {"NVIDIA Corporation", "NVIDIA"},
   };
 

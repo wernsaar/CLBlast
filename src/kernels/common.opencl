@@ -125,6 +125,10 @@ R"(
   #define USE_MAD24 0
 #endif
 
+#ifndef USE_VLOAD
+  #define USE_VLOAD 0
+#endif
+
 // Sets a variable to zero
 #if PRECISION == 3232 || PRECISION == 6464
   #define SetToZero(a) a.x = ZERO; a.y = ZERO

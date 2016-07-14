@@ -43,6 +43,8 @@
 #include <memory>    // std::shared_ptr
 #include <stdexcept> // std::runtime_error
 #include <numeric>   // std::accumulate
+#include <iostream>
+#include <fstream>
 
 // OpenCL
 #if defined(__APPLE__) || defined(__MACOSX)
@@ -210,7 +212,7 @@ class Device {
   // Query for a specific type of device or brand
   bool IsCPU() const { return Type() == "CPU"; }
   bool IsGPU() const { return Type() == "GPU"; }
-  bool IsAMD() const { return Vendor() == "AMD" || Vendor() == "Advanced Micro Devices, Inc."; }
+  bool IsAMD() const { return Vendor() == "AMD" || Vendor() == "Advanced Micro Devices, Inc." || "AuthenticAMD"; }
   bool IsNVIDIA() const { return Vendor() == "NVIDIA" || Vendor() == "NVIDIA Corporation"; }
   bool IsARM() const { return Vendor() == "ARM"; }
 
@@ -302,9 +304,15 @@ class Program {
       length_(source.length()),
       source_(std::move(source)),
       source_ptr_(&source_[0]) {
-    auto status = CL_SUCCESS;
-    *program_ = clCreateProgramWithSource(context(), 1, &source_ptr_, &length_, &status);
-    CheckError(status);
+      std::ofstream myfile;
+      myfile.open ("/tmp/source.cl");
+      // std::cout << "########################### SOURCE BEGIN ##############################\n" << std::endl;
+      myfile << source_ptr_;
+      // std::cout << "########################### SOURCE END ################################\n" << std::endl;
+      myfile.close();
+      auto status = CL_SUCCESS;
+      *program_ = clCreateProgramWithSource(context(), 1, &source_ptr_, &length_, &status);
+      CheckError(status);
   }
 
   // Binary-based constructor with memory management

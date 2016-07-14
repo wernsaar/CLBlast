@@ -24,17 +24,42 @@ R"(
   typedef real realC;
 #elif COPY_VW == 2
   #define COPY_VW_SHIFT 1
-  typedef real2 realC;
+  #if USE_VLOAD == 1
+    #define COPY_VLOAD_N vload2
+    #define COPY_VSTORE_N vstore2
+    typedef real realC;
+  #else
+    typedef real2 realC;
+  #endif
 #elif COPY_VW == 4
   #define COPY_VW_SHIFT 2
-  typedef real4 realC;
+  #if USE_VLOAD == 1
+    #define COPY_VLOAD_N vload4
+    #define COPY_VSTORE_N vstore4
+    typedef real realC;
+  #else
+    typedef real4 realC;
+  #endif
 #elif COPY_VW == 8
   #define COPY_VW_SHIFT 3
-  typedef real8 realC;
+  #if USE_VLOAD == 1
+    #define COPY_VLOAD_N vload8
+    #define COPY_VSTORE_N vstore8
+    typedef real realC;
+  #else
+    typedef real8 realC;
+  #endif
 #elif COPY_VW == 16
   #define COPY_VW_SHIFT 4
-  typedef real16 realC;
+  #if USE_VLOAD == 1
+    #define COPY_VLOAD_N vload16
+    #define COPY_VSTORE_N vstore16
+    typedef real realC;
+   #else
+     typedef real16 realC;
+   #endif
 #endif
+
 
 #if COPY_WPT == 1
   #define COPY_WPT_SHIFT 0
@@ -91,7 +116,12 @@ __kernel void CopyMatrixFast(const int ld,
     #endif
 
     #if (PRECISION == 32) || (PRECISION == 3232) || (PRECISION == 64) || (PRECISION == 6464)
-      dest[id] = src[id];
+      #if (defined(COPY_VLOAD_N)) && ( USE_VLOAD == 1)
+        COPY_VSTORE_N(COPY_VLOAD_N(0, &src[id]), 0, &dest[id]);
+      #else
+        dest[id] = src[id];
+      #endif
+
     #else
       realC result;
       #if COPY_VW == 1

@@ -61,7 +61,7 @@ class TuneCopy {
     tuner.AddParameter(id, "COPY_DIMX", {8, 16, 32});
     tuner.AddParameter(id, "COPY_DIMY", {8, 16, 32});
     tuner.AddParameter(id, "COPY_WPT", {1, 2, 4, 8});
-    tuner.AddParameter(id, "COPY_VW", {1, 2, 4, 8});
+    tuner.AddParameter(id, "COPY_VW", {1, 2, 4, 8, 16});
   }
 
   // Sets the constraints and local memory size

@@ -54,6 +54,7 @@ void Tuner(int argc, char* argv[]) {
   auto isAMD = false;
   auto isARM = false;
   auto isGPU = false;
+  auto isCPU = false;
   auto isNVIDIA = false;
   auto IsGeforce_GTS_450 = false;
   {
@@ -67,6 +68,7 @@ void Tuner(int argc, char* argv[]) {
     isARM = device.IsARM();
     isNVIDIA = device.IsNVIDIA();
     isGPU = device.IsGPU();
+    isCPU = device.IsCPU();
     IsGeforce_GTS_450 = device.IsGeforce_GTS_450();
   }
 
@@ -94,6 +96,8 @@ void Tuner(int argc, char* argv[]) {
   }
   else {
     tuner.UseRandomSearch(1.0/args.fraction);
+    // tuner.UseAnnealing(1.0/args.fraction, 4.0 );
+    // tuner.UsePSO(1.0/args.fraction, 4 , 0.4, 0.0, 0.4);
   }
 
 
@@ -110,8 +114,12 @@ void Tuner(int argc, char* argv[]) {
       defines += "#define USE_MAD24 1\n";
     } else {
       defines += "#define USE_MAD24 1\n";
-      defines += "#define USE_CL_MAD 1\n";
+      defines += "#define USE_CL_FMA 1\n";
     }
+  }
+  if (isAMD && isCPU) {
+      defines += "#define USE_VECTOR_MAD 1\n";
+      defines += "#define USE_VLOAD 1\n";
   }
   if (isARM && isGPU) {
     defines += "#define GLOBAL_MEM_FENCE 1\n";

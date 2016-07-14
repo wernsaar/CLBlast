@@ -47,6 +47,12 @@ const Database::DatabaseEntry Database::CopySingle = {
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8},  {"COPY_VW",2}, {"COPY_WPT",1} } },
       }
     },
+    { // AMD GPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",32} } },
+        { "default",                                         { {"COPY_DIMX",8},  {"COPY_DIMY",8},  {"COPY_VW",2},  {"COPY_WPT",1} } },
+      }
+    },
     { // ARM GPUs
       kDeviceTypeGPU, "ARM", {
         { "Mali-T628",                                       { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",4} } },
