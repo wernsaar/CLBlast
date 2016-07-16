@@ -47,6 +47,13 @@ const Database::DatabaseEntry Database::TransposeSingle = {
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"TRA_DIM",8}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"TRA_DIM",8}, {"TRA_WPT",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+        { "default",                                         { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+      }
+    },
     { // ARM GPUs
       kDeviceTypeGPU, "ARM", {
         { "Mali-T628",                                       { {"TRA_DIM",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",4} } },

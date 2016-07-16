@@ -68,45 +68,28 @@ __kernel void TransposeMatrixFast(const int ld,
                                   __global const realT* restrict src,
                                   __global realT* dest,
                                   const __constant real* restrict arg_alpha) {
-  const real alpha = arg_alpha[0];
 
-  // Sets the group identifiers. They might be 'shuffled' around to distribute work in a different
-  // way over workgroups, breaking memory-bank dependencies.
-
-  const int gid0_M1 = get_group_id(0) << TRA_DIM_SHIFT;
-  const int ld_D1   = ld >> TRA_WPT_SHIFT;
-
+  uint ld_D1   = ld >> TRA_WPT_SHIFT;
 
   #if TRA_SHUFFLE == 1
-    const int gid1_M1 = ((get_group_id(0) + get_group_id(1)) % get_num_groups(0)) << TRA_DIM_SHIFT;
+    uint gid1_M1 = ((get_group_id(0) + get_group_id(1)) % get_num_groups(0)) << TRA_DIM_SHIFT;
   #else
-    const int gid1_M1 = get_group_id(1) << TRA_DIM_SHIFT;
+    uint gid1_M1 = get_group_id(1) << TRA_DIM_SHIFT;
   #endif
-
-  const int id_one  = gid1_M1  + get_local_id(0);
-  const int id_one_1 = gid0_M1 + get_local_id(0);
-
-  const int gid0_M2 = (gid0_M1 + get_local_id(1)) << TRA_WPT_SHIFT;
-  const int gid1_M2 = (gid1_M1 + get_local_id(1)) << TRA_WPT_SHIFT;
-
-  const int LocalID0xTRA_WPT_SHIFT = get_local_id(0)<<TRA_WPT_SHIFT;
-  const int LocalID1xTRA_WPT_SHIFT = get_local_id(1)<<TRA_WPT_SHIFT;
 
   // Local memory to store a tile of the matrix (for coalescing)
   __local realT tile[TRA_WPT << TRA_DIM_SHIFT][TRA_DIM + TRA_PAD];
 
+  uint gid0_M2xld_D1 = (((get_group_id(0) << TRA_DIM_SHIFT) + get_local_id(1)) << TRA_WPT_SHIFT)*ld_D1 + gid1_M1  + get_local_id(0); 
+  uint LocalID0xTRA_WPT_SHIFT = get_local_id(0)<<TRA_WPT_SHIFT;
+  uint w_onexld_D1 = 0;
+
   // Loops over the work per thread
-  #pragma unroll
-  for (int w_one=0; w_one<TRA_WPT; ++w_one) {
+  #pragma unroll TRA_WPT
+  for (uint w_one=0; w_one<TRA_WPT; ++w_one) {
 
-      // Loads data into the local memory
-      #if USE_MAD24 == 2
-        realT value = src[mad24(gid0_M2 + w_one,ld_D1 , id_one)];
-      #else
-        realT value = src[(gid0_M2 + w_one)*ld_D1 + id_one];
-      #endif
-
-      tile[LocalID0xTRA_WPT_SHIFT + w_one][get_local_id(1)] = value;
+      tile[LocalID0xTRA_WPT_SHIFT + w_one][get_local_id(1)] = src[gid0_M2xld_D1 + w_onexld_D1];
+      w_onexld_D1 += ld_D1;
 
   }
 
@@ -116,8 +99,10 @@ __kernel void TransposeMatrixFast(const int ld,
   // Loads transposed data from the local memory
   realT v[TRA_WPT];
 
+  const uint LocalID1xTRA_WPT_SHIFT = get_local_id(1)<<TRA_WPT_SHIFT;
+
   #pragma unroll
-  for (int w_one=0; w_one<TRA_WPT; ++w_one) {
+  for (uint w_one=0; w_one<TRA_WPT; ++w_one) {
 
       v[w_one] = tile[LocalID1xTRA_WPT_SHIFT + w_one][get_local_id(0)];
 
@@ -163,66 +148,14 @@ __kernel void TransposeMatrixFast(const int ld,
     results[15] = (realT) {v[0].sF, v[1].sF, v[2].sF, v[3].sF, v[4].sF, v[5].sF, v[6].sF, v[7].sF, v[8].sF, v[9].sF, v[10].sF, v[11].sF, v[12].sF, v[13].sF, v[14].sF, v[15].sF};
   #endif
 
-  // Multiplies by alpha and then stores the results into the destination matrix
-  #pragma unroll
-  for (int w_two=0; w_two<TRA_WPT; ++w_two) {
+  uint gid1_M2xld_D1 = ((gid1_M1 + get_local_id(1)) << TRA_WPT_SHIFT)*ld_D1+(get_group_id(0) << TRA_DIM_SHIFT) + get_local_id(0);
+  uint  w_twoxld_D1 =0;
 
-    #if (PRECISION == 32) || (PRECISION == 3232) || (PRECISION == 64) || (PRECISION == 6464)
- 
-      #if USE_MAD24 == 2
-        dest[mad24(gid1_M2 + w_two,ld_D1  , id_one_1)] = results[w_two];
-      #else
-        dest[(gid1_M2 + w_two)*ld_D1  + id_one_1] = results[w_two];
-      #endif
+  #pragma unroll TRA_WPT
+  for (uint w_two=0; w_two<TRA_WPT; ++w_two) {
 
-    #else
-
-      realT result;
-      #if TRA_WPT == 1
-        Multiply(result, alpha, results[w_two]);
-      #elif TRA_WPT == 2
-        Multiply(result.x, alpha, results[w_two].x);
-        Multiply(result.y, alpha, results[w_two].y);
-      #elif TRA_WPT == 4
-        Multiply(result.x, alpha, results[w_two].x);
-        Multiply(result.y, alpha, results[w_two].y);
-        Multiply(result.z, alpha, results[w_two].z);
-        Multiply(result.w, alpha, results[w_two].w);
-      #elif TRA_WPT == 8
-        Multiply(result.s0, alpha, results[w_two].s0);
-        Multiply(result.s1, alpha, results[w_two].s1);
-        Multiply(result.s2, alpha, results[w_two].s2);
-        Multiply(result.s3, alpha, results[w_two].s3);
-        Multiply(result.s4, alpha, results[w_two].s4);
-        Multiply(result.s5, alpha, results[w_two].s5);
-        Multiply(result.s6, alpha, results[w_two].s6);
-        Multiply(result.s7, alpha, results[w_two].s7);
-      #elif TRA_WPT == 16
-        Multiply(result.s0, alpha, results[w_two].s0);
-        Multiply(result.s1, alpha, results[w_two].s1);
-        Multiply(result.s2, alpha, results[w_two].s2);
-        Multiply(result.s3, alpha, results[w_two].s3);
-        Multiply(result.s4, alpha, results[w_two].s4);
-        Multiply(result.s5, alpha, results[w_two].s5);
-        Multiply(result.s6, alpha, results[w_two].s6);
-        Multiply(result.s7, alpha, results[w_two].s7);
-        Multiply(result.s8, alpha, results[w_two].s8);
-        Multiply(result.s9, alpha, results[w_two].s9);
-        Multiply(result.sA, alpha, results[w_two].sA);
-        Multiply(result.sB, alpha, results[w_two].sB);
-        Multiply(result.sC, alpha, results[w_two].sC);
-        Multiply(result.sD, alpha, results[w_two].sD);
-        Multiply(result.sE, alpha, results[w_two].sE);
-        Multiply(result.sF, alpha, results[w_two].sF);
-      #endif
-  
-      #if USE_MAD24 == 2
-        dest[mad24(gid1_M2 + w_two,ld_D1  , id_one_1)] = result;
-      #else
-        dest[(gid1_M2 + w_two)*ld_D1  + id_one_1] = result;
-      #endif
-
-   #endif
+        dest[gid1_M2xld_D1 + w_twoxld_D1] = results[w_two];
+        w_twoxld_D1+= ld_D1;
 
   }
 }

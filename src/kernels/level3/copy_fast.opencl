@@ -24,40 +24,16 @@ R"(
   typedef real realC;
 #elif COPY_VW == 2
   #define COPY_VW_SHIFT 1
-  #if USE_VLOAD == 1
-    #define COPY_VLOAD_N vload2
-    #define COPY_VSTORE_N vstore2
-    typedef real realC;
-  #else
-    typedef real2 realC;
-  #endif
+  typedef real2 realC;
 #elif COPY_VW == 4
   #define COPY_VW_SHIFT 2
-  #if USE_VLOAD == 1
-    #define COPY_VLOAD_N vload4
-    #define COPY_VSTORE_N vstore4
-    typedef real realC;
-  #else
-    typedef real4 realC;
-  #endif
+  typedef real4 realC;
 #elif COPY_VW == 8
   #define COPY_VW_SHIFT 3
-  #if USE_VLOAD == 1
-    #define COPY_VLOAD_N vload8
-    #define COPY_VSTORE_N vstore8
-    typedef real realC;
-  #else
-    typedef real8 realC;
-  #endif
+  typedef real8 realC;
 #elif COPY_VW == 16
   #define COPY_VW_SHIFT 4
-  #if USE_VLOAD == 1
-    #define COPY_VLOAD_N vload16
-    #define COPY_VSTORE_N vstore16
-    typedef real realC;
-   #else
-     typedef real16 realC;
-   #endif
+  typedef real16 realC;
 #endif
 
 
@@ -102,70 +78,28 @@ __kernel void CopyMatrixFast(const int ld,
                              const __constant real* restrict arg_alpha) {
 
 
-  const real alpha = arg_alpha[0];
-  const int ld_D1 = (ld >> COPY_VW_SHIFT);
-  const int GroupID1_M2 = (((int) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + get_local_id(1)) * (ld >> COPY_VW_SHIFT) + get_global_id(0) ;
+  #if USE_MAD24 == 1
+    uint GroupID1_M2 = mad24(((int) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (int) get_local_id(1), (ld >> COPY_VW_SHIFT) , (int) get_global_id(0)) ;
+  #else
+    uint GroupID1_M2 = (((uint) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (uint) get_local_id(1)) * (ld >> COPY_VW_SHIFT) + (uint) get_global_id(0) ;
+  #endif
 
-  #pragma unroll COPY_WPT
-  for (int w_one=0; w_one<COPY_WPT; ++w_one) {
+  uint ld_D1 = (ld >> COPY_VW_SHIFT);
+   
+  uint ld_D1P = 0;
 
-    #if USE_MAD24 == 1
-      int id = mad24(w_one << COPY_DIMY_SHIFT , ld_D1 , GroupID1_M2);
-    #else
-      int id = (w_one << COPY_DIMY_SHIFT) * ld_D1 + GroupID1_M2;
+  #pragma unroll COPY_WPT 
+  for (uint w_one=0; w_one<COPY_WPT; w_one++) {
+
+    uint id = ld_D1P + GroupID1_M2;
+    #if COPY_WPT > 1
+      ld_D1P += ld_D1 << COPY_DIMY_SHIFT;
     #endif
 
-    #if (PRECISION == 32) || (PRECISION == 3232) || (PRECISION == 64) || (PRECISION == 6464)
-      #if (defined(COPY_VLOAD_N)) && ( USE_VLOAD == 1)
-        COPY_VSTORE_N(COPY_VLOAD_N(0, &src[id]), 0, &dest[id]);
-      #else
-        dest[id] = src[id];
-      #endif
+    dest[id] = src[id];
 
-    #else
-      realC result;
-      #if COPY_VW == 1
-        Multiply(result, alpha, src[id]);
-      #elif COPY_VW == 2
-        Multiply(result.x, alpha, src[id].x);
-        Multiply(result.y, alpha, src[id].y);
-      #elif COPY_VW == 4
-        Multiply(result.x, alpha, src[id].x);
-        Multiply(result.y, alpha, src[id].y);
-        Multiply(result.z, alpha, src[id].z);
-        Multiply(result.w, alpha, src[id].w);
-    #elif COPY_VW == 8
-        Multiply(result.s0, alpha, src[id].s0);
-        Multiply(result.s1, alpha, src[id].s1);
-        Multiply(result.s2, alpha, src[id].s2);
-        Multiply(result.s3, alpha, src[id].s3);
-        Multiply(result.s4, alpha, src[id].s4);
-        Multiply(result.s5, alpha, src[id].s5);
-        Multiply(result.s6, alpha, src[id].s6);
-        Multiply(result.s7, alpha, src[id].s7);
-    #elif COPY_VW == 16
-        Multiply(result.s0, alpha, src[id].s0);
-        Multiply(result.s1, alpha, src[id].s1);
-        Multiply(result.s2, alpha, src[id].s2);
-        Multiply(result.s3, alpha, src[id].s3);
-        Multiply(result.s4, alpha, src[id].s4);
-        Multiply(result.s5, alpha, src[id].s5);
-        Multiply(result.s6, alpha, src[id].s6);
-        Multiply(result.s7, alpha, src[id].s7);
-        Multiply(result.s8, alpha, src[id].s8);
-        Multiply(result.s9, alpha, src[id].s9);
-        Multiply(result.sA, alpha, src[id].sA);
-        Multiply(result.sB, alpha, src[id].sB);
-        Multiply(result.sC, alpha, src[id].sC);
-        Multiply(result.sD, alpha, src[id].sD);
-        Multiply(result.sE, alpha, src[id].sE);
-        Multiply(result.sF, alpha, src[id].sF);
-      #endif
+    }
 
-      dest[id] = result;
-    #endif
-
-  }
 }
 
 // =================================================================================================

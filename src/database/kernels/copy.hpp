@@ -47,9 +47,11 @@ const Database::DatabaseEntry Database::CopySingle = {
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8},  {"COPY_VW",2}, {"COPY_WPT",1} } },
       }
     },
-    { // AMD GPUs
+    { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak1",        { {"COPY_DIMX",32}, {"COPY_DIMY",16}, {"COPY_WPT",2}, {"COPY_VW",16}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",4}, {"COPY_VW",16}, {"PRECISION",32} } },
         { "default",                                         { {"COPY_DIMX",8},  {"COPY_DIMY",8},  {"COPY_VW",2},  {"COPY_WPT",1} } },
       }
     },
@@ -94,8 +96,10 @@ const Database::DatabaseEntry Database::CopySingle = {
         { "Tesla K20m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",4}, {"COPY_WPT",4} } },
         { "Tesla K40m",                                      { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",4}, {"COPY_WPT",2} } },
         { "GeForce GTX 750bak",                              { {"COPY_DIMX",16}, {"COPY_DIMY",64}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
-        { "GeForce GTX 750",                                 { {"COPY_DIMX",8}, {"COPY_DIMY",16}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
-        { "GeForce GTS 450",                                 { {"COPY_DIMX",32}, {"COPY_DIMY",4}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
+        { "GeForce GTX 750bak1",                             { {"COPY_DIMX",8}, {"COPY_DIMY",16}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
+        { "GeForce GTX 750",                                 { {"COPY_DIMX",32}, {"COPY_DIMY",32}, {"COPY_WPT",1}, {"COPY_VW",8}, {"PRECISION",32} } },
+        { "GeForce GTS 450bak",                              { {"COPY_DIMX",32}, {"COPY_DIMY",4}, {"COPY_WPT",1}, {"COPY_VW",2}, {"PRECISION",32} } },
+        { "GeForce GTS 450",                                 { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",4}, {"PRECISION",32} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
       }
     },
@@ -121,6 +125,12 @@ const Database::DatabaseEntry Database::CopyComplexSingle = {
         { "Olandbak1",                                       { {"COPY_DIMX",64}, {"COPY_DIMY",2}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",3232} } },
         { "Oland",                                           { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",3232} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
+      }
+    },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",16}, {"COPY_DIMY",32}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",3232} } },
+        { "default",                                         { {"COPY_DIMX",16}, {"COPY_DIMY",32}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",3232} } },
       }
     },
     { // Intel CPUs
@@ -184,6 +194,12 @@ const Database::DatabaseEntry Database::CopyDouble = {
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
       }
     },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",64} } },
+        { "default",                                         { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",64} } },
+      }
+    },
     { // ARM GPUs
       kDeviceTypeGPU, "ARM", {
         { "Mali-T628",                                       { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_VW",8}, {"COPY_WPT",2} } },
@@ -241,6 +257,12 @@ const Database::DatabaseEntry Database::CopyComplexDouble = {
         { "Tahiti",                                          { {"COPY_DIMX",8}, {"COPY_DIMY",16}, {"COPY_VW",1}, {"COPY_WPT",1} } },
         { "Oland",                                           { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
         { "default",                                         { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_VW",1}, {"COPY_WPT",1} } },
+      }
+    },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
+        { "default",                                         { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
       }
     },
     { // ARM GPUs
