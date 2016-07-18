@@ -335,31 +335,31 @@ inline void GlobalToLocalA(const __global realM* restrict agm, __local realM* al
                            const int kSizeM, const int tid, const int kwg) {
 
   #if STRM == 0
-    const int la0_M1 = (tid - (tid & -MDIMA)) << ((MWA_SHIFT - VWM_SHIFT) > 0 ? (MWA_SHIFT - VWM_SHIFT) : 0);
+    uint la0_M1 = (tid - (tid & -MDIMA)) << ((MWA_SHIFT - VWM_SHIFT) > 0 ? (MWA_SHIFT - VWM_SHIFT) : 0);
   #else
-    const int la0 = tid - (tid & -MDIMA);
+    uint la0 = tid - (tid & -MDIMA);
   #endif
 
-  const int GroupID0_M1 = GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) > 0 ? (MWG_SHIFT - VWM_SHIFT) : 0);
-  const int  la1_M1 = (tid >> MDIMA_SHIFT) << KWA_SHIFT;
-  const int  kSizeMxVWM = kSizeM >> VWM_SHIFT;
+  uint GroupID0_M1 = GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) > 0 ? (MWG_SHIFT - VWM_SHIFT) : 0);
+  uint  la1_M1 = (tid >> MDIMA_SHIFT) << KWA_SHIFT;
+  uint  kSizeMxVWM = kSizeM >> VWM_SHIFT;
  
 
   #pragma unroll
-  for (int mia=0; mia<(MWA >> VWM_SHIFT); ++mia) {
+  for (uint mia=0; mia<(MWA >> VWM_SHIFT); ++mia) {
 
     #if STRM == 0
-      const int mg = mia + la0_M1;
+      uint mg = mia + la0_M1;
     #elif STRM == 1
-      const int mg = la0 + (mia << MDIMA_SHIFT);
+      uint mg = la0 + (mia << MDIMA_SHIFT);
     #endif
 
-    const int idm = mg + GroupID0_M1;
+    uint idm = mg + GroupID0_M1;
 
-    #pragma unroll
-    for (int kia=0; kia<KWA; ++kia) {
+    #pragma unroll 
+    for (uint kia=0; kia<KWA; ++kia) {
         // Computes the indices for the global memory
-        int kg = kia + la1_M1;
+        uint kg = kia + la1_M1;
 
         // Loads the data from global memory (not transposed) into the local memory
         #if USE_MAD24 == 1

@@ -212,7 +212,7 @@ class Device {
   // Query for a specific type of device or brand
   bool IsCPU() const { return Type() == "CPU"; }
   bool IsGPU() const { return Type() == "GPU"; }
-  bool IsAMD() const { return Vendor() == "AMD" || Vendor() == "Advanced Micro Devices, Inc." || "AuthenticAMD"; }
+  bool IsAMD() const { return Vendor() == "AMD" || Vendor() == "Advanced Micro Devices, Inc." || Vendor() == "AuthenticAMD"; }
   bool IsNVIDIA() const { return Vendor() == "NVIDIA" || Vendor() == "NVIDIA Corporation"; }
   bool IsARM() const { return Vendor() == "ARM"; }
 

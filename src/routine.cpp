@@ -92,14 +92,15 @@ StatusCode Routine::SetUp() {
 
   if (device_.IsAMD() && device_.IsCPU()) {
     defines += "#define USE_VECTOR_MAD 1\n";
-    defines += "#define USE_VLOAD 1\n";
+    defines += "#define USE_CL_MAD 1\n";
+    defines += "#define USE_VLOAD 0\n";
   }
 
   if (device_.IsNVIDIA() && device_.IsGPU()) {
     if (device_.IsGeforce_GTS_450()) {
       // printf("Using IsGeforce_GTS_450\n\n");
-      defines += "#define USE_VECTOR_MAD 1\n";
-      defines += "#define USE_CL_FMA 1\n";
+      defines += "#define USE_VECTOR_MAD 0\n";
+      defines += "#define USE_CL_MAD 1\n";
     }
     else {
       defines += "#define USE_CL_MAD 1\n";
