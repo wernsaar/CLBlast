@@ -56,6 +56,7 @@ void Tuner(int argc, char* argv[]) {
   auto isGPU = false;
   auto isCPU = false;
   auto isNVIDIA = false;
+  auto isINTEL = false;
   auto IsGeforce_GTS_450 = false;
   {
     const auto platform = Platform(args.platform_id);
@@ -67,6 +68,7 @@ void Tuner(int argc, char* argv[]) {
     isAMD = device.IsAMD();
     isARM = device.IsARM();
     isNVIDIA = device.IsNVIDIA();
+    isINTEL = device.IsINTEL();
     isGPU = device.IsGPU();
     isCPU = device.IsCPU();
     IsGeforce_GTS_450 = device.IsGeforce_GTS_450();
@@ -120,6 +122,11 @@ void Tuner(int argc, char* argv[]) {
   if (isAMD && isCPU) {
       defines += "#define USE_VECTOR_MAD 1\n";
       defines += "#define USE_CL_MAD 1\n";
+      defines += "#define USE_VLOAD 1\n";
+  }
+  if (isINTEL && isCPU) {
+      defines += "#define USE_VECTOR_MAD 1\n";
+      // defines += "#define USE_CL_MAD 1\n";
       defines += "#define USE_VLOAD 1\n";
   }
   if (isARM && isGPU) {

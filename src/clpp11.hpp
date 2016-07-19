@@ -214,6 +214,7 @@ class Device {
   bool IsGPU() const { return Type() == "GPU"; }
   bool IsAMD() const { return Vendor() == "AMD" || Vendor() == "Advanced Micro Devices, Inc." || Vendor() == "AuthenticAMD"; }
   bool IsNVIDIA() const { return Vendor() == "NVIDIA" || Vendor() == "NVIDIA Corporation"; }
+  bool IsINTEL() const { return Vendor() == "INTEL" || Vendor() == "GenuineIntel"; }
   bool IsARM() const { return Vendor() == "ARM"; }
 
   bool IsGeforce_GTS_450() const { return Name() == "GeForce GTS 450"; }

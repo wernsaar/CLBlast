@@ -57,6 +57,7 @@ const Database::DatabaseEntry Database::PadtransposeSingle = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",1} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",8} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"PADTRA_PAD",0}, {"PADTRA_TILE",32}, {"PADTRA_WPT",1} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PADTRA_TILE",8}, {"PADTRA_WPT",8}, {"PADTRA_PAD",0}, {"PRECISION",32} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",1} } },
       }
     },
@@ -126,6 +127,7 @@ const Database::DatabaseEntry Database::PadtransposeComplexSingle = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"PADTRA_PAD",1}, {"PADTRA_TILE",8}, {"PADTRA_WPT",4} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",8} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",4} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PADTRA_TILE",8}, {"PADTRA_WPT",8}, {"PADTRA_PAD",0}, {"PRECISION",3232} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",4} } },
       }
     },
@@ -193,6 +195,7 @@ const Database::DatabaseEntry Database::PadtransposeDouble = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"PADTRA_PAD",1}, {"PADTRA_TILE",8}, {"PADTRA_WPT",4} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",8} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"PADTRA_PAD",1}, {"PADTRA_TILE",32}, {"PADTRA_WPT",1} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PADTRA_TILE",8}, {"PADTRA_WPT",8}, {"PADTRA_PAD",0}, {"PRECISION",64} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",1} } },
       }
     },
@@ -253,6 +256,7 @@ const Database::DatabaseEntry Database::PadtransposeComplexDouble = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"PADTRA_PAD",1}, {"PADTRA_TILE",8}, {"PADTRA_WPT",2} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"PADTRA_PAD",1}, {"PADTRA_TILE",8}, {"PADTRA_WPT",4} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"PADTRA_PAD",1}, {"PADTRA_TILE",8}, {"PADTRA_WPT",4} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PADTRA_TILE",8}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",6464} } },
         { "default",                                         { {"PADTRA_PAD",1}, {"PADTRA_TILE",8}, {"PADTRA_WPT",2} } },
       }
     },
