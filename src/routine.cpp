@@ -93,7 +93,7 @@ StatusCode Routine::SetUp() {
   if (device_.IsAMD() && device_.IsCPU()) {
     defines += "#define USE_VECTOR_MAD 1\n";
     defines += "#define USE_CL_MAD 1\n";
-    defines += "#define USE_VLOAD 0\n";
+    defines += "#define USE_VLOAD 1\n";
   }
 
   if (device_.IsNVIDIA() && device_.IsGPU()) {

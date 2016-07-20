@@ -21,18 +21,38 @@ R"(
 // Data-widths
 #if COPY_VW == 1
   #define COPY_VW_SHIFT 0
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define COPY_VLOADN vload2
+    #define COPY_VSTORN vstore2
+  #endif
   typedef real realC;
 #elif COPY_VW == 2
   #define COPY_VW_SHIFT 1
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define COPY_VLOADN vload4
+    #define COPY_VSTORN vstore4
+  #endif
   typedef real2 realC;
 #elif COPY_VW == 4
   #define COPY_VW_SHIFT 2
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define COPY_VLOADN vload8
+    #define COPY_VSTORN vstore8
+  #endif
   typedef real4 realC;
 #elif COPY_VW == 8
   #define COPY_VW_SHIFT 3
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define COPY_VLOADN vload16
+    #define COPY_VSTORN vstore16
+  #endif
   typedef real8 realC;
 #elif COPY_VW == 16
   #define COPY_VW_SHIFT 4
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define COPY_VLOADN vload8
+    #define COPY_VSTORN vstore8
+  #endif
   typedef real16 realC;
 #endif
 
@@ -65,6 +85,13 @@ R"(
   #define COPY_DIMY_SHIFT 6
 #endif
 
+typedef union COPY_Ptr {
+    __global singlereal *f;
+    __global const singlereal *cf;
+    __global realC            *s;
+    __global const realC      *cs;
+} COPY_Ptr;
+
 
 
 // =================================================================================================
@@ -96,7 +123,43 @@ __kernel void CopyMatrixFast(const int ld,
       ld_D1P += ld_D1 << COPY_DIMY_SHIFT;
     #endif
 
-    dest[id] = src[id];
+    #if (USE_VLOAD == 1) && ((PRECISION == 3232) || (PRECISION == 6464))
+
+      #if COPY_VW == 16
+
+        COPY_Ptr S;
+        COPY_Ptr D;
+        S.cs = &src[id];
+        D.s = &dest[id];
+
+        singlereal8 X1;
+        singlereal8 X2;
+        singlereal8 X3;
+        singlereal8 X4;
+
+        X1 = COPY_VLOADN(0,S.cf);
+        X2 = COPY_VLOADN(1,S.cf);
+        X3 = COPY_VLOADN(2,S.cf);
+        X4 = COPY_VLOADN(3,S.cf);
+
+        COPY_VSTORN(X1,0,D.f);
+        COPY_VSTORN(X2,1,D.f);
+        COPY_VSTORN(X3,2,D.f);
+        COPY_VSTORN(X4,3,D.f);
+
+      #else
+
+        COPY_Ptr S;
+        COPY_Ptr D;
+        S.cs = &src[id];
+        D.s = &dest[id];
+        COPY_VSTORN(COPY_VLOADN(0,S.cf),0,D.f);
+
+      #endif
+
+    #else
+      dest[id] = src[id];
+    #endif
 
     }
 

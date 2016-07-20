@@ -52,7 +52,8 @@ const Database::DatabaseEntry Database::CopySingle = {
         { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",32} } },
         { "AMD FX(tm)-8150 Eight-Core Processorbak1",        { {"COPY_DIMX",32}, {"COPY_DIMY",16}, {"COPY_WPT",2}, {"COPY_VW",16}, {"PRECISION",32} } },
         { "AMD FX(tm)-8150 Eight-Core Processorbak2",        { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",4}, {"COPY_VW",16}, {"PRECISION",32} } },
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",32}, {"COPY_DIMY",32}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak3",        { {"COPY_DIMX",32}, {"COPY_DIMY",32}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",32}, {"COPY_DIMY",16}, {"COPY_WPT",2}, {"COPY_VW",16}, {"PRECISION",32} } },
         { "default",                                         { {"COPY_DIMX",8},  {"COPY_DIMY",8},  {"COPY_VW",2},  {"COPY_WPT",1} } },
       }
     },
@@ -132,7 +133,9 @@ const Database::DatabaseEntry Database::CopyComplexSingle = {
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
         { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"COPY_DIMX",16}, {"COPY_DIMY",32}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",3232} } },
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",3232} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak1",        { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",3232} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak2",        { {"COPY_DIMX",32}, {"COPY_DIMY",16}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",3232} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",16}, {"COPY_DIMY",32}, {"COPY_WPT",2}, {"COPY_VW",16}, {"PRECISION",3232} } },
         { "default",                                         { {"COPY_DIMX",16}, {"COPY_DIMY",32}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",3232} } },
       }
     },
@@ -200,7 +203,8 @@ const Database::DatabaseEntry Database::CopyDouble = {
     },
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",64} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",64} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",32}, {"COPY_DIMY",32}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",64} } },
         { "default",                                         { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",64} } },
       }
     },
@@ -267,6 +271,7 @@ const Database::DatabaseEntry Database::CopyComplexDouble = {
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
         { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
         { "default",                                         { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
       }
     },

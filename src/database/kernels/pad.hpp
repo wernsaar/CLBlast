@@ -46,6 +46,12 @@ const Database::DatabaseEntry Database::PadSingle = {
         { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
       }
     },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",32} } },
+        { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",32} } },
+      }
+    },
     { // ARM GPUs
       kDeviceTypeGPU, "ARM", {
         { "Mali-T628",                                       { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",4} } },
@@ -116,6 +122,12 @@ const Database::DatabaseEntry Database::PadComplexSingle = {
         { "Olandbak1",                                       { {"COPY_DIMX",64}, {"COPY_DIMY",2}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",3232} } },
         { "Oland",                                           { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1}, {"PRECISION",3232} } },
         { "default",                                         { {"PAD_DIMX",8}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
+      }
+    },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",3232} } },
+        { "default",                                         { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",3232} } },
       }
     },
     { // ARM GPUs
@@ -189,6 +201,12 @@ const Database::DatabaseEntry Database::PadDouble = {
         { "default",                                         { {"PAD_DIMX",8}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
       }
     },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",64} } },
+        { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",64} } },
+      }
+    },
     { // ARM GPUs
       kDeviceTypeGPU, "ARM", {
         { "Mali-T628",                                       { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2} } },
@@ -248,6 +266,12 @@ const Database::DatabaseEntry Database::PadComplexDouble = {
         { "Tahiti",                                          { {"PAD_DIMX",8}, {"PAD_DIMY",16}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
         { "Oland",                                           { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
         { "default",                                         { {"PAD_DIMX",8}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
+      }
+    },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",6464} } },
+        { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",6464} } },
       }
     },
     { // ARM GPUs

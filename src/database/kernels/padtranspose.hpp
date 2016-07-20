@@ -46,6 +46,12 @@ const Database::DatabaseEntry Database::PadtransposeSingle = {
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",4} } },
       }
     },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+        { "default",                                         { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+      }
+    },
     { // ARM GPUs
       kDeviceTypeGPU, "ARM", {
         { "Mali-T628",                                       { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",2} } },
@@ -116,6 +122,12 @@ const Database::DatabaseEntry Database::PadtransposeComplexSingle = {
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",2} } },
       }
     },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",3232} } },
+        { "default",                                         { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",3232} } },
+      }
+    },
     { // ARM GPUs
       kDeviceTypeGPU, "ARM", {
         { "Mali-T628",                                       { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",2} } },
@@ -184,6 +196,12 @@ const Database::DatabaseEntry Database::PadtransposeDouble = {
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",2} } },
       }
     },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",64} } },
+        { "default",                                         { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",64} } },
+      }
+    },
     { // ARM GPUs
       kDeviceTypeGPU, "ARM", {
         { "Mali-T628",                                       { {"PADTRA_PAD",0}, {"PADTRA_TILE",16}, {"PADTRA_WPT",2} } },
@@ -243,6 +261,12 @@ const Database::DatabaseEntry Database::PadtransposeComplexDouble = {
         { "Tahiti",                                          { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",2} } },
         { "Oland",                                           { {"PADTRA_PAD",1}, {"PADTRA_TILE",16}, {"PADTRA_WPT",2} } },
         { "default",                                         { {"PADTRA_PAD",0}, {"PADTRA_TILE",8}, {"PADTRA_WPT",2} } },
+      }
+    },
+    { // AMD CPUs
+      kDeviceTypeCPU, "AMD", {
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",0}, {"PRECISION",6464} } },
+        { "default",                                         { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",0}, {"PRECISION",6464} } },
       }
     },
     { // ARM GPUs
