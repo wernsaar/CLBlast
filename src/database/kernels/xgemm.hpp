@@ -143,7 +143,9 @@ const Database::DatabaseEntry Database::XgemmComplexSingle = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"KWG",32}, {"KWI",2}, {"MDIMA",32}, {"MDIMC",16}, {"MWG",32}, {"NDIMB",16}, {"NDIMC",16}, {"NWG",64}, {"SA",0}, {"SB",1}, {"STRM",1}, {"STRN",0}, {"VWM",1}, {"VWN",2} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"KWG",32}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",8}, {"MWG",128}, {"NDIMB",16}, {"NDIMC",32}, {"NWG",128}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",4} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"KWG",32}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",16}, {"MWG",16}, {"NDIMB",16}, {"NDIMC",16}, {"NWG",128}, {"SA",0}, {"SB",0}, {"STRM",1}, {"STRN",1}, {"VWM",1}, {"VWN",4} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",16}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",16}, {"KWI",1}, {"VWM",2}, {"VWN",1}, {"STRM",0}, {"STRN",0}, {"SA",1}, {"SB",0}, {"PRECISION",3232} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHzbak", { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",16}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",16}, {"KWI",1}, {"VWM",2}, {"VWN",1}, {"STRM",0}, {"STRN",0}, {"SA",1}, {"SB",0}, {"PRECISION",3232} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHziak", { {"MWG",128}, {"NWG",128}, {"KWG",16}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",16}, {"NDIMB",8}, {"KWI",1}, {"VWM",1}, {"VWN",4}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",1}, {"PRECISION",3232} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"MWG",256}, {"NWG",128}, {"KWG",16}, {"MDIMC",16}, {"NDIMC",8}, {"MDIMA",8}, {"NDIMB",8}, {"KWI",1}, {"VWM",1}, {"VWN",4}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",1}, {"PRECISION",3232} } },
         { "default",                                         { {"KWG",32}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",8}, {"MWG",16}, {"NDIMB",16}, {"NDIMC",16}, {"NWG",64}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",2} } },
       }
     },

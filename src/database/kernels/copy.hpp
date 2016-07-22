@@ -68,7 +68,8 @@ const Database::DatabaseEntry Database::CopySingle = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"COPY_DIMX",32}, {"COPY_DIMY",16}, {"COPY_VW",8}, {"COPY_WPT",2} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"COPY_DIMX",32}, {"COPY_DIMY",16}, {"COPY_VW",8}, {"COPY_WPT",1} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",8}, {"COPY_WPT",1} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",8}, {"PRECISION",32} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHzbak", { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",8}, {"PRECISION",32} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"COPY_DIMX",8}, {"COPY_DIMY",32}, {"COPY_WPT",2}, {"COPY_VW",16}, {"PRECISION",32} } },
         { "default",                                         { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_VW",8}, {"COPY_WPT",1} } },
       }
     },
@@ -219,7 +220,8 @@ const Database::DatabaseEntry Database::CopyDouble = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_VW",8}, {"COPY_WPT",1} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"COPY_DIMX",16}, {"COPY_DIMY",32}, {"COPY_VW",2}, {"COPY_WPT",1} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"COPY_DIMX",16}, {"COPY_DIMY",16}, {"COPY_VW",8}, {"COPY_WPT",1} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",64} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHzbak", { {"COPY_DIMX",32}, {"COPY_DIMY",8}, {"COPY_WPT",1}, {"COPY_VW",16}, {"PRECISION",64} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"COPY_DIMX",32}, {"COPY_DIMY",32}, {"COPY_WPT",4}, {"COPY_VW",16}, {"PRECISION",64} } },
         { "default",                                         { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_VW",2}, {"COPY_WPT",1} } },
       }
     },
@@ -270,8 +272,9 @@ const Database::DatabaseEntry Database::CopyComplexDouble = {
     },
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak1",        { {"COPY_DIMX",8}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"COPY_DIMX",8}, {"COPY_DIMY",32}, {"COPY_WPT",4}, {"COPY_VW",16}, {"PRECISION",6464} } },
         { "default",                                         { {"COPY_DIMX",16}, {"COPY_DIMY",8}, {"COPY_WPT",8}, {"COPY_VW",16}, {"PRECISION",6464} } },
       }
     },

@@ -49,6 +49,7 @@ const Database::DatabaseEntry Database::PadSingle = {
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
         { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",32}, {"PAD_WPTY",1}, {"PRECISION",32} } },
         { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",32} } },
       }
     },
@@ -126,7 +127,8 @@ const Database::DatabaseEntry Database::PadComplexSingle = {
     },
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",3232} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",3232} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",8}, {"PAD_DIMY",16}, {"PAD_WPTX",32}, {"PAD_WPTY",1}, {"PRECISION",3232} } },
         { "default",                                         { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",3232} } },
       }
     },
@@ -203,7 +205,8 @@ const Database::DatabaseEntry Database::PadDouble = {
     },
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",64} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",64} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",8}, {"PAD_DIMY",16}, {"PAD_WPTX",32}, {"PAD_WPTY",1}, {"PRECISION",64} } },
         { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",64} } },
       }
     },
@@ -270,7 +273,10 @@ const Database::DatabaseEntry Database::PadComplexDouble = {
     },
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak1",        { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",8}, {"PAD_WPTY",2}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak2",        { {"PAD_DIMX",4}, {"PAD_DIMY",32}, {"PAD_WPTX",16}, {"PAD_WPTY",1}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PAD_DIMX",8}, {"PAD_DIMY",32}, {"PAD_WPTX",16}, {"PAD_WPTY",1}, {"PRECISION",6464} } },
         { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",2}, {"PRECISION",6464} } },
       }
     },

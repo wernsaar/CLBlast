@@ -106,19 +106,20 @@ __kernel void CopyMatrixFast(const int ld,
 
 
   #if USE_MAD24 == 1
-    uint GroupID1_M2 = mad24(((int) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (int) get_local_id(1), (ld >> COPY_VW_SHIFT) , (int) get_global_id(0)) ;
+    const uint GroupID1_M2 = mad24(((int) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (int) get_local_id(1), (ld >> COPY_VW_SHIFT) , (int) get_global_id(0)) ;
   #else
-    uint GroupID1_M2 = (((uint) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (uint) get_local_id(1)) * (ld >> COPY_VW_SHIFT) + (uint) get_global_id(0) ;
+    const uint GroupID1_M2 = (((uint) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (uint) get_local_id(1)) * (ld >> COPY_VW_SHIFT) + (uint) get_global_id(0) ;
   #endif
 
-  uint ld_D1 = (ld >> COPY_VW_SHIFT);
+  const uint ld_D1 = (ld >> COPY_VW_SHIFT);
    
   uint ld_D1P = 0;
 
-  #pragma unroll COPY_WPT 
+  #pragma unroll 
   for (uint w_one=0; w_one<COPY_WPT; w_one++) {
 
     uint id = ld_D1P + GroupID1_M2;
+
     #if COPY_WPT > 1
       ld_D1P += ld_D1 << COPY_DIMY_SHIFT;
     #endif

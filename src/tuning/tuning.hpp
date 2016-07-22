@@ -108,6 +108,7 @@ void Tuner(int argc, char* argv[]) {
   if (isAMD && isGPU) {
     defines += "#define USE_MAD24 1\n";
     defines += "#define USE_CL_MAD 1\n";
+    defines += "#define USE_VLOAD 1\n";
     defines += "#define USE_STAGGERED_INDICES 1\n";
   }
   if (isNVIDIA && isGPU) {
@@ -165,8 +166,8 @@ void Tuner(int argc, char* argv[]) {
 
   // Also prints the performance of the best-case in terms of GB/s or GFLOPS
   if (time_ms != 0.0) {
-    printf("[ -------> ] %.1lf ms", time_ms);
-    printf(" or %.1lf %s\n", C::GetMetric(args)/(time_ms*1.0e6), C::PerformanceUnit().c_str());
+    printf("[ -------> ] %.4lf ms", time_ms);
+    printf(" or %.4lf %s\n", C::GetMetric(args)/(time_ms*1.0e6), C::PerformanceUnit().c_str());
   }
 
   // Outputs the results as JSON to disk, including some meta-data

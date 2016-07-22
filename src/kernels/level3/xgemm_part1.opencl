@@ -214,6 +214,8 @@ R"(
     #define NWG_SHIFT 6
 #elif NWG == 128
     #define NWG_SHIFT 7
+#elif NWG == 256
+    #define NWG_SHIFT 8
 #endif
 
 #if MWG == 1
@@ -232,6 +234,8 @@ R"(
     #define MWG_SHIFT 6
 #elif MWG == 128
     #define MWG_SHIFT 7
+#elif MWG == 256
+    #define MWG_SHIFT 8
 #endif
 
 #if KWG == 1
