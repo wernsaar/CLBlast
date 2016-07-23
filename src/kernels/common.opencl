@@ -104,16 +104,19 @@ R"(
 #if PRECISION == 3232
   typedef float singlereal;
   typedef float2 singlereal2;
+  typedef float4 singlereal4;
   typedef float8 singlereal8;
   typedef float16 singlereal16;
 #elif PRECISION == 6464
   typedef double singlereal;
   typedef double2 singlereal2;
+  typedef double4 singlereal4;
   typedef double8 singlereal8;
   typedef double16 singlereal16;
 #else
   typedef real singlereal;
   typedef real2 singlereal2;
+  typedef real4 singlereal4;
   typedef real8 singlereal8;
   typedef real16 singlereal16;
 #endif

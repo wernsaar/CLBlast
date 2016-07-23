@@ -22,18 +22,43 @@ R"(
 // Data-widths
 #if TRA_WPT == 1
   #define TRA_WPT_SHIFT 0
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define TRA_VLOADN vload2
+    #define TRA_VSTORN vstore2
+  #endif
+  typedef singlereal2 realTV;
   typedef real realT;
 #elif TRA_WPT == 2
   #define TRA_WPT_SHIFT 1
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define TRA_VLOADN vload4
+    #define TRA_VSTORN vstore4
+  #endif
+  typedef singlereal4 realTV;
   typedef real2 realT;
 #elif TRA_WPT == 4
   #define TRA_WPT_SHIFT 2
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define TRA_VLOADN vload8
+    #define TRA_VSTORN vstore8
+  #endif
+  typedef singlereal8 realTV;
   typedef real4 realT;
 #elif TRA_WPT == 8
   #define TRA_WPT_SHIFT 3
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define TRA_VLOADN vload16
+    #define TRA_VSTORN vstore16
+  #endif
+  typedef singlereal16 realTV;
   typedef real8 realT;
 #elif TRA_WPT == 16
   #define TRA_WPT_SHIFT 4
+  #if (PRECISION == 3232) || (PRECISION == 6464)
+    #define TRA_VLOADN vload8
+    #define TRA_VSTORN vstore8
+  #endif
+  typedef singlereal8 realTV;
   typedef real16 realT;
 #endif
 
@@ -57,6 +82,15 @@ R"(
   #define TRA_DIM_SHIFT 8
 #endif
 
+typedef union TRA_Ptr {
+    __global   singlereal *f;
+    __local    singlereal *lf;
+    __global   const singlereal *cf;
+    __global   realT            *s;
+    __local    realT            *ls;
+    __global   const realT      *cs;
+} TRA_Ptr;
+
 
 
 // =================================================================================================
@@ -69,26 +103,39 @@ __kernel void TransposeMatrixFast(const int ld,
                                   __global realT* dest,
                                   const __constant real* restrict arg_alpha) {
 
-  uint ld_D1   = ld >> TRA_WPT_SHIFT;
+  const uint ld_D1   = ld >> TRA_WPT_SHIFT;
+  const uint lid1    = get_local_id(1);
+  const uint lid0    = get_local_id(0);
 
   #if TRA_SHUFFLE == 1
-    uint gid1_M1 = ((get_group_id(0) + get_group_id(1)) % get_num_groups(0)) << TRA_DIM_SHIFT;
+    const uint gid1_M1 = ((get_group_id(0) + get_group_id(1)) % get_num_groups(0)) << TRA_DIM_SHIFT;
   #else
-    uint gid1_M1 = get_group_id(1) << TRA_DIM_SHIFT;
+    const uint gid1_M1 = get_group_id(1) << TRA_DIM_SHIFT;
   #endif
 
   // Local memory to store a tile of the matrix (for coalescing)
   __local realT tile[TRA_WPT << TRA_DIM_SHIFT][TRA_DIM + TRA_PAD];
 
-  uint gid0_M2xld_D1 = (((get_group_id(0) << TRA_DIM_SHIFT) + get_local_id(1)) << TRA_WPT_SHIFT)*ld_D1 + gid1_M1  + get_local_id(0); 
-  uint LocalID0xTRA_WPT_SHIFT = get_local_id(0)<<TRA_WPT_SHIFT;
+  const uint gid0_M2xld_D1 = (((get_group_id(0) << TRA_DIM_SHIFT) + lid1) << TRA_WPT_SHIFT)*ld_D1 + gid1_M1  + lid0; 
+  const uint LocalID0xTRA_WPT_SHIFT = lid0<<TRA_WPT_SHIFT;
+
   uint w_onexld_D1 = 0;
 
   // Loops over the work per thread
-  #pragma unroll TRA_WPT
+  #pragma unroll 1
   for (uint w_one=0; w_one<TRA_WPT; ++w_one) {
 
-      tile[LocalID0xTRA_WPT_SHIFT + w_one][get_local_id(1)] = src[gid0_M2xld_D1 + w_onexld_D1];
+      #if (USE_VLOAD == 1) && ((PRECISION == 3232) || (PRECISION == 6464)) && (TRA_WPT < 16)
+
+        TRA_Ptr G;
+        TRA_Ptr L;
+        G.cs = &src[gid0_M2xld_D1 + w_onexld_D1];
+        L.ls = &tile[LocalID0xTRA_WPT_SHIFT + w_one][lid1];
+        TRA_VSTORN(TRA_VLOADN(0,G.cf),0,L.lf);
+
+      #else
+        tile[LocalID0xTRA_WPT_SHIFT + w_one][lid1] = src[gid0_M2xld_D1 + w_onexld_D1];
+      #endif
       w_onexld_D1 += ld_D1;
 
   }
@@ -96,40 +143,71 @@ __kernel void TransposeMatrixFast(const int ld,
   // Synchronizes all threads in a workgroup
   barrier(CLK_LOCAL_MEM_FENCE);
 
-  // Loads transposed data from the local memory
+
+  const uint LocalID1xTRA_WPT_SHIFT = lid1<<TRA_WPT_SHIFT;
+  const uint gid1_M2xld_D1 = ((gid1_M1 + lid1) << TRA_WPT_SHIFT)*ld_D1+(get_group_id(0) << TRA_DIM_SHIFT) + lid0;
+
+
   realT v[TRA_WPT];
 
-  const uint LocalID1xTRA_WPT_SHIFT = get_local_id(1)<<TRA_WPT_SHIFT;
+  #if TRA_WPT >= 16
+    uint  w_twoxld_D1 = 0;
+    realT results[TRA_WPT];
+  #endif
 
-  #pragma unroll
-  for (uint w_one=0; w_one<TRA_WPT; ++w_one) {
-
-      v[w_one] = tile[LocalID1xTRA_WPT_SHIFT + w_one][get_local_id(0)];
-
-  }
-
-  // Performs the register-level transpose of the vectorized data
-  realT results[TRA_WPT];
   #if TRA_WPT == 1
-    results[0] = v[0];
+    dest[gid1_M2xld_D1] = tile[LocalID1xTRA_WPT_SHIFT][lid0];
   #elif TRA_WPT == 2
-    results[0] = (realT) {v[0].x, v[1].x};
-    results[1] = (realT) {v[0].y, v[1].y};
+    v[0] = tile[LocalID1xTRA_WPT_SHIFT + 0][lid0];
+    v[1] = tile[LocalID1xTRA_WPT_SHIFT + 1][lid0];
+    dest[gid1_M2xld_D1]        = (realT) {v[0].x, v[1].x};
+    dest[gid1_M2xld_D1+ld_D1] = (realT) {v[0].y, v[1].y};
   #elif TRA_WPT == 4
-    results[0] = (realT) {v[0].x, v[1].x, v[2].x, v[3].x};
-    results[1] = (realT) {v[0].y, v[1].y, v[2].y, v[3].y};
-    results[2] = (realT) {v[0].z, v[1].z, v[2].z, v[3].z};
-    results[3] = (realT) {v[0].w, v[1].w, v[2].w, v[3].w};
+    v[0] = tile[LocalID1xTRA_WPT_SHIFT + 0][lid0];
+    v[1] = tile[LocalID1xTRA_WPT_SHIFT + 1][lid0];
+    v[2] = tile[LocalID1xTRA_WPT_SHIFT + 2][lid0];
+    v[3] = tile[LocalID1xTRA_WPT_SHIFT + 3][lid0];
+    dest[gid1_M2xld_D1]                  = (realT) {v[0].x, v[1].x, v[2].x, v[3].x};
+    dest[gid1_M2xld_D1+ld_D1]            = (realT) {v[0].y, v[1].y, v[2].y, v[3].y};
+    dest[gid1_M2xld_D1+(ld_D1<<1)]       = (realT) {v[0].z, v[1].z, v[2].z, v[3].z};
+    dest[gid1_M2xld_D1+(ld_D1<<1)+ld_D1] = (realT) {v[0].w, v[1].w, v[2].w, v[3].w};
   #elif TRA_WPT == 8
-    results[0] = (realT) {v[0].s0, v[1].s0, v[2].s0, v[3].s0, v[4].s0, v[5].s0, v[6].s0, v[7].s0};
-    results[1] = (realT) {v[0].s1, v[1].s1, v[2].s1, v[3].s1, v[4].s1, v[5].s1, v[6].s1, v[7].s1};
-    results[2] = (realT) {v[0].s2, v[1].s2, v[2].s2, v[3].s2, v[4].s2, v[5].s2, v[6].s2, v[7].s2};
-    results[3] = (realT) {v[0].s3, v[1].s3, v[2].s3, v[3].s3, v[4].s3, v[5].s3, v[6].s3, v[7].s3};
-    results[4] = (realT) {v[0].s4, v[1].s4, v[2].s4, v[3].s4, v[4].s4, v[5].s4, v[6].s4, v[7].s4};
-    results[5] = (realT) {v[0].s5, v[1].s5, v[2].s5, v[3].s5, v[4].s5, v[5].s5, v[6].s5, v[7].s5};
-    results[6] = (realT) {v[0].s6, v[1].s6, v[2].s6, v[3].s6, v[4].s6, v[5].s6, v[6].s6, v[7].s6};
-    results[7] = (realT) {v[0].s7, v[1].s7, v[2].s7, v[3].s7, v[4].s7, v[5].s7, v[6].s7, v[7].s7};
+    v[0] = tile[LocalID1xTRA_WPT_SHIFT + 0][lid0];
+    v[1] = tile[LocalID1xTRA_WPT_SHIFT + 1][lid0];
+    v[2] = tile[LocalID1xTRA_WPT_SHIFT + 2][lid0];
+    v[3] = tile[LocalID1xTRA_WPT_SHIFT + 3][lid0];
+    v[4] = tile[LocalID1xTRA_WPT_SHIFT + 4][lid0];
+    v[5] = tile[LocalID1xTRA_WPT_SHIFT + 5][lid0];
+    v[6] = tile[LocalID1xTRA_WPT_SHIFT + 6][lid0];
+    v[7] = tile[LocalID1xTRA_WPT_SHIFT + 7][lid0];
+    const uint ld_D1x2 = ld_D1 << 1;
+    const uint ld_D1x4 = ld_D1 << 2;
+    const uint ld_D1x6 = ld_D1x4+ld_D1x2;
+    dest[gid1_M2xld_D1]                   = (realT) {v[0].s0, v[1].s0, v[2].s0, v[3].s0, v[4].s0, v[5].s0, v[6].s0, v[7].s0};
+    dest[gid1_M2xld_D1+ld_D1]             = (realT) {v[0].s1, v[1].s1, v[2].s1, v[3].s1, v[4].s1, v[5].s1, v[6].s1, v[7].s1};
+    dest[gid1_M2xld_D1+ld_D1x2]           = (realT) {v[0].s2, v[1].s2, v[2].s2, v[3].s2, v[4].s2, v[5].s2, v[6].s2, v[7].s2};
+    dest[gid1_M2xld_D1+ld_D1x2+ld_D1]     = (realT) {v[0].s3, v[1].s3, v[2].s3, v[3].s3, v[4].s3, v[5].s3, v[6].s3, v[7].s3};
+    dest[gid1_M2xld_D1+ld_D1x4]           = (realT) {v[0].s4, v[1].s4, v[2].s4, v[3].s4, v[4].s4, v[5].s4, v[6].s4, v[7].s4};
+    dest[gid1_M2xld_D1+ld_D1x4+ld_D1]     = (realT) {v[0].s5, v[1].s5, v[2].s5, v[3].s5, v[4].s5, v[5].s5, v[6].s5, v[7].s5};
+    dest[gid1_M2xld_D1+ld_D1x6]           = (realT) {v[0].s6, v[1].s6, v[2].s6, v[3].s6, v[4].s6, v[5].s6, v[6].s6, v[7].s6};
+    dest[gid1_M2xld_D1+ld_D1x6+ld_D1]     = (realT) {v[0].s7, v[1].s7, v[2].s7, v[3].s7, v[4].s7, v[5].s7, v[6].s7, v[7].s7};
   #elif TRA_WPT == 16
+    v[0] = tile[LocalID1xTRA_WPT_SHIFT + 0][lid0];
+    v[1] = tile[LocalID1xTRA_WPT_SHIFT + 1][lid0];
+    v[2] = tile[LocalID1xTRA_WPT_SHIFT + 2][lid0];
+    v[3] = tile[LocalID1xTRA_WPT_SHIFT + 3][lid0];
+    v[4] = tile[LocalID1xTRA_WPT_SHIFT + 4][lid0];
+    v[5] = tile[LocalID1xTRA_WPT_SHIFT + 5][lid0];
+    v[6] = tile[LocalID1xTRA_WPT_SHIFT + 6][lid0];
+    v[7] = tile[LocalID1xTRA_WPT_SHIFT + 7][lid0];
+    v[8] = tile[LocalID1xTRA_WPT_SHIFT + 8][lid0];
+    v[9] = tile[LocalID1xTRA_WPT_SHIFT + 9][lid0];
+    v[10] = tile[LocalID1xTRA_WPT_SHIFT + 10][lid0];
+    v[11] = tile[LocalID1xTRA_WPT_SHIFT + 11][lid0];
+    v[12] = tile[LocalID1xTRA_WPT_SHIFT + 12][lid0];
+    v[13] = tile[LocalID1xTRA_WPT_SHIFT + 13][lid0];
+    v[14] = tile[LocalID1xTRA_WPT_SHIFT + 14][lid0];
+    v[15] = tile[LocalID1xTRA_WPT_SHIFT + 15][lid0];
     results[ 0] = (realT) {v[0].s0, v[1].s0, v[2].s0, v[3].s0, v[4].s0, v[5].s0, v[6].s0, v[7].s0, v[8].s0, v[9].s0, v[10].s0, v[11].s0, v[12].s0, v[13].s0, v[14].s0, v[15].s0};
     results[ 1] = (realT) {v[0].s1, v[1].s1, v[2].s1, v[3].s1, v[4].s1, v[5].s1, v[6].s1, v[7].s1, v[8].s1, v[9].s1, v[10].s1, v[11].s1, v[12].s1, v[13].s1, v[14].s1, v[15].s1};
     results[ 2] = (realT) {v[0].s2, v[1].s2, v[2].s2, v[3].s2, v[4].s2, v[5].s2, v[6].s2, v[7].s2, v[8].s2, v[9].s2, v[10].s2, v[11].s2, v[12].s2, v[13].s2, v[14].s2, v[15].s2};
@@ -148,16 +226,18 @@ __kernel void TransposeMatrixFast(const int ld,
     results[15] = (realT) {v[0].sF, v[1].sF, v[2].sF, v[3].sF, v[4].sF, v[5].sF, v[6].sF, v[7].sF, v[8].sF, v[9].sF, v[10].sF, v[11].sF, v[12].sF, v[13].sF, v[14].sF, v[15].sF};
   #endif
 
-  uint gid1_M2xld_D1 = ((gid1_M1 + get_local_id(1)) << TRA_WPT_SHIFT)*ld_D1+(get_group_id(0) << TRA_DIM_SHIFT) + get_local_id(0);
-  uint  w_twoxld_D1 =0;
+  #if TRA_WPT >=16
 
-  #pragma unroll TRA_WPT
-  for (uint w_two=0; w_two<TRA_WPT; ++w_two) {
+    #pragma unroll 1
+    for (uint w_two=0; w_two<TRA_WPT; ++w_two) {
 
         dest[gid1_M2xld_D1 + w_twoxld_D1] = results[w_two];
         w_twoxld_D1+= ld_D1;
 
-  }
+    }
+
+  #endif
+
 }
 
 // =================================================================================================
