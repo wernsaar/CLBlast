@@ -60,6 +60,16 @@ R"(
   #define PADTRA_WPT_SHIFT 8
 #endif
 
+typedef union PADTRA_Ptr {
+    __global singlereal        *f;
+    __local  singlereal        *lf;
+    __global const singlereal  *cf;
+    __global singlereal2       *f2;
+    __global const singlereal2 *cf2;
+    __global real              *s;
+    __local  real              *ls;
+    __global const real        *cs;
+} PADTRA_Ptr;
 
 
 
@@ -76,71 +86,86 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
                                  __global real* dest,
                                  const __constant real* restrict arg_alpha,
                                  const int do_conjugate) {
-  const real alpha = arg_alpha[0];
+  // const real alpha = arg_alpha[0];
 
-  const int GroupID1xPADTRA_WPT = ((int) get_group_id(1) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + get_local_id(0);
-  const int GroupID0xPADTRA_WPT = ((int) get_group_id(0) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + get_local_id(1);
 
-  const int GroupID1xPADTRA_WPT_1 = ((int) get_group_id(1) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + get_local_id(1);
-  const int GroupID0xPADTRA_WPT_1 = ((int) get_group_id(0) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + get_local_id(0);
+  const uint LocalID0xPADTRA_WPT = (uint) get_local_id(0) << PADTRA_WPT_SHIFT;
+  const uint LocalID1xPADTRA_WPT = (uint) get_local_id(1) << PADTRA_WPT_SHIFT;
 
-  const int LocalID0xPADTRA_WPT = (int) get_local_id(0) << PADTRA_WPT_SHIFT;
-  const int LocalID1xPADTRA_WPT = (int) get_local_id(1) << PADTRA_WPT_SHIFT;
 
   // Local memory to store a tile of the matrix (for coalescing)
-  __local real tile[PADTRA_WPT*PADTRA_TILE][PADTRA_WPT*PADTRA_TILE + PADTRA_PAD];
+  __local real tile[PADTRA_WPT<<PADTRA_TILE_SHIFT][(PADTRA_WPT<<PADTRA_TILE_SHIFT) + PADTRA_PAD];
+
 
   // Loop over the work per thread
-  #pragma unroll
-  for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
+  const uint GroupID0xPADTRA_WPT = ((uint) get_group_id(0) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + (uint) get_local_id(1);
+  const uint GroupID1xPADTRA_WPT = ((uint) get_group_id(1) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + (uint) get_local_id(0);
+  uint src_ldp = 0;
+  const uint GroupID0xPADTRA_WPTxSRC_LD = GroupID0xPADTRA_WPT*src_ld + src_offset;
 
-    const int id_src_two  = GroupID0xPADTRA_WPT + (w_one << PADTRA_TILE_SHIFT);
-    const int w_one_1    = LocalID0xPADTRA_WPT + w_one;
+  #pragma unroll 
+  for (uint w_one=0; w_one<PADTRA_WPT; ++w_one) {
 
-    #pragma unroll
-    for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
+    const uint id_src_two  = GroupID0xPADTRA_WPT + (w_one << PADTRA_TILE_SHIFT);
+    const uint w_one_1    = LocalID0xPADTRA_WPT + w_one;
+    const uint id_src_twoXsrc_ld = GroupID0xPADTRA_WPTxSRC_LD + (src_ldp << PADTRA_TILE_SHIFT);
 
-      // Computes the identifiers for the source matrix. Note that the local and global dimensions
-      // do not correspond to each other!
+    #pragma unroll 
+    for (uint w_two=0; w_two<PADTRA_WPT; ++w_two) {
 
-      const int id_src_one = GroupID1xPADTRA_WPT + (w_two << PADTRA_TILE_SHIFT);
+      const uint id_src_one = GroupID1xPADTRA_WPT + (w_two << PADTRA_TILE_SHIFT);
 
-      // Loads data into the local memory if the thread IDs are within bounds of the source matrix.
-      // Otherwise, set the local memory value to zero.
-      real value;
-      SetToZero(value);
-      bool condition = id_src_two < src_two && id_src_one < src_one;
-      if (condition) {
+      bool condition = (id_src_two < src_two) && (id_src_one < src_one);
+      #if (PRECISION == 32) || (PRECISION == 64)
+        tile[LocalID1xPADTRA_WPT + w_two][w_one_1] = condition ? src[id_src_twoXsrc_ld + id_src_one] : (real) ZERO ;
+      #else
+        if (condition) {
+          #if (USE_VLOAD == 1) 
 
-          #if USE_MAD24
-            value = src[mad24(id_src_two,src_ld , id_src_one + src_offset)];
+            PADTRA_Ptr S;
+            PADTRA_Ptr L;
+            S.cs = &src[id_src_twoXsrc_ld + id_src_one];
+            L.ls = &tile[LocalID1xPADTRA_WPT + w_two][w_one_1];
+            vstore2(vload2(0,S.cf),0,L.lf);
+
           #else
-            value = src[id_src_two*src_ld + id_src_one + src_offset];
+            tile[LocalID1xPADTRA_WPT + w_two][w_one_1] = src[id_src_twoXsrc_ld + id_src_one];
           #endif
 
-      }
-
-      tile[LocalID1xPADTRA_WPT + w_two][w_one_1] = value;
-
+        } else {
+             real value;
+             SetToZero(value);
+             tile[LocalID1xPADTRA_WPT + w_two][w_one_1] = value;
+        }
+      #endif
 
     }
+    src_ldp += src_ld;
+
   }
 
   // Synchronizes all threads in a workgroup
   barrier(CLK_LOCAL_MEM_FENCE);
 
+  const uint GroupID1xPADTRA_WPT_1 = ((uint) get_group_id(1) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + (uint) get_local_id(1);
+  const uint GroupID0xPADTRA_WPT_1 = ((uint) get_group_id(0) << (PADTRA_WPT_SHIFT + PADTRA_TILE_SHIFT)) + (uint) get_local_id(0);
+  const uint GroupID1xPADTRA_WPT_1xDEST_LD = GroupID1xPADTRA_WPT_1*dest_ld + dest_offset;
+
   // Loop over the work per thread
   #pragma unroll
-  for (int w_one=0; w_one<PADTRA_WPT; ++w_one) {
+  for (uint w_one=0; w_one<PADTRA_WPT; ++w_one) {
 
-    const int id_dest_one = GroupID0xPADTRA_WPT_1 + (w_one << PADTRA_TILE_SHIFT);
+    const uint id_dest_one = GroupID0xPADTRA_WPT_1 + (w_one << PADTRA_TILE_SHIFT);
+    const uint id_dest_onep = GroupID1xPADTRA_WPT_1xDEST_LD+id_dest_one;
 
     if ( id_dest_one < dest_one ) {
 
-      const int w_one_1 = LocalID1xPADTRA_WPT + w_one; 
+      const uint w_one_1 = LocalID1xPADTRA_WPT + w_one; 
+      
+      uint dest_ldp = 0;
 
       #pragma unroll
-      for (int w_two=0; w_two<PADTRA_WPT; ++w_two) {
+      for (uint w_two=0; w_two<PADTRA_WPT; ++w_two) {
   
         // Computes the identifiers for the destination matrix
   
@@ -149,31 +174,34 @@ __kernel void TransposePadMatrix(const int src_one, const int src_two,
         // Stores the transposed value in the destination matrix
         if ( id_dest_two < dest_two ) {
   
-            real value = tile[LocalID0xPADTRA_WPT + w_two][w_one_1];
-  
-            #if (PRECISION == 3232) || (PRECISION == 6464)
-              if (do_conjugate == 1) { COMPLEX_CONJUGATE(value); }
-            #endif
+          #if (PRECISION == 32) || (PRECISION == 64)
 
-            #if (PRECISION == 32) || (PRECISION == 3232) || (PRECISION == 64) || (PRECISION == 6464)
-  
-              #if USE_MAD24 == 1
-                dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)] = value;
+            dest[(dest_ldp << PADTRA_TILE_SHIFT) + id_dest_onep] = tile[LocalID0xPADTRA_WPT + w_two][w_one_1];
+
+          #else  
+
+            if (do_conjugate == 1) {
+              real value = tile[LocalID0xPADTRA_WPT + w_two][w_one_1];
+              COMPLEX_CONJUGATE(value);
+              dest[(dest_ldp << PADTRA_TILE_SHIFT) + id_dest_onep] = value;
+            } else {
+
+              #if USE_VLOAD == 1
+
+                PADTRA_Ptr L;
+                PADTRA_Ptr D;
+                L.ls = &tile[LocalID0xPADTRA_WPT + w_two][w_one_1];
+                D.s  = &dest[(dest_ldp << PADTRA_TILE_SHIFT) + id_dest_onep];
+                vstore2(vload2(0,L.lf),0,D.f);
+
               #else
-                dest[id_dest_two*dest_ld + id_dest_one + dest_offset] = value;
+                dest[(dest_ldp << PADTRA_TILE_SHIFT) + id_dest_onep] = tile[LocalID0xPADTRA_WPT + w_two][w_one_1];
               #endif
+            }
 
-            #else
-  
-              #if USE_MAD24 == 1
-                Multiply(dest[mad24(id_dest_two,dest_ld , id_dest_one + dest_offset)], alpha, value);
-              #else
-                Multiply(dest[id_dest_two*dest_ld + id_dest_one + dest_offset], alpha, value);
-              #endif
-
-            #endif
-  
+          #endif
         }
+        dest_ldp += dest_ld;
       }
     }
   }

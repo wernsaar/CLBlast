@@ -48,7 +48,8 @@ const Database::DatabaseEntry Database::PadtransposeSingle = {
     },
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",8}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",32} } },
         { "default",                                         { {"PADTRA_TILE",32}, {"PADTRA_WPT",2}, {"PADTRA_PAD",1}, {"PRECISION",32} } },
       }
     },
@@ -124,7 +125,8 @@ const Database::DatabaseEntry Database::PadtransposeComplexSingle = {
     },
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",3232} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",3232} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",8}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",3232} } },
         { "default",                                         { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",3232} } },
       }
     },
@@ -199,6 +201,7 @@ const Database::DatabaseEntry Database::PadtransposeDouble = {
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
         { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",64} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",8}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",64} } },
         { "default",                                         { {"PADTRA_TILE",16}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",64} } },
       }
     },
@@ -265,7 +268,8 @@ const Database::DatabaseEntry Database::PadtransposeComplexDouble = {
     },
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",0}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",0}, {"PRECISION",6464} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"PADTRA_TILE",4}, {"PADTRA_WPT",4}, {"PADTRA_PAD",0}, {"PRECISION",6464} } },
         { "default",                                         { {"PADTRA_TILE",16}, {"PADTRA_WPT",2}, {"PADTRA_PAD",0}, {"PRECISION",6464} } },
       }
     },
