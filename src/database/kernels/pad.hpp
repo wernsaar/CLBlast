@@ -42,7 +42,8 @@ const Database::DatabaseEntry Database::PadSingle = {
         { "Tahiti",                                          { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",2} } },
         { "Olandbak",                                        { {"PAD_DIMX",16}, {"PAD_DIMY",4}, {"PAD_WPTX",1}, {"PAD_WPTY",2}, {"PRECISION",32} } },
         { "Olandbak1",                                       { {"PAD_DIMX",32}, {"PAD_DIMY",2}, {"PAD_WPTX",2}, {"PAD_WPTY",1}, {"PRECISION",32} } },
-        { "Oland",                                           { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1}, {"PRECISION",32} } },
+        { "Olandbak",                                        { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1}, {"PRECISION",32} } },
+        { "Oland",                                           { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",4}, {"PRECISION",32} } },
         { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
       }
     },
@@ -64,7 +65,8 @@ const Database::DatabaseEntry Database::PadSingle = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"PAD_DIMX",32}, {"PAD_DIMY",16}, {"PAD_WPTX",4}, {"PAD_WPTY",1} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"PAD_DIMX",16}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",4} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PAD_DIMX",16}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",4}, {"PRECISION",32} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHzb",{ {"PAD_DIMX",16}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",4}, {"PRECISION",32} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",16}, {"PAD_WPTY",4}, {"PRECISION",32} } },
         { "default",                                         { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1} } },
       }
     },
@@ -121,7 +123,8 @@ const Database::DatabaseEntry Database::PadComplexSingle = {
         { "Tahiti",                                          { {"PAD_DIMX",16}, {"PAD_DIMY",16}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
         { "Olandbak",                                        { {"PAD_DIMX",32}, {"PAD_DIMY",4}, {"PAD_WPTX",1}, {"PAD_WPTY",1}, {"PRECISION",3232} } },
         { "Olandbak1",                                       { {"COPY_DIMX",64}, {"COPY_DIMY",2}, {"COPY_WPT",1}, {"COPY_VW",1}, {"PRECISION",3232} } },
-        { "Oland",                                           { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1}, {"PRECISION",3232} } },
+        { "Olandbak2",                                       { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1}, {"PRECISION",3232} } },
+        { "Oland",                                           { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",2}, {"PRECISION",3232} } },
         { "default",                                         { {"PAD_DIMX",8}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
       }
     },
@@ -143,7 +146,8 @@ const Database::DatabaseEntry Database::PadComplexSingle = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",2}, {"PAD_WPTY",2} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",1} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"PAD_DIMX",32}, {"PAD_DIMY",16}, {"PAD_WPTX",4}, {"PAD_WPTY",1} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",4}, {"PRECISION",3232} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHzb",{ {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",4}, {"PRECISION",3232} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PAD_DIMX",32}, {"PAD_DIMY",4}, {"PAD_WPTX",16}, {"PAD_WPTY",4}, {"PRECISION",3232} } },
         { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",2}, {"PAD_WPTY",1} } },
       }
     },
@@ -199,7 +203,8 @@ const Database::DatabaseEntry Database::PadDouble = {
         { "Pitcairn",                                        { {"PAD_DIMX",8}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",2} } },
         { "Tahiti",                                          { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
         { "Olandbak",                                        { {"PAD_DIMX",16}, {"PAD_DIMY",4}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
-        { "Oland",                                           { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1}, {"PRECISION",64} } },
+        { "Olandbak",                                        { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1}, {"PRECISION",64} } },
+        { "Oland",                                           { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1}, {"PRECISION",64} } },
         { "default",                                         { {"PAD_DIMX",8}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
       }
     },
@@ -221,7 +226,8 @@ const Database::DatabaseEntry Database::PadDouble = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",4}, {"PAD_WPTY",1} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",1} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",2}, {"PAD_WPTY",1} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",4}, {"PRECISION",64} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHzb",{ {"PAD_DIMX",32}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",4}, {"PRECISION",64} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PAD_DIMX",32}, {"PAD_DIMY",16}, {"PAD_WPTX",16}, {"PAD_WPTY",1}, {"PRECISION",64} } },
         { "default",                                         { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",2}, {"PAD_WPTY",1} } },
       }
     },
@@ -267,7 +273,7 @@ const Database::DatabaseEntry Database::PadComplexDouble = {
         { "Hawaii",                                          { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
         { "Pitcairn",                                        { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
         { "Tahiti",                                          { {"PAD_DIMX",8}, {"PAD_DIMY",16}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
-        { "Oland",                                           { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
+        { "Oland",                                           { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1}, {"PRECISION",6464} } },
         { "default",                                         { {"PAD_DIMX",8}, {"PAD_DIMY",8}, {"PAD_WPTX",1}, {"PAD_WPTY",1} } },
       }
     },
@@ -291,7 +297,8 @@ const Database::DatabaseEntry Database::PadComplexDouble = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",2}, {"PAD_WPTY",1} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"PAD_DIMX",16}, {"PAD_DIMY",32}, {"PAD_WPTX",4}, {"PAD_WPTY",1} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",2}, {"PAD_WPTY",1} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PAD_DIMX",32}, {"PAD_DIMY",16}, {"PAD_WPTX",4}, {"PAD_WPTY",1}, {"PRECISION",6464} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHzb",{ {"PAD_DIMX",32}, {"PAD_DIMY",16}, {"PAD_WPTX",4}, {"PAD_WPTY",1}, {"PRECISION",6464} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"PAD_DIMX",32}, {"PAD_DIMY",8}, {"PAD_WPTX",16}, {"PAD_WPTY",1}, {"PRECISION",6464} } },
         { "default",                                         { {"PAD_DIMX",16}, {"PAD_DIMY",8}, {"PAD_WPTX",2}, {"PAD_WPTY",1} } },
       }
     },

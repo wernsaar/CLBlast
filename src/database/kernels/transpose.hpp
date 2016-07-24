@@ -43,7 +43,8 @@ const Database::DatabaseEntry Database::TransposeSingle = {
         { "Olandbak",                                        { {"TRA_DIM",4}, {"TRA_WPT",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
         { "Olandbak1",                                       { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
         { "Olandbak2",                                       { {"TRA_DIM",8}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
-        { "Oland",                                           { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+        { "Olandbak3",                                       { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+        { "Oland",                                           { {"TRA_DIM",8}, {"TRA_WPT",2}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -66,7 +67,8 @@ const Database::DatabaseEntry Database::TransposeSingle = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",8} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",8} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",8} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHzb",{ {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"TRA_DIM",4}, {"TRA_WPT",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",32} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",8} } },
       }
     },
@@ -121,7 +123,8 @@ const Database::DatabaseEntry Database::TransposeComplexSingle = {
         { "Tahiti",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Olandbak",                                        { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
         { "Olandbak1",                                       { {"TRA_DIM",4}, {"TRA_WPT",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
-        { "Oland",                                           { {"TRA_DIM",4}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
+        { "Olandbak2",                                       { {"TRA_DIM",4}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
+        { "Oland",                                           { {"TRA_DIM",8}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -143,7 +146,7 @@ const Database::DatabaseEntry Database::TransposeComplexSingle = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"TRA_DIM",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",2} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"TRA_DIM",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",8} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",4} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",3232} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"PRECISION",3232} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",2} } },
       }
     },
@@ -191,7 +194,7 @@ const Database::DatabaseEntry Database::TransposeDouble = {
         { "Pitcairn",                                        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",2} } },
         { "Tahiti",                                          { {"TRA_DIM",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",4} } },
         { "Olandbak",                                           { {"TRA_DIM",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
-        { "Oland",                                           { {"TRA_DIM",4}, {"TRA_WPT",2}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",64} } },
+        { "Oland",                                           { {"TRA_DIM",8}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",64} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -213,7 +216,8 @@ const Database::DatabaseEntry Database::TransposeDouble = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",4} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"TRA_DIM",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",8} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",8} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"TRA_DIM",4}, {"TRA_WPT",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",64} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHzb",{ {"TRA_DIM",4}, {"TRA_WPT",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",64} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"PRECISION",64} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",4} } },
       }
     },
@@ -257,8 +261,8 @@ const Database::DatabaseEntry Database::TransposeComplexDouble = {
         { "Hawaii",                                          { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",2} } },
         { "Pitcairn",                                        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
         { "Tahiti",                                          { {"TRA_DIM",16}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
-        { "Olandbak",                                        { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
-        { "Oland",                                           { {"TRA_DIM",4}, {"TRA_WPT",2}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",6464} } },
+        { "Olandbak",                                        { {"TRA_DIM",4}, {"TRA_WPT",2}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"PRECISION",6464} } },
+        { "Oland",                                           { {"TRA_DIM",16}, {"TRA_WPT",1}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",6464} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",1}, {"TRA_WPT",1} } },
       }
     },
@@ -280,7 +284,7 @@ const Database::DatabaseEntry Database::TransposeComplexDouble = {
         { "Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz",        { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",4} } },
         { "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",         { {"TRA_DIM",4}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",4} } },
         { "Intel(R) Core(TM) i7-5930K CPU @ 3.50GHz",        { {"TRA_DIM",16}, {"TRA_PAD",1}, {"TRA_SHUFFLE",0}, {"TRA_WPT",2} } },
-        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",1}, {"TRA_SHUFFLE",1}, {"PRECISION",6464} } },
+        { "Intel(R) Core(TM) i5 CPU         750  @ 2.67GHz", { {"TRA_DIM",4}, {"TRA_WPT",8}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"PRECISION",6464} } },
         { "default",                                         { {"TRA_DIM",4}, {"TRA_PAD",0}, {"TRA_SHUFFLE",0}, {"TRA_WPT",2} } },
       }
     },

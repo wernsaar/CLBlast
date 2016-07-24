@@ -88,6 +88,7 @@ StatusCode Routine::SetUp() {
   if (device_.IsAMD() && device_.IsGPU()) {
     defines += "#define USE_CL_MAD 1\n";
     defines += "#define USE_MAD24 1\n";
+    defines += "#define USE_VLOAD 1\n";
   }
 
   if (device_.IsAMD() && device_.IsCPU()) {
