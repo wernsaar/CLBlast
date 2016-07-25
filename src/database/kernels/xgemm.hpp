@@ -42,8 +42,9 @@ const Database::DatabaseEntry Database::XgemmSingle = {
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
         { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",8}, {"NDIMB",8}, {"KWI",8}, {"VWM",1}, {"VWN",8}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",32} } },
-        { "AMD FX(tm)-8150 Eight-Core Processorbak1",            { {"MWG",128}, {"NWG",64}, {"KWG",32}, {"MDIMC",16}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",16}, {"KWI",8}, {"VWM",4}, {"VWN",2}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",32} } },
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"MWG",128}, {"NWG",32}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",8}, {"NDIMB",16}, {"KWI",1}, {"VWM",16}, {"VWN",1}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak1",        { {"MWG",128}, {"NWG",64}, {"KWG",32}, {"MDIMC",16}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",16}, {"KWI",8}, {"VWM",4}, {"VWN",2}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak2",        { {"MWG",128}, {"NWG",32}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",8}, {"NDIMB",16}, {"KWI",1}, {"VWM",16}, {"VWN",1}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",32} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"MWG",128}, {"NWG",128}, {"KWG",16}, {"MDIMC",8}, {"NDIMC",4}, {"MDIMA",16}, {"NDIMB",32}, {"KWI",4}, {"VWM",4}, {"VWN",4}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",32} } },
         { "default",                                         { {"KWG",32}, {"KWI",2}, {"MDIMA",16}, {"MDIMC",8}, {"MWG",64}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",64}, {"SA",0}, {"SB",1}, {"STRM",1}, {"STRN",0}, {"VWM",1}, {"VWN",2} } },
       }
     },
@@ -127,7 +128,8 @@ const Database::DatabaseEntry Database::XgemmComplexSingle = {
       kDeviceTypeCPU, "AMD", {
         { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",8}, {"NDIMB",16}, {"KWI",1}, {"VWM",4}, {"VWN",8}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
         { "AMD FX(tm)-8150 Eight-Core Processorbak1",        { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",16}, {"NDIMB",8}, {"KWI",2}, {"VWM",2}, {"VWN",4}, {"STRM",0}, {"STRN",1}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"MWG",128}, {"NWG",128}, {"KWG",16}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",32}, {"KWI",1}, {"VWM",2}, {"VWN",4}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak2",        { {"MWG",128}, {"NWG",128}, {"KWG",16}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",32}, {"KWI",1}, {"VWM",2}, {"VWN",4}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"MWG",64}, {"NWG",128}, {"KWG",32}, {"MDIMC",4}, {"NDIMC",4}, {"MDIMA",4}, {"NDIMB",16}, {"KWI",1}, {"VWM",2}, {"VWN",4}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
         { "default",                                         { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",8}, {"NDIMB",16}, {"KWI",1}, {"VWM",4}, {"VWN",8}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
       }
     },
