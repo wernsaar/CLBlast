@@ -19,7 +19,7 @@ R"(
 
 // The vectorised multiply-add function
 inline realM MultiplyAddVector(realM cvec, const realM avec, const real bval) {
-  #if (USE_VECTOR_MAD == 1) && (PRECISION == 32)
+  #if (USE_VECTOR_MAD == 1) && ((PRECISION == 32) || (PRECISION == 64)) 
     #if USE_CL_MAD == 1
       cvec = mad(avec,bval,cvec);
     #elif USE_CL_FMA == 1

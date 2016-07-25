@@ -206,7 +206,8 @@ const Database::DatabaseEntry Database::XgemmDouble = {
     },
     { // AMD CPUs
       kDeviceTypeCPU, "AMD", {
-        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",8}, {"KWI",1}, {"VWM",1}, {"VWN",8}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",64} } },
+        { "AMD FX(tm)-8150 Eight-Core Processorbak",         { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",8}, {"KWI",1}, {"VWM",1}, {"VWN",8}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",64} } },
+        { "AMD FX(tm)-8150 Eight-Core Processor",            { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",8}, {"NDIMB",16}, {"KWI",2}, {"VWM",2}, {"VWN",8}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",64} } },
         { "default",                                         { {"MWG",128}, {"NWG",128}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",8}, {"KWI",1}, {"VWM",1}, {"VWN",8}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",64} } },
       }
     },
