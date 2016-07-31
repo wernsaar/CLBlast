@@ -500,7 +500,7 @@ inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >
 inline void LocalToPrivateA(__local realM* alm, realM apm[MWI >> VWM_SHIFT], const int kg) {
 
   #if STRM == 0
-    const uint LocalID0_M1 = get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) >0 ? (MWI_SHIFT - VWM_SHIFT) : 0) + (kg << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
+    const uint LocalID0_M1 = (get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) >0 ? (MWI_SHIFT - VWM_SHIFT) : 0)) + (kg << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
   #else
     const uint local_id0 = get_local_id(0) + (kg << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
   #endif
