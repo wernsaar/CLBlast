@@ -73,12 +73,12 @@ inline realM MultiplyAddVector(realM cvec, const realM avec, const real bval) {
 // Performs the actual computation: Cpm += Apm * Bpm
 inline void MultiplyAccumulate(realM cpm[NWI][MWI >> VWM_SHIFT], realM apm[MWI >> VWM_SHIFT], realN bpm[NWI >> VWN_SHIFT]) {
   #pragma unroll
-  for (int ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
+  for (uint ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
 
-    int NIxVWN = ni << VWN_SHIFT;
+    const uint NIxVWN = ni << VWN_SHIFT;
 
     #pragma unroll
-    for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
+    for (uint mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
       const realM aval = apm[mi];
       #if VWN == 1
         cpm[NIxVWN + 0][mi] = MultiplyAddVector(cpm[NIxVWN + 0][mi], aval, bpm[ni]);
@@ -127,52 +127,64 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
                          const real alpha, const real beta) {
 
 
-  const int kSizeMxVWM  = kSizeM >> VWM_SHIFT;
-  const int LocalID1_M1 = get_local_id(1) << VWN_SHIFT;
+  const uint kSizeMxVWM  = kSizeM >> VWM_SHIFT;
+  const uint LocalID1_M1 = get_local_id(1) << VWN_SHIFT;
 
   #if STRN == 0
-    const int LocalID1_M2 = (int) get_local_id(1) << NWI_SHIFT;
+    const uint LocalID1_M2 = (int) get_local_id(1) << NWI_SHIFT;
   #endif
 
   #if STRM == 0
-    const int LocalID0_M1 = (int) get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) >0 ? (MWI_SHIFT - VWM_SHIFT) : 0);
+    const uint LocalID0_M1 = (int) get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) >0 ? (MWI_SHIFT - VWM_SHIFT) : 0);
   #else
-    const int local_id0 = get_local_id(0);
+    const uint local_id0 = get_local_id(0);
   #endif
 
   #if USE_MAD24 == 1
-    const int GroupID1_M2 = mad24((int) GetGroupID1() << NWG_SHIFT, kSizeMxVWM, (int) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) :0 ));
+    const uint GroupID1_M2 = mad24((uint) GetGroupID1() << NWG_SHIFT, kSizeMxVWM, (uint) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) :0 ));
   #else
-    const int GroupID1_M2 = (GetGroupID1() << NWG_SHIFT) * kSizeMxVWM + (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
+    const uint GroupID1_M2 = (GetGroupID1() << NWG_SHIFT) * kSizeMxVWM + (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
   #endif
 
   #pragma unroll
-  for (int ni=0; ni<NWI; ++ni) {
+  for (uint ni=0; ni<NWI; ++ni) {
 
     #if STRN == 0
-      int ng = ni + LocalID1_M2;
+      const uint ng = ni + LocalID1_M2;
     #elif STRN == 1
-      int ng = (ni - (ni & -VWN)) + LocalID1_M1 + ((ni >> VWN_SHIFT) << (VWN_SHIFT + NDIMC_SHIFT));
+      const uint ng = (ni - (ni & -VWN)) + LocalID1_M1 + ((ni >> VWN_SHIFT) << (VWN_SHIFT + NDIMC_SHIFT));
     #endif
 
     #if USE_MAD24 == 1
-      const int idn_M1 = mad24(ng, kSizeMxVWM , GroupID1_M2);
+      const uint idn_M1 = mad24(ng, kSizeMxVWM , GroupID1_M2);
     #else
-      const int idn_M1 = ng*kSizeMxVWM + GroupID1_M2;
+      const uint idn_M1 = ng*kSizeMxVWM + GroupID1_M2;
     #endif
 
     #pragma unroll
-    for (int mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
+    for (uint mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
 
       #if STRM == 0
-        int mg = mi + LocalID0_M1;
+        const uint mg = mi + LocalID0_M1;
       #elif STRM == 1
-        int mg = local_id0 + (mi << MDIMC_SHIFT);
+        const uint mg = local_id0 + (mi << MDIMC_SHIFT);
       #endif
 
 
       // The final multiplication with alpha and the addition with beta*C
-      int index = idn_M1 + mg;
+      const uint index = idn_M1 + mg;
+
+
+      #if (USE_VECTOR_MAD == 1) && ((PRECISION == 32) || (PRECISION == 64)) 
+        #if USE_CL_MAD == 1
+          cgm[index]=mad(cpm[ni][mi],(realM)alpha , cgm[index]*(realM) beta);
+        #elif USE_CL_FMA == 1
+          cgm[index]=fma(cpm[ni][mi],(realM)alpha , cgm[index]*(realM) beta);
+        #else
+          cgm[index]=cpm[ni][mi] *(realM)alpha + cgm[index] * (realM) beta;
+        #endif
+      #else
+
 
       realM result;
       realM xval = cpm[ni][mi];
@@ -216,6 +228,7 @@ inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], 
         AXPBY(result.sF, alpha, xval.sF, beta, yval.sF);
       #endif
       cgm[index] = result;
+      #endif
     }
   }
 }
@@ -241,14 +254,15 @@ inline void XgemmBody(const int kSizeM, const int kSizeN, const int kSizeK,
 
   // Combined thread identifier (volatile to disable caching)
   #if SA == 1 || SB == 1
-    volatile int tid = get_local_id(0) + (get_local_id(1) << MDIMC_SHIFT);
+    volatile uint tid = get_local_id(0) + (get_local_id(1) << MDIMC_SHIFT);
   #endif
 
   // Initializes the accumulation registers
   InitAccRegisters(cpm);
 
   // Loops over all workgroup tiles
-  for (int kwg=0; kwg<kSizeK; kwg+=KWG) {
+  // #pragma unroll
+  for (uint kwg=0; kwg<kSizeK; kwg+=KWG) {
 
     // Loads data: off-chip --> local (matrix A)
     #if SA == 1
@@ -263,16 +277,17 @@ inline void XgemmBody(const int kSizeM, const int kSizeN, const int kSizeK,
     #endif
 
     // Loops over all workitem tiles, unrolled by a factor KWI
-    for (int pwi=0; pwi<KWG; pwi+=KWI) {
+    // #pragma unroll
+    for (uint pwi=0; pwi<KWG; pwi+=KWI) {
 
       #pragma unroll
-      for (int pit=0; pit<KWI; ++pit) {
+      for (uint pit=0; pit<KWI; ++pit) {
 
         #if SA == 0 || SB == 0
-          int idk = kwg + pwi + pit;
+          const uint idk = kwg + pwi + pit;
         #endif
         #if SA == 1 || SB == 1
-          int kg = pwi+pit;
+          const uint kg = pwi+pit;
         #endif
 
         // Loads data: local --> private (matrix A)
