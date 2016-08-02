@@ -97,9 +97,9 @@ void Tuner(int argc, char* argv[]) {
     tuner.UseFullSearch();
   }
   else {
-    tuner.UseRandomSearch(1.0/args.fraction);
+    // tuner.UseRandomSearch(1.0/args.fraction);
     // tuner.UseAnnealing(1.0/args.fraction, 10.1 );
-    // tuner.UsePSO(1.0/args.fraction, 4 , 0.6, 0.0, 0.8);
+    tuner.UsePSO(1.0/args.fraction, 4 , 0.6, 0.0, 0.8);
   }
 
 
@@ -114,7 +114,8 @@ void Tuner(int argc, char* argv[]) {
   if (isNVIDIA && isGPU) {
     if (IsGeforce_GTS_450) {
       defines += "#define USE_VECTOR_MAD 0\n";
-      defines += "#define USE_CL_FMA 1\n";
+      defines += "#define USE_CL_FMA 0\n";
+      defines += "#define USE_MAD24 0\n";
     } else {
       defines += "#define USE_MAD24 1\n";
       defines += "#define USE_CL_FMA 1\n";
