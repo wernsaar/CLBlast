@@ -141,6 +141,10 @@ R"(
   #define USE_VLOAD 0
 #endif
 
+#ifndef BODY_UNROLL_KWG
+  #define BODY_UNROLL_KWG 0
+#endif
+
 // Sets a variable to zero
 #if PRECISION == 3232 || PRECISION == 6464
   #define SetToZero(a) a.x = ZERO; a.y = ZERO

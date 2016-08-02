@@ -99,7 +99,7 @@ void Tuner(int argc, char* argv[]) {
   else {
     // tuner.UseRandomSearch(1.0/args.fraction);
     // tuner.UseAnnealing(1.0/args.fraction, 10.1 );
-    tuner.UsePSO(1.0/args.fraction, 4 , 0.6, 0.0, 0.8);
+    tuner.UsePSO(1.0/args.fraction, 4 , 0.4, 0.2, 0.6);
   }
 
 

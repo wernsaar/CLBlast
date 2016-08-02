@@ -147,6 +147,10 @@ R"(
     #define MDIMA_SHIFT 5
 #elif MDIMA == 64
     #define MDIMA_SHIFT 6
+#elif MDIMA == 128
+    #define MDIMA_SHIFT 7
+#elif MDIMA == 256
+    #define MDIMA_SHIFT 8
 #endif
 
 #if NDIMB == 1
@@ -163,6 +167,10 @@ R"(
     #define NDIMB_SHIFT 5
 #elif NDIMB == 64
     #define NDIMB_SHIFT 6
+#elif NDIMB == 128
+    #define NDIMB_SHIFT 7
+#elif NDIMB == 256
+    #define NDIMB_SHIFT 8
 #endif
 
 #if MDIMC == 1
@@ -179,6 +187,10 @@ R"(
     #define MDIMC_SHIFT 5
 #elif MDIMC == 64
     #define MDIMC_SHIFT 6
+#elif MDIMC == 128
+    #define MDIMC_SHIFT 7
+#elif MDIMC == 256
+    #define MDIMC_SHIFT 8
 #endif
 
 #if NDIMC == 1
@@ -195,6 +207,10 @@ R"(
     #define NDIMC_SHIFT 5
 #elif NDIMC == 64
     #define NDIMC_SHIFT 6
+#elif NDIMC == 128
+    #define NDIMC_SHIFT 7
+#elif NDIMC == 256
+    #define NDIMC_SHIFT 8
 #endif
 
 
@@ -254,6 +270,8 @@ R"(
     #define KWG_SHIFT 6
 #elif KWG == 128
     #define KWG_SHIFT 7
+#elif KWG == 256
+    #define KWG_SHIFT 8
 #endif
 
 // Helper parameters based on the above tuning parameters
@@ -274,12 +292,6 @@ R"(
 #define KWA_SHIFT   ((KWG_SHIFT - KDIMA_SHIFT) > 0 ? (KWG_SHIFT - KDIMA_SHIFT) : 0 )
 #define KWB_SHIFT   ((KWG_SHIFT - KDIMB_SHIFT) > 0 ? (KWG_SHIFT - KDIMB_SHIFT) : 0 )
 #define NWB_SHIFT   ((NWG_SHIFT - NDIMB_SHIFT) > 0 ? (NWG_SHIFT - NDIMB_SHIFT) : 0 )
-
-
-
-
-
-
 
 // =================================================================================================
 

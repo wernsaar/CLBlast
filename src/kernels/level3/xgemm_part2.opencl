@@ -277,7 +277,9 @@ inline void XgemmBody(const int kSizeM, const int kSizeN, const int kSizeK,
     #endif
 
     // Loops over all workitem tiles, unrolled by a factor KWI
-    #pragma unroll
+    #if BODY_UNROLL_KWG == 1
+      #pragma unroll
+    #endif
     for (uint pwi=0; pwi<KWG; pwi+=KWI) {
 
       #pragma unroll

@@ -61,14 +61,14 @@ class TuneXgemm {
 
   // Sets the tuning parameters and their possible values
   static void SetParameters(cltune::Tuner &tuner, const size_t id) {
-    tuner.AddParameter(id, "MWG", {8,32,64,128,256});
-    tuner.AddParameter(id, "NWG", {8,32,64,128,256});
-    tuner.AddParameter(id, "KWG", {16,32,64,128});
-    tuner.AddParameter(id, "MDIMC", {8,16,32});
-    tuner.AddParameter(id, "NDIMC", {8,16,32});
-    tuner.AddParameter(id, "MDIMA", {8,16,32});
-    tuner.AddParameter(id, "NDIMB", {8,16,32});
-    tuner.AddParameter(id, "KWI", {1,2,4,8,16});
+    tuner.AddParameter(id, "MWG", {64,128});
+    tuner.AddParameter(id, "NWG", {64,128});
+    tuner.AddParameter(id, "KWG", {64,128});
+    tuner.AddParameter(id, "MDIMC", {16,32});
+    tuner.AddParameter(id, "NDIMC", {16,32});
+    tuner.AddParameter(id, "MDIMA", {16,32});
+    tuner.AddParameter(id, "NDIMB", {16,32});
+    tuner.AddParameter(id, "KWI", {4,8,16,32});
     tuner.AddParameter(id, "VWM", {4,8,16});
     tuner.AddParameter(id, "VWN", {4,8,16});
     tuner.AddParameter(id, "STRM", {0,1});
