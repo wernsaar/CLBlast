@@ -94,6 +94,9 @@ R"(
 #ifndef GLOBAL_MEM_FENCE
   #define GLOBAL_MEM_FENCE 0    // Global synchronisation barrier for potential better performance
 #endif
+#ifndef USE_INITIALIZED_ARRAYS
+  #define USE_INITIALIZED_ARRAYS 1
+#endif
 
 // =================================================================================================
 
@@ -302,9 +305,9 @@ inline void InitAccRegisters(realM cpm[NWI][MWI >> VWM_SHIFT]) {
     const realM z = (realM) ZERO;
   #endif
 
-  #pragma unroll 
+  // #pragma unroll 
   for (uint mi=0; mi<(MWI>>VWM_SHIFT); ++mi) {
-    #pragma unroll
+    // #pragma unroll
     for (uint ni=0; ni<NWI; ++ni) {
       #if (USE_VECTOR_MAD == 1) && ((PRECISION == 32) || (PRECISION == 64))
         cpm[ni][mi] = z;
@@ -466,15 +469,15 @@ inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI>>
 
 
       #if STRM == 0
-        const uint LocalID0_M1 = get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) > 0 ? (MWI_SHIFT - VWM_SHIFT) : 0);
+        uint LocalID0_M1 = get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) > 0 ? (MWI_SHIFT - VWM_SHIFT) : 0);
       #else
-        const uint local_id0 = get_local_id(0);
+        uint local_id0 = get_local_id(0);
       #endif 
     
       #if USE_MAD24 == 1
-        const uint idk_M1 = mad24((uint) idk,(uint) (kSizeM >> VWM_SHIFT) , (uint) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
+        uint idk_M1 = mad24((uint) idk,(uint) (kSizeM >> VWM_SHIFT) , (uint) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
       #else
-        const uint idk_M1 = idk*(kSizeM >> VWM_SHIFT) + ((uint) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
+        uint idk_M1 = idk*(kSizeM >> VWM_SHIFT) + ((uint) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
       #endif
     
       #pragma unroll
@@ -497,15 +500,15 @@ inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >
                              const int kSizeN, const int idk) {
 
   #if STRN == 0
-    const uint LocalID1_M1 = get_local_id(1) << ((NWI_SHIFT - VWN_SHIFT) >0 ? (NWI_SHIFT - VWN_SHIFT) : 0);
+    uint LocalID1_M1 = get_local_id(1) << ((NWI_SHIFT - VWN_SHIFT) >0 ? (NWI_SHIFT - VWN_SHIFT) : 0);
   #else
-    const uint local_id1 = get_local_id(1); 
+    uint local_id1 = get_local_id(1); 
   #endif
 
   #if USE_MAD24 == 1
-    const uint idk_M1 = mad24((uint) idk,(uint) (kSizeN >> VWN_SHIFT) , ((uint) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)));
+    uint idk_M1 = mad24((uint) idk,(uint) (kSizeN >> VWN_SHIFT) , ((uint) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)));
   #else
-    const uint idk_M1 = idk*(kSizeN >> VWN_SHIFT) + ((uint) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0));
+    uint idk_M1 = idk*(kSizeN >> VWN_SHIFT) + ((uint) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0));
   #endif
 
   #pragma unroll

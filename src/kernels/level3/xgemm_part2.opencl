@@ -258,10 +258,11 @@ inline void XgemmBody(const int kSizeM, const int kSizeN, const int kSizeK,
   #endif
 
   // Initializes the accumulation registers
-  InitAccRegisters(cpm);
+  #if USE_INITIALIZED_ARRAYS == 0
+    InitAccRegisters(cpm);
+  #endif
 
   // Loops over all workgroup tiles
-  // #pragma unroll
   for (uint kwg=0; kwg<kSizeK; kwg+=KWG) {
 
     // Loads data: off-chip --> local (matrix A)
@@ -430,7 +431,8 @@ __kernel void Xgemm(const int kSizeM, const int kSizeN, const int kSizeK,
   #endif
 
   // Computes the matrix-multiplication and stores the result in register memory
-  realM cpm[NWI][MWI >> VWM_SHIFT];
+  realM cpm[NWI][MWI >> VWM_SHIFT]={};
+
   #if SA == 1 && SB == 1
     XgemmBody(kSizeM, kSizeN, kSizeK, agm, bgm, cgm, cpm, alm, blm);
   #elif SA == 1
