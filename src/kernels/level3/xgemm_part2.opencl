@@ -431,7 +431,11 @@ __kernel void Xgemm(const int kSizeM, const int kSizeN, const int kSizeK,
   #endif
 
   // Computes the matrix-multiplication and stores the result in register memory
-  realM cpm[NWI][MWI >> VWM_SHIFT]={};
+  #if USE_INITIALIZED_ARRAYS == 1
+    realM cpm[NWI][MWI >> VWM_SHIFT]={};
+  #else
+    realM cpm[NWI][MWI >> VWM_SHIFT];
+  #endif
 
   #if SA == 1 && SB == 1
     XgemmBody(kSizeM, kSizeN, kSizeK, agm, bgm, cgm, cpm, alm, blm);

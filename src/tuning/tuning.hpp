@@ -110,6 +110,7 @@ void Tuner(int argc, char* argv[]) {
     defines += "#define USE_CL_MAD 1\n";
     defines += "#define USE_VLOAD 1\n";
     defines += "#define USE_STAGGERED_INDICES 1\n";
+    defines += "#define USE_INITIALIZED_ARRAYS 0\n";
   }
   if (isNVIDIA && isGPU) {
     if (IsGeforce_GTS_450) {
@@ -131,6 +132,7 @@ void Tuner(int argc, char* argv[]) {
       defines += "#define USE_VECTOR_MAD 1\n";
       // defines += "#define USE_CL_MAD 1\n";
       defines += "#define USE_VLOAD 1\n";
+      defines += "#define USE_INITIALIZED_ARRAYS 0\n";
   }
   if (isARM && isGPU) {
     defines += "#define GLOBAL_MEM_FENCE 1\n";

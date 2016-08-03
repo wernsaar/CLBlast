@@ -89,6 +89,7 @@ StatusCode Routine::SetUp() {
     defines += "#define USE_CL_MAD 1\n";
     defines += "#define USE_MAD24 1\n";
     defines += "#define USE_VLOAD 1\n";
+    defines += "#define USE_INITIALIZED_ARRAYS 0\n";
   }
 
   if (device_.IsAMD() && device_.IsCPU()) {
@@ -115,6 +116,7 @@ StatusCode Routine::SetUp() {
       defines += "#define USE_VECTOR_MAD 1\n";
       defines += "#define USE_CL_MAD 1\n";
       defines += "#define USE_VLOAD 1\n";
+      defines += "#define USE_INITIALIZED_ARRAYS 0\n";
   }
 
 
