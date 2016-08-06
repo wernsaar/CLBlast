@@ -126,111 +126,118 @@ inline void MultiplyAccumulate(realM cpm[NWI][MWI >> VWM_SHIFT], realM apm[MWI >
 inline void StoreResults(__global realM* cgm, realM cpm[NWI][MWI >> VWM_SHIFT], const int kSizeM,
                          const real alpha, const real beta) {
 
+        
+          const uint kSizeMxVWM  = kSizeM >> VWM_SHIFT;
+         
+          #if STRN == 0
+            #if USE_MAD24 == 1
+              const uint LocalID1_M1 = mad24((uint) ((get_local_id(1) << NWI_SHIFT) + (GetGroupID1() << NWG_SHIFT)) , kSizeMxVWM
+                                     ,(uint) (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0)));
+            #else
+              const uint LocalID1_M1 = ((get_local_id(1) << NWI_SHIFT) + (GetGroupID1() << NWG_SHIFT)) * kSizeMxVWM
+                                     + (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
+            #endif
+          #else
+            #if USE_MAD24 == 1
+              const uint LocalID1_M1 = mad24((uint) ((get_local_id(1) << VWN_SHIFT) + (GetGroupID1() << NWG_SHIFT)) , kSizeMxVWM
+                                     ,(uint) (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0)));
+            #else
+              const uint LocalID1_M1 = ((get_local_id(1) << VWN_SHIFT) + (GetGroupID1() << NWG_SHIFT)) * kSizeMxVWM
+                                     + (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
+            #endif
+          #endif
+        
+          #if STRM == 0
+            const uint LocalID0_M1 = (int) get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) >0 ? (MWI_SHIFT - VWM_SHIFT) : 0);
+          #else
+            const uint local_id0 = get_local_id(0);
+          #endif
 
-  const uint kSizeMxVWM  = kSizeM >> VWM_SHIFT;
-  const uint LocalID1_M1 = get_local_id(1) << VWN_SHIFT;
+          #if STRN == 0
+            uint kSizeMxVWMP = 0;
+          #endif
 
-  #if STRN == 0
-    const uint LocalID1_M2 = (int) get_local_id(1) << NWI_SHIFT;
-  #endif
-
-  #if STRM == 0
-    const uint LocalID0_M1 = (int) get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) >0 ? (MWI_SHIFT - VWM_SHIFT) : 0);
-  #else
-    const uint local_id0 = get_local_id(0);
-  #endif
-
-  #if USE_MAD24 == 1
-    const uint GroupID1_M2 = mad24((uint) GetGroupID1() << NWG_SHIFT, kSizeMxVWM, (uint) GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) :0 ));
-  #else
-    const uint GroupID1_M2 = (GetGroupID1() << NWG_SHIFT) * kSizeMxVWM + (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0));
-  #endif
-
-  #pragma unroll
-  for (uint ni=0; ni<NWI; ++ni) {
-
-    #if STRN == 0
-      const uint ng = ni + LocalID1_M2;
-    #elif STRN == 1
-      const uint ng = (ni - (ni & -VWN)) + LocalID1_M1 + ((ni >> VWN_SHIFT) << (VWN_SHIFT + NDIMC_SHIFT));
-    #endif
-
-    #if USE_MAD24 == 1
-      const uint idn_M1 = mad24(ng, kSizeMxVWM , GroupID1_M2);
-    #else
-      const uint idn_M1 = ng*kSizeMxVWM + GroupID1_M2;
-    #endif
-
-    #pragma unroll
-    for (uint mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
-
-      #if STRM == 0
-        const uint mg = mi + LocalID0_M1;
-      #elif STRM == 1
-        const uint mg = local_id0 + (mi << MDIMC_SHIFT);
-      #endif
-
-
-      // The final multiplication with alpha and the addition with beta*C
-      const uint index = idn_M1 + mg;
-
-
-      #if (USE_VECTOR_MAD == 1) && ((PRECISION == 32) || (PRECISION == 64)) 
-        #if USE_CL_MAD == 1
-          cgm[index]=mad(cpm[ni][mi],(realM)alpha , cgm[index]*(realM) beta);
-        #elif USE_CL_FMA == 1
-          cgm[index]=fma(cpm[ni][mi],(realM)alpha , cgm[index]*(realM) beta);
-        #else
-          cgm[index]=cpm[ni][mi] *(realM)alpha + cgm[index] * (realM) beta;
-        #endif
-      #else
-
-
-      realM result;
-      realM xval = cpm[ni][mi];
-      realM yval = cgm[index];
-
-      #if VWM == 1
-        AXPBY(result, alpha, xval, beta, yval);
-      #elif VWM == 2
-        AXPBY(result.x, alpha, xval.x, beta, yval.x);
-        AXPBY(result.y, alpha, xval.y, beta, yval.y);
-      #elif VWM == 4
-        AXPBY(result.x, alpha, xval.x, beta, yval.x);
-        AXPBY(result.y, alpha, xval.y, beta, yval.y);
-        AXPBY(result.z, alpha, xval.z, beta, yval.z);
-        AXPBY(result.w, alpha, xval.w, beta, yval.w);
-      #elif VWM == 8
-        AXPBY(result.s0, alpha, xval.s0, beta, yval.s0);
-        AXPBY(result.s1, alpha, xval.s1, beta, yval.s1);
-        AXPBY(result.s2, alpha, xval.s2, beta, yval.s2);
-        AXPBY(result.s3, alpha, xval.s3, beta, yval.s3);
-        AXPBY(result.s4, alpha, xval.s4, beta, yval.s4);
-        AXPBY(result.s5, alpha, xval.s5, beta, yval.s5);
-        AXPBY(result.s6, alpha, xval.s6, beta, yval.s6);
-        AXPBY(result.s7, alpha, xval.s7, beta, yval.s7);
-      #elif VWM == 16
-        AXPBY(result.s0, alpha, xval.s0, beta, yval.s0);
-        AXPBY(result.s1, alpha, xval.s1, beta, yval.s1);
-        AXPBY(result.s2, alpha, xval.s2, beta, yval.s2);
-        AXPBY(result.s3, alpha, xval.s3, beta, yval.s3);
-        AXPBY(result.s4, alpha, xval.s4, beta, yval.s4);
-        AXPBY(result.s5, alpha, xval.s5, beta, yval.s5);
-        AXPBY(result.s6, alpha, xval.s6, beta, yval.s6);
-        AXPBY(result.s7, alpha, xval.s7, beta, yval.s7);
-        AXPBY(result.s8, alpha, xval.s8, beta, yval.s8);
-        AXPBY(result.s9, alpha, xval.s9, beta, yval.s9);
-        AXPBY(result.sA, alpha, xval.sA, beta, yval.sA);
-        AXPBY(result.sB, alpha, xval.sB, beta, yval.sB);
-        AXPBY(result.sC, alpha, xval.sC, beta, yval.sC);
-        AXPBY(result.sD, alpha, xval.sD, beta, yval.sD);
-        AXPBY(result.sE, alpha, xval.sE, beta, yval.sE);
-        AXPBY(result.sF, alpha, xval.sF, beta, yval.sF);
-      #endif
-      cgm[index] = result;
-      #endif
-    }
-  }
+          #pragma unroll
+          for (uint ni=0; ni<NWI; ++ni) {
+        
+            #if STRN == 0
+              const uint idn_M1 = kSizeMxVWMP + LocalID1_M1;
+            #else
+              #if USE_MAD24 == 1
+                const uint idn_M1 = mad24((uint) ((ni - (ni & -VWN)) + ((ni >> VWN_SHIFT) << (VWN_SHIFT + NDIMC_SHIFT))),kSizeMxVWM , (uint) LocalID1_M1);
+              #else
+                const uint idn_M1 = ((ni - (ni & -VWN)) + ((ni >> VWN_SHIFT) << (VWN_SHIFT + NDIMC_SHIFT)))*kSizeMxVWM + LocalID1_M1;
+              #endif
+            #endif
+        
+            #pragma unroll
+            for (uint mi=0; mi<(MWI >> VWM_SHIFT); ++mi) {
+        
+              #if STRM == 0
+                uint index = idn_M1 + LocalID0_M1 + mi;
+              #elif STRM == 1
+                uint index = idn_M1 + (mi << MDIMC_SHIFT) + local_id0;
+              #endif
+        
+              #if (USE_VECTOR_MAD == 1) && ((PRECISION == 32) || (PRECISION == 64)) 
+                #if USE_CL_MAD == 1
+                  cgm[index]=mad(cpm[ni][mi],(realM)alpha , cgm[index]*(realM) beta);
+                #elif USE_CL_FMA == 1
+                  cgm[index]=fma(cpm[ni][mi],(realM)alpha , cgm[index]*(realM) beta);
+                #else
+                  cgm[index]=cpm[ni][mi] *(realM)alpha + cgm[index] * (realM) beta;
+                #endif
+              #else
+        
+                realM result;
+                realM xval = cpm[ni][mi];
+                realM yval = cgm[index];
+          
+                #if VWM == 1
+                  AXPBY(result, alpha, xval, beta, yval);
+                #elif VWM == 2
+                  AXPBY(result.x, alpha, xval.x, beta, yval.x);
+                  AXPBY(result.y, alpha, xval.y, beta, yval.y);
+                #elif VWM == 4
+                  AXPBY(result.x, alpha, xval.x, beta, yval.x);
+                  AXPBY(result.y, alpha, xval.y, beta, yval.y);
+                  AXPBY(result.z, alpha, xval.z, beta, yval.z);
+                  AXPBY(result.w, alpha, xval.w, beta, yval.w);
+                #elif VWM == 8
+                  AXPBY(result.s0, alpha, xval.s0, beta, yval.s0);
+                  AXPBY(result.s1, alpha, xval.s1, beta, yval.s1);
+                  AXPBY(result.s2, alpha, xval.s2, beta, yval.s2);
+                  AXPBY(result.s3, alpha, xval.s3, beta, yval.s3);
+                  AXPBY(result.s4, alpha, xval.s4, beta, yval.s4);
+                  AXPBY(result.s5, alpha, xval.s5, beta, yval.s5);
+                  AXPBY(result.s6, alpha, xval.s6, beta, yval.s6);
+                  AXPBY(result.s7, alpha, xval.s7, beta, yval.s7);
+                #elif VWM == 16
+                  AXPBY(result.s0, alpha, xval.s0, beta, yval.s0);
+                  AXPBY(result.s1, alpha, xval.s1, beta, yval.s1);
+                  AXPBY(result.s2, alpha, xval.s2, beta, yval.s2);
+                  AXPBY(result.s3, alpha, xval.s3, beta, yval.s3);
+                  AXPBY(result.s4, alpha, xval.s4, beta, yval.s4);
+                  AXPBY(result.s5, alpha, xval.s5, beta, yval.s5);
+                  AXPBY(result.s6, alpha, xval.s6, beta, yval.s6);
+                  AXPBY(result.s7, alpha, xval.s7, beta, yval.s7);
+                  AXPBY(result.s8, alpha, xval.s8, beta, yval.s8);
+                  AXPBY(result.s9, alpha, xval.s9, beta, yval.s9);
+                  AXPBY(result.sA, alpha, xval.sA, beta, yval.sA);
+                  AXPBY(result.sB, alpha, xval.sB, beta, yval.sB);
+                  AXPBY(result.sC, alpha, xval.sC, beta, yval.sC);
+                  AXPBY(result.sD, alpha, xval.sD, beta, yval.sD);
+                  AXPBY(result.sE, alpha, xval.sE, beta, yval.sE);
+                  AXPBY(result.sF, alpha, xval.sF, beta, yval.sF);
+                #endif
+                cgm[index] = result;
+              #endif
+            }
+            #if STRN == 0
+	      kSizeMxVWMP += kSizeMxVWM;
+            #endif
+          }
+        
 }
 
 // =================================================================================================
@@ -254,7 +261,8 @@ inline void XgemmBody(const int kSizeM, const int kSizeN, const int kSizeK,
 
   // Combined thread identifier (volatile to disable caching)
   #if SA == 1 || SB == 1
-    volatile uint tid = get_local_id(0) + (get_local_id(1) << MDIMC_SHIFT);
+    uint tid = get_local_id(0) + (get_local_id(1) << MDIMC_SHIFT);
+    // volatile uint tid = get_local_id(0) + (get_local_id(1) << MDIMC_SHIFT);
   #endif
 
   // Initializes the accumulation registers

@@ -312,44 +312,44 @@ inline void InitAccRegisters(realM cpm[NWI][MWI >> VWM_SHIFT]) {
       #if (USE_VECTOR_MAD == 1) && ((PRECISION == 32) || (PRECISION == 64))
         cpm[ni][mi] = z;
       #else
-
-      #if VWM == 1
-        SetToZero(cpm[ni][mi]);
-      #elif VWM == 2
-        SetToZero(cpm[ni][mi].x);
-        SetToZero(cpm[ni][mi].y);
-      #elif VWM == 4
-        SetToZero(cpm[ni][mi].x);
-        SetToZero(cpm[ni][mi].y);
-        SetToZero(cpm[ni][mi].z);
-        SetToZero(cpm[ni][mi].w);
-      #elif VWM == 8
-        SetToZero(cpm[ni][mi].s0);
-        SetToZero(cpm[ni][mi].s1);
-        SetToZero(cpm[ni][mi].s2);
-        SetToZero(cpm[ni][mi].s3);
-        SetToZero(cpm[ni][mi].s4);
-        SetToZero(cpm[ni][mi].s5);
-        SetToZero(cpm[ni][mi].s6);
-        SetToZero(cpm[ni][mi].s7);
-      #elif VWM == 16
-        SetToZero(cpm[ni][mi].s0);
-        SetToZero(cpm[ni][mi].s1);
-        SetToZero(cpm[ni][mi].s2);
-        SetToZero(cpm[ni][mi].s3);
-        SetToZero(cpm[ni][mi].s4);
-        SetToZero(cpm[ni][mi].s5);
-        SetToZero(cpm[ni][mi].s6);
-        SetToZero(cpm[ni][mi].s7);
-        SetToZero(cpm[ni][mi].s8);
-        SetToZero(cpm[ni][mi].s9);
-        SetToZero(cpm[ni][mi].sA);
-        SetToZero(cpm[ni][mi].sB);
-        SetToZero(cpm[ni][mi].sC);
-        SetToZero(cpm[ni][mi].sD);
-        SetToZero(cpm[ni][mi].sE);
-        SetToZero(cpm[ni][mi].sF);
-      #endif
+  
+        #if VWM == 1
+          SetToZero(cpm[ni][mi]);
+        #elif VWM == 2
+          SetToZero(cpm[ni][mi].x);
+          SetToZero(cpm[ni][mi].y);
+        #elif VWM == 4
+          SetToZero(cpm[ni][mi].x);
+          SetToZero(cpm[ni][mi].y);
+          SetToZero(cpm[ni][mi].z);
+          SetToZero(cpm[ni][mi].w);
+        #elif VWM == 8
+          SetToZero(cpm[ni][mi].s0);
+          SetToZero(cpm[ni][mi].s1);
+          SetToZero(cpm[ni][mi].s2);
+          SetToZero(cpm[ni][mi].s3);
+          SetToZero(cpm[ni][mi].s4);
+          SetToZero(cpm[ni][mi].s5);
+          SetToZero(cpm[ni][mi].s6);
+          SetToZero(cpm[ni][mi].s7);
+        #elif VWM == 16
+          SetToZero(cpm[ni][mi].s0);
+          SetToZero(cpm[ni][mi].s1);
+          SetToZero(cpm[ni][mi].s2);
+          SetToZero(cpm[ni][mi].s3);
+          SetToZero(cpm[ni][mi].s4);
+          SetToZero(cpm[ni][mi].s5);
+          SetToZero(cpm[ni][mi].s6);
+          SetToZero(cpm[ni][mi].s7);
+          SetToZero(cpm[ni][mi].s8);
+          SetToZero(cpm[ni][mi].s9);
+          SetToZero(cpm[ni][mi].sA);
+          SetToZero(cpm[ni][mi].sB);
+          SetToZero(cpm[ni][mi].sC);
+          SetToZero(cpm[ni][mi].sD);
+          SetToZero(cpm[ni][mi].sE);
+          SetToZero(cpm[ni][mi].sF);
+        #endif
       #endif
     }
   }
@@ -368,36 +368,64 @@ inline void GlobalToLocalA(const __global realM* restrict agm, __local realM* al
 
   #if STRM == 0
     const uint la0_M1 = (tid - (tid & -MDIMA)) << ((MWA_SHIFT - VWM_SHIFT) > 0 ? (MWA_SHIFT - VWM_SHIFT) : 0);
+    #if USE_MAD24 == 1
+      const uint  kSizeMxVWMM = mad24((uint)(la1_M1+kwg),kSizeMxVWM ,(uint) ((GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) > 0 ? (MWG_SHIFT - VWM_SHIFT) : 0)) + la0_M1));
+    #else
+      const uint  kSizeMxVWMM = (la1_M1+kwg)*kSizeMxVWM + (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) > 0 ? (MWG_SHIFT - VWM_SHIFT) : 0)) + la0_M1;
+    #endif
   #else
     const uint la0 = tid - (tid & -MDIMA);
+    #if USE_MAD24 == 1
+      const uint  kSizeMxVWMM = mad24((uint)(la1_M1+kwg),kSizeMxVWM ,(uint) ((GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) > 0 ? (MWG_SHIFT - VWM_SHIFT) : 0)) + la0));
+    #else
+      const uint  kSizeMxVWMM = (la1_M1+kwg)*kSizeMxVWM + (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) > 0 ? (MWG_SHIFT - VWM_SHIFT) : 0)) + la0;
+    #endif
   #endif
 
-  const uint GroupID0_M1 = GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) > 0 ? (MWG_SHIFT - VWM_SHIFT) : 0);
-  const uint  kSizeMxVWMM = (la1_M1+kwg)*kSizeMxVWM;
- 
+  #if (MWA >> VWM_SHIFT) == 1 
 
-  #pragma unroll 1
-  for (uint mia=0; mia<(MWA >> VWM_SHIFT); ++mia) {
+        uint kSizeMxVWMP = 0;
+    
+        #pragma unroll 
+        for (uint kia=0; kia<KWA; ++kia) {
+    
+            // Loads the data from global memory (not transposed) into the local memory
+            #if STRM == 0
+              alm[((kia + la1_M1) << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0 )) + la0_M1] = agm[kSizeMxVWMP + kSizeMxVWMM];
+            #else
+              alm[((kia + la1_M1) << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0 )) + la0] = agm[kSizeMxVWMP + kSizeMxVWMM];
+            #endif
+            kSizeMxVWMP+=kSizeMxVWM;
+    
+        }
 
-    #if STRM == 0
-      const uint mg = mia + la0_M1;
-      const uint idm = mia + la0_M1 + GroupID0_M1 + kSizeMxVWMM;
-    #elif STRM == 1
-      const uint mg = la0 + (mia << MDIMA_SHIFT);
-      const uint idm = la0 + (mia << MDIMA_SHIFT) + GroupID0_M1 + kSizeMxVWMM;
-    #endif
+  #else
 
-    uint kSizeMxVWMP = 0;
+      #pragma unroll
+      for (uint mia=0; mia<(MWA >> VWM_SHIFT); ++mia) {
+    
+        #if STRM == 0
+          const uint mg = mia + la0_M1;
+          const uint idm = mia + kSizeMxVWMM;
+        #else
+          const uint mg = la0 + (mia << MDIMA_SHIFT);
+          const uint idm = (mia << MDIMA_SHIFT) + kSizeMxVWMM;
+        #endif
+    
+        uint kSizeMxVWMP = 0;
+    
+        #pragma unroll 
+        for (uint kia=0; kia<KWA; ++kia) {
+    
+            // Loads the data from global memory (not transposed) into the local memory
+            alm[((kia + la1_M1) << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0 )) + mg] = agm[kSizeMxVWMP + idm];
+            kSizeMxVWMP+=kSizeMxVWM;
+    
+        }
+      }
 
-    #pragma unroll 
-    for (uint kia=0; kia<KWA; ++kia) {
+   #endif 
 
-        // Loads the data from global memory (not transposed) into the local memory
-        alm[((kia + la1_M1) << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0 )) + mg] = agm[kSizeMxVWMP + idm];
-        kSizeMxVWMP+=kSizeMxVWM;
-
-    }
-  }
 }
 #endif
 
@@ -407,6 +435,7 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
                            const int kSizeN, const int tid, const int kwg) {
 
   const uint lb1_M1 = (tid >> NDIMB_SHIFT) << KWB_SHIFT;
+  const uint kSizeNxVWN = kSizeN >> VWN_SHIFT;
 
   #if STRN == 0
     const uint lb0_M1 = (tid - (tid & -NDIMB)) << ((NWB_SHIFT - VWN_SHIFT) >0 ? (NWB_SHIFT - VWN_SHIFT) : 0);
@@ -414,8 +443,19 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
     const uint lb0 = tid - (tid & -NDIMB);
   #endif
 
-  const uint kSizeNxVWN = kSizeN >> VWN_SHIFT;
-  const uint kSizeNxVWNM = (lb1_M1 + kwg) * kSizeNxVWN + (GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0));
+  #if STRN == 0
+    #if USE_MAD24 == 1
+      const uint kSizeNxVWNM = mad24((uint) (lb1_M1 + kwg),kSizeNxVWN ,(uint) ((GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0_M1));
+    #else
+      const uint kSizeNxVWNM = (lb1_M1 + kwg) * kSizeNxVWN + (GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0_M1;
+    #endif
+  #else
+    #if USE_MAD24 == 1
+      const uint kSizeNxVWNM = mad24((uint)(lb1_M1 + kwg),kSizeNxVWN,(uint) ((GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0));
+    #else
+      const uint kSizeNxVWNM = (lb1_M1 + kwg) * kSizeNxVWN + (GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0;
+    #endif
+  #endif
 
   uint kSizeNxVWNP = 0;
 
@@ -425,9 +465,9 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
       for (uint kib=0; kib<KWB; ++kib) {
     
         #if STRN == 0
-          blm[((kib + lb1_M1) << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0_M1] = bgm[kSizeNxVWNP + kSizeNxVWNM + lb0_M1];
-        #elif STRN == 1
-          blm[((kib + lb1_M1) << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0] = bgm[kSizeNxVWNP + kSizeNxVWNM + lb0];
+          blm[((kib + lb1_M1) << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0_M1] = bgm[kSizeNxVWNP + kSizeNxVWNM];
+        #else
+          blm[((kib + lb1_M1) << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0] = bgm[kSizeNxVWNP + kSizeNxVWNM];
         #endif
     
         kSizeNxVWNP+=kSizeNxVWN;
@@ -438,16 +478,21 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
       #pragma unroll
       for (uint kib=0; kib<KWB; ++kib) {
     
-        const uint kg_M1 = (kib + lb1_M1) << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0);
         const uint idk_M1 = kSizeNxVWNP + kSizeNxVWNM;
+
+        #if STRN == 0
+          const uint kg_M1 = ((kib + lb1_M1) << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0_M1;
+        #else
+          const uint kg_M1 = ((kib + lb1_M1) << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + lb0;
+        #endif
     
         #pragma unroll
         for (uint nib=0; nib<(NWB >> VWN_SHIFT); ++nib) {
     
             #if STRN == 0
-              blm[kg_M1 + nib + lb0_M1] = bgm[idk_M1 + nib + lb0_M1];
-            #elif STRN == 1
-              blm[kg_M1 + lb0 + (nib << NDIMB_SHIFT)] = bgm[idk_M1 + lb0 + (nib << NDIMB_SHIFT)];
+              blm[kg_M1 + nib] = bgm[idk_M1 + nib];
+            #else
+              blm[kg_M1 + (nib << NDIMB_SHIFT)] = bgm[idk_M1 + (nib << NDIMB_SHIFT)];
             #endif
     
         }
@@ -467,6 +512,11 @@ inline void GlobalToLocalB(const __global realN* restrict bgm, __local realN* bl
 inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI>>VWM_SHIFT],
                              const int kSizeM, const int idk, const int kwg) {
 
+  #if (MWI >> VWM_SHIFT) == 1
+ 
+      apm[0] = agm[idk*(kSizeM >> VWM_SHIFT) + (GetGroupID0() << ((MWG_SHIFT - VWM_SHIFT) >0 ? (MWG_SHIFT - VWM_SHIFT) : 0)) + get_local_id(0)];
+
+  #else
 
       #if STRM == 0
         uint LocalID0_M1 = get_local_id(0) << ((MWI_SHIFT - VWM_SHIFT) > 0 ? (MWI_SHIFT - VWM_SHIFT) : 0);
@@ -485,11 +535,13 @@ inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI>>
     
           #if STRM == 0
             apm[mi] = agm[idk_M1 + mi + LocalID0_M1];
-          #elif STRM == 1
+          #else
             apm[mi] = agm[idk_M1 + (local_id0 + (mi << MDIMC_SHIFT))];
           #endif
     
       }
+
+   #endif
 
 }
 #endif
@@ -499,28 +551,42 @@ inline void GlobalToPrivateA(const __global realM* restrict agm, realM apm[MWI>>
 inline void GlobalToPrivateB(const __global realN* restrict bgm, realN bpm[NWI >> VWN_SHIFT],
                              const int kSizeN, const int idk) {
 
-  #if STRN == 0
-    uint LocalID1_M1 = get_local_id(1) << ((NWI_SHIFT - VWN_SHIFT) >0 ? (NWI_SHIFT - VWN_SHIFT) : 0);
+  #if (NWI >> VWN_SHIFT) == 1
+
+    #if USE_MAD24 == 1
+      bpm[0] = bgm[mad24((uint) idk,(uint) (kSizeN >> VWN_SHIFT) ,(uint) ((GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)) + get_local_id(1)))];
+    #else
+
+      bpm[0] = bgm[idk*(kSizeN >> VWN_SHIFT) + (GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0))
+             + get_local_id(1)];
+
+    #endif
+
   #else
-    uint local_id1 = get_local_id(1); 
+
+       #if STRN == 0
+         uint LocalID1_N1 = get_local_id(1) << ((NWI_SHIFT - VWN_SHIFT) >0 ? (NWI_SHIFT - VWN_SHIFT) : 0);
+       #else
+         uint local_id1 = get_local_id(1); 
+       #endif
+     
+       #if USE_MAD24 == 1
+         uint idk_N1 = mad24((uint) idk,(uint) (kSizeN >> VWN_SHIFT) , ((uint) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)));
+       #else
+         uint idk_N1 = idk*(kSizeN >> VWN_SHIFT) + ((uint) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0));
+       #endif
+     
+       #pragma unroll
+       for (uint ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
+     
+           #if STRN == 0
+             bpm[ni] = bgm[idk_N1 + ni + LocalID1_N1];
+           #else
+             bpm[ni] = bgm[idk_N1 + (local_id1 + (ni << NDIMC_SHIFT))];
+           #endif
+     
+       }
   #endif
-
-  #if USE_MAD24 == 1
-    uint idk_M1 = mad24((uint) idk,(uint) (kSizeN >> VWN_SHIFT) , ((uint) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0)));
-  #else
-    uint idk_M1 = idk*(kSizeN >> VWN_SHIFT) + ((uint) GetGroupID1() << ((NWG_SHIFT - VWN_SHIFT) >0 ? (NWG_SHIFT - VWN_SHIFT) : 0));
-  #endif
-
-  #pragma unroll
-  for (uint ni=0; ni<(NWI >> VWN_SHIFT); ++ni) {
-
-      #if STRN == 0
-        bpm[ni] = bgm[idk_M1 + ni + LocalID1_M1];
-      #elif STRN == 1
-        bpm[ni] = bgm[idk_M1 + (local_id1 + (ni << NDIMC_SHIFT))];
-      #endif
-
-  }
 }
 #endif
 

@@ -106,7 +106,7 @@ StatusCode Routine::SetUp() {
       defines += "#define BODY_UNROLL_KWG 1\n";
     }
     else {
-      defines += "#define USE_CL_MAD 1\n";
+      defines += "#define USE_CL_FMA 1\n";
       defines += "#define USE_MAD24 1\n";
     }
   }
