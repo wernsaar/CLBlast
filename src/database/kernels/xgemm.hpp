@@ -35,7 +35,9 @@ const Database::DatabaseEntry Database::XgemmSingle = {
         { "Pitcairn",                                        { {"KWG",16}, {"KWI",2}, {"MDIMA",16}, {"MDIMC",8}, {"MWG",32}, {"NDIMB",16}, {"NDIMC",16}, {"NWG",128}, {"SA",0}, {"SB",0}, {"STRM",1}, {"STRN",0}, {"VWM",1}, {"VWN",1} } },
         { "Tahiti",                                          { {"KWG",32}, {"KWI",2}, {"MDIMA",16}, {"MDIMC",32}, {"MWG",128}, {"NDIMB",16}, {"NDIMC",8}, {"NWG",64}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",4}, {"VWN",1} } },
 	{ "Oland_341",					     { {"MWG",128}, {"NWG",128}, {"KWG",16}, {"MDIMC",16}, {"NDIMC",16}, {"MDIMA",32}, {"NDIMB",32}, {"KWI",2}, {"VWM",4}, {"VWN",2}, {"STRM",0}, {"STRN",1}, {"SA",1}, {"SB",1} } },
-	{ "Oland",					     { {"MWG",128}, {"NWG",128}, {"KWG",16}, {"MDIMC",16}, {"NDIMC",16}, {"MDIMA",32}, {"NDIMB",32}, {"KWI",2}, {"VWM",4}, {"VWN",2}, {"STRM",0}, {"STRN",1}, {"SA",1}, {"SB",1} } },
+	{ "Olandbak",					     { {"MWG",128}, {"NWG",128}, {"KWG",16}, {"MDIMC",16}, {"NDIMC",16}, {"MDIMA",32}, {"NDIMB",32}, {"KWI",2}, {"VWM",4}, {"VWN",2}, {"STRM",0}, {"STRN",1}, {"SA",1}, {"SB",1} } },
+        { "Olandbak",                                        { {"MWG",64}, {"NWG",64}, {"KWG",8}, {"MDIMC",8}, {"NDIMC",16}, {"MDIMA",16}, {"NDIMB",16}, {"KWI",2}, {"VWM",4}, {"VWN",2}, {"STRM",0}, {"STRN",0}, {"SA",1}, {"SB",1}, {"PRECISION",32} } },
+        { "Oland",                                           { {"MWG",128}, {"NWG",64}, {"KWG",16}, {"MDIMC",32}, {"NDIMC",8}, {"MDIMA",16}, {"NDIMB",16}, {"KWI",2}, {"VWM",4}, {"VWN",4}, {"STRM",1}, {"STRN",0}, {"SA",1}, {"SB",1}, {"PRECISION",32} } },
         { "default",                                         { {"KWG",16}, {"KWI",2}, {"MDIMA",16}, {"MDIMC",8}, {"MWG",32}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",64}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",1} } },
       }
     },
@@ -123,7 +125,8 @@ const Database::DatabaseEntry Database::XgemmComplexSingle = {
         { "Olandbak1",                                       { {"MWG",64}, {"NWG",128}, {"KWG",32}, {"MDIMC",16}, {"NDIMC",16}, {"MDIMA",32}, {"NDIMB",32}, {"KWI",8}, {"VWM",2}, {"VWN",1}, {"STRM",1}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
         { "Olandbak2", 					     { {"MWG",64}, {"NWG",128}, {"KWG",64}, {"MDIMC",16}, {"NDIMC",16}, {"MDIMA",16}, {"NDIMB",16}, {"KWI",2}, {"VWM",2}, {"VWN",2}, {"STRM",1}, {"STRN",1}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
        { "Olandbak3",                                        { {"MWG",64}, {"NWG",64}, {"KWG",16}, {"MDIMC",16}, {"NDIMC",8}, {"MDIMA",16}, {"NDIMB",8}, {"KWI",1}, {"VWM",4}, {"VWN",1}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
-       { "Oland",                                            { {"MWG",128}, {"NWG",64}, {"KWG",32}, {"MDIMC",32}, {"NDIMC",8}, {"MDIMA",16}, {"NDIMB",16}, {"KWI",2}, {"VWM",2}, {"VWN",1}, {"STRM",1}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
+       { "Olandbak",                                            { {"MWG",128}, {"NWG",64}, {"KWG",32}, {"MDIMC",32}, {"NDIMC",8}, {"MDIMA",16}, {"NDIMB",16}, {"KWI",2}, {"VWM",2}, {"VWN",1}, {"STRM",1}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
+       { "Oland",                                            { {"MWG",128}, {"NWG",64}, {"KWG",8}, {"MDIMC",32}, {"NDIMC",8}, {"MDIMA",32}, {"NDIMB",32}, {"KWI",8}, {"VWM",2}, {"VWN",1}, {"STRM",0}, {"STRN",0}, {"SA",0}, {"SB",0}, {"PRECISION",3232} } },
         { "default",                                         { {"KWG",16}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",8}, {"MWG",32}, {"NDIMB",8}, {"NDIMC",8}, {"NWG",32}, {"SA",0}, {"SB",0}, {"STRM",0}, {"STRN",0}, {"VWM",1}, {"VWN",1} } },
       }
     },
