@@ -83,6 +83,10 @@ R"(
   #define COPY_DIMY_SHIFT 5
 #elif COPY_DIMY == 64
   #define COPY_DIMY_SHIFT 6
+#elif COPY_DIMY == 128
+  #define COPY_DIMY_SHIFT 7
+#elif COPY_DIMY == 256
+  #define COPY_DIMY_SHIFT 8
 #endif
 
 typedef union COPY_Ptr {
@@ -106,64 +110,65 @@ __kernel void CopyMatrixFast(const int ld,
 
 
   #if USE_MAD24 == 1
-    const uint GroupID1_M2 = mad24(((int) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (int) get_local_id(1), (ld >> COPY_VW_SHIFT) , (int) get_global_id(0)) ;
+    uint id = mad24(((int) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (int) get_local_id(1), (ld >> COPY_VW_SHIFT) , (int) get_global_id(0)) ;
   #else
-    const uint GroupID1_M2 = (((uint) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (uint) get_local_id(1)) * (ld >> COPY_VW_SHIFT) + (uint) get_global_id(0) ;
+    uint id = (((uint) get_group_id(1) << (COPY_WPT_SHIFT + COPY_DIMY_SHIFT)) + (uint) get_local_id(1)) * (ld >> COPY_VW_SHIFT) + (uint) get_global_id(0) ;
   #endif
 
-  const uint ld_D1 = (ld >> COPY_VW_SHIFT);
-   
-  uint ld_D1P = 0;
-
-  #pragma unroll 
-  for (uint w_one=0; w_one<COPY_WPT; w_one++) {
-
-    uint id = ld_D1P + GroupID1_M2;
-
-    #if COPY_WPT > 1
-      ld_D1P += ld_D1 << COPY_DIMY_SHIFT;
-    #endif
-
-    #if (USE_VLOAD == 1) && ((PRECISION == 3232) || (PRECISION == 6464))
-
-      #if COPY_VW == 16
-
-        COPY_Ptr S;
-        COPY_Ptr D;
-        S.cs = &src[id];
-        D.s = &dest[id];
-
-        singlereal8 X1;
-        singlereal8 X2;
-        singlereal8 X3;
-        singlereal8 X4;
-
-        X1 = COPY_VLOADN(0,S.cf);
-        X2 = COPY_VLOADN(1,S.cf);
-        X3 = COPY_VLOADN(2,S.cf);
-        X4 = COPY_VLOADN(3,S.cf);
-
-        COPY_VSTORN(X1,0,D.f);
-        COPY_VSTORN(X2,1,D.f);
-        COPY_VSTORN(X3,2,D.f);
-        COPY_VSTORN(X4,3,D.f);
-
-      #else
-
-        COPY_Ptr S;
-        COPY_Ptr D;
-        S.cs = &src[id];
-        D.s = &dest[id];
-        COPY_VSTORN(COPY_VLOADN(0,S.cf),0,D.f);
-
+  #if (COPY_WPT == 1) && ((PRECISION == 32) || (PRECISION == 64))
+          dest[id] = src[id];
+  #else
+    
+      #if COPY_WPT > 1
+        const uint ld_D1 = (ld >> COPY_VW_SHIFT) << COPY_DIMY_SHIFT;
       #endif
-
-    #else
-      dest[id] = src[id];
-    #endif
-
-    }
-
+    
+      #pragma unroll 
+      for (uint w_one=0; w_one<COPY_WPT; w_one++) {
+    
+        #if (USE_VLOAD == 1) && ((PRECISION == 3232) || (PRECISION == 6464))
+    
+          #if COPY_VW == 16
+    
+            COPY_Ptr S;
+            COPY_Ptr D;
+            S.cs = &src[id];
+            D.s = &dest[id];
+    
+            singlereal8 X1;
+            singlereal8 X2;
+            singlereal8 X3;
+            singlereal8 X4;
+    
+            X1 = COPY_VLOADN(0,S.cf);
+            X2 = COPY_VLOADN(1,S.cf);
+            X3 = COPY_VLOADN(2,S.cf);
+            X4 = COPY_VLOADN(3,S.cf);
+    
+            COPY_VSTORN(X1,0,D.f);
+            COPY_VSTORN(X2,1,D.f);
+            COPY_VSTORN(X3,2,D.f);
+            COPY_VSTORN(X4,3,D.f);
+    
+          #else
+    
+            COPY_Ptr S;
+            COPY_Ptr D;
+            S.cs = &src[id];
+            D.s = &dest[id];
+            COPY_VSTORN(COPY_VLOADN(0,S.cf),0,D.f);
+    
+          #endif
+    
+        #else
+          dest[id] = src[id];
+        #endif
+    
+        #if COPY_WPT > 1
+          id += ld_D1;
+        #endif
+      }
+  #endif
 }
 
 // =================================================================================================
