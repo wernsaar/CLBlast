@@ -58,8 +58,8 @@ class TuneCopy {
 
   // Sets the tuning parameters and their possible values
   static void SetParameters(cltune::Tuner &tuner, const size_t id) {
-    tuner.AddParameter(id, "COPY_DIMX", {2, 4, 8, 16, 32, 64 ,128, 256});
-    tuner.AddParameter(id, "COPY_DIMY", {2, 4, 8, 16, 32, 64 ,128, 256});
+    tuner.AddParameter(id, "COPY_DIMX", {1, 2, 4, 8, 16, 32});
+    tuner.AddParameter(id, "COPY_DIMY", {1, 2, 4, 8, 16, 32});
     tuner.AddParameter(id, "COPY_WPT", {1, 2, 4, 8,16});
     tuner.AddParameter(id, "COPY_VW", {1, 2, 4, 8, 16});
   }

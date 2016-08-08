@@ -126,7 +126,7 @@ void Tuner(int argc, char* argv[]) {
       defines += "#define USE_VECTOR_MAD 1\n";
       defines += "#define USE_CL_MAD 1\n";
       defines += "#define USE_VLOAD 1\n";
-      defines += "#define BLOCK_UNROLL_KWG 1\n";
+      // defines += "#define BLOCK_UNROLL_KWG 1\n";
   }
   if (isINTEL && isCPU) {
       defines += "#define USE_VECTOR_MAD 1\n";
@@ -135,6 +135,9 @@ void Tuner(int argc, char* argv[]) {
       defines += "#define USE_INITIALIZED_ARRAYS 0\n";
   }
   if (isARM && isGPU) {
+    defines += "#define USE_VECTOR_MAD 1\n";
+    defines += "#define USE_VLOAD 1\n";
+    //defines += "#define BLOCK_UNROLL_KWG 1\n";
     defines += "#define GLOBAL_MEM_FENCE 1\n";
   }
 

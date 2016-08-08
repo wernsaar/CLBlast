@@ -128,7 +128,9 @@ StatusCode Routine::SetUp() {
   // For specific devices add a global synchronisation barrier to the GEMM kernel to optimize
   // performance through better cache behaviour
   if (device_.IsARM() && device_.IsGPU()) {
-    defines += "#define GLOBAL_MEM_FENCE 1\n";
+      defines += "#define USE_VECTOR_MAD 1\n";
+      defines += "#define USE_VLOAD 1\n";
+      defines += "#define GLOBAL_MEM_FENCE 1\n";
   }
 
   // Combines everything together into a single source string

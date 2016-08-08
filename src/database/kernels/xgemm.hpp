@@ -56,6 +56,8 @@ const Database::DatabaseEntry Database::XgemmSingle = {
     { // ARM GPUs
       kDeviceTypeGPU, "ARM", {
         { "Mali-T628",                                       { {"KWG",16}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",8}, {"MWG",64}, {"NDIMB",8}, {"NDIMC",16}, {"NWG",16}, {"SA",0}, {"SB",0}, {"STRM",1}, {"STRN",1}, {"VWM",8}, {"VWN",1} } },
+        { "Mali-T604bak",                                    { {"MWG",64}, {"NWG",32}, {"KWG",32}, {"MDIMC",16}, {"NDIMC",8}, {"MDIMA",8}, {"NDIMB",4}, {"KWI",2}, {"VWM",4}, {"VWN",4}, {"STRM",1}, {"STRN",1}, {"SA",0}, {"SB",0}, {"PRECISION",32} } },
+     { "Mali-T604",                                          { {"MWG",32}, {"NWG",64}, {"KWG",32}, {"MDIMC",8}, {"NDIMC",16}, {"MDIMA",8}, {"NDIMB",16}, {"KWI",2}, {"VWM",4}, {"VWN",4}, {"STRM",0}, {"STRN",1}, {"SA",0}, {"SB",0}, {"PRECISION",32} } },
         { "default",                                         { {"KWG",16}, {"KWI",2}, {"MDIMA",8}, {"MDIMC",8}, {"MWG",64}, {"NDIMB",8}, {"NDIMC",16}, {"NWG",16}, {"SA",0}, {"SB",0}, {"STRM",1}, {"STRN",1}, {"VWM",8}, {"VWN",1} } },
       }
     },
